@@ -60,6 +60,20 @@
   .pt{display:grid;grid-template-columns:repeat(18,1fr);gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
   .el{aspect-ratio:1/1;border-radius:6px;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 18%,#16161a);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-weight:800;font-size:clamp(10px,1.2vw,16px);transition:opacity .25s,transform .2s;position:relative}
   .el small{font-size:9px;font-weight:400;color:var(--muted);position:absolute;top:2px;left:4px}
+  .el .emo{font-size:clamp(9px,.9vw,13px);line-height:1;margin-top:2px}
+  #ptp{position:sticky;top:12px;align-self:start}
+  .kid-pic{display:flex;align-items:center;gap:14px;background:color-mix(in srgb,var(--c) 16%,#1d1d22);border:1px solid var(--c);border-radius:14px;padding:12px 16px}
+  .kid-emo{font-size:46px;line-height:1;letter-spacing:4px}
+  .kid-sym{margin-left:auto;font-size:40px;font-weight:800;color:var(--c)}
+  .kid-tags{display:flex;gap:6px;flex-wrap:wrap}
+  .kid-tags .tag{margin-bottom:4px}
+  .kid-what{font-size:17px;line-height:1.5;margin:8px 0}
+  .kid-fun{background:var(--panel2);border-left:3px solid var(--non);border-radius:8px;padding:8px 11px;font-size:14px;line-height:1.45;margin-top:8px}
+  .kid-fun b{display:block;font-size:12.5px;color:var(--muted);margin-bottom:2px}
+  .kid-photo{margin:12px 0 0}
+  .kid-photo img{width:100%;max-height:220px;object-fit:cover;border-radius:10px;display:block;background:#222}
+  .kid-photo figcaption{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .kid-photo a{color:var(--metal)}
   .el.course::after{content:"★";position:absolute;top:1px;right:3px;font-size:9px;color:var(--warn)}
   .el.fade{opacity:.15}
   .el.sel{transform:scale(1.12);box-shadow:0 0 0 2px var(--text);z-index:2}
@@ -417,6 +431,83 @@ const ROWS=[
  "Cs Caesium,Ba Barium,La Lanthanum,Hf Hafnium,Ta Tantalum,W Tungsten,Re Rhenium,Os Osmium,Ir Iridium,Pt Platinum,Au Gold,Hg Mercury,Tl Thallium,Pb Lead,Bi Bismuth,Po Polonium,At Astatine,Rn Radon"
 ].map(r=>typeof r==="string"?r.split(",").map((s,i)=>[i+1,...s.split(" ")]):r);
 const NOTES={C:"Carbon. Graphite (a form of carbon) conducts electricity, which is unusual for a non-metal.",Li:"Lithium. A metal soft enough to cut with a knife.",Na:"Sodium. A metal soft enough to cut with a knife.",K:"Potassium. A metal (Do Now answer).",O:"Oxygen. A non-metal (Do Now answer).",Cl:"Chlorine. A non-metal (Do Now answer).",Si:"Silicon. A metalloid. Density 2.33 g per cm³.",Au:"Gold. A metal. Density 19.3 g per cm³.",Fe:"Iron. A metal (Do Now answer).",Cu:"Copper. A metal (Do Now answer).",Al:"Aluminium. A metal (Do Now answer).",Y:"Yttrium. Challenge question: it is a metal, so predict shiny, malleable, ductile, good conductor, high density."};
+/* Kid-friendly cards: [picture clue, what it is, fun fact] */
+const KIDS={
+ H:["💧 ☀️","The lightest thing in the universe. The Sun is mostly hydrogen.","Two hydrogen atoms + one oxygen atom make water (H₂O)."],
+ He:["🎈","A very light gas. Party balloons that float are full of it.","The Sun makes helium out of hydrogen."],
+ Li:["🔋 📱","A very light, soft metal. It is inside phone and car batteries.","So soft you can cut it with a knife."],
+ Be:["🛰️","A light, strong metal used in space telescopes.","The James Webb Space Telescope’s mirrors are made of it."],
+ B:["🧪 🍲","Found in strong oven-safe glass and some cleaning powders.","It is a metalloid: half metal, half non-metal."],
+ C:["✏️ 💎","Pencil “lead” (graphite) and diamonds are both carbon.","You are made of lots of carbon too!"],
+ N:["🌬️ 🥔","Most of the air you breathe (about 78%).","Crisp packets are filled with it to keep crisps fresh."],
+ O:["🫁 🔥","The gas we need to breathe.","Fire needs oxygen to burn."],
+ F:["🪥 🦷","Added to toothpaste to keep teeth strong.","As a gas it is the most reactive element of all."],
+ Ne:["🌈 🪧","A gas that glows in bright shop signs.","Neon signs glow red-orange."],
+ Na:["🧂","Half of table salt (sodium chloride).","Pure sodium is a soft metal that fizzes in water."],
+ Mg:["🎇","A light metal that burns with a dazzling white light.","Used in fireworks and sparklers."],
+ Al:["🥤","Light metal for drink cans and kitchen foil.","Cans can be recycled again and again."],
+ Si:["🏖️ 💻","Found in sand. Used to make computer chips.","Silicon Valley is named after it."],
+ P:["🔥 🦴","Found in the tip of matches.","Your bones and teeth contain phosphorus."],
+ S:["🌋 🥚","A yellow solid found near volcanoes.","Some of its compounds smell like rotten eggs."],
+ Cl:["🏊","Keeps swimming pools clean.","The other half of table salt."],
+ Ar:["💡","A gas inside old-style light bulbs.","About 1% of the air is argon."],
+ K:["🍌","A soft metal. Bananas contain lots of potassium.","It fizzes with a lilac flame in water."],
+ Ca:["🥛 🦴","Makes bones and teeth strong.","Milk and cheese are full of calcium."],
+ Sc:["🚲","Added to aluminium to make light, strong bike frames.","It is a rare metal."],
+ Ti:["✈️ 🦿","A strong, light metal for planes and new hip joints.","It hardly ever rusts."],
+ V:["🔧","Makes steel tools extra tough.","Named after Vanadis, a Norse goddess."],
+ Cr:["🚿","The shiny “chrome” coating on taps and car parts.","It gives rubies their red colour."],
+ Mn:["🔩","Mixed into steel to make it stronger.","Some batteries use it."],
+ Fe:["🔩 🧲","The main metal in steel: bridges, cars and nails.","Your blood is red because of iron. Magnets pick it up."],
+ Co:["💙","Gives glass and paint a deep blue colour.","Used in rechargeable batteries."],
+ Ni:["🪙","Used in coins and stainless steel.","It is magnetic, like iron."],
+ Cu:["🔌 🗽","Orange metal in electric wires.","The Statue of Liberty is copper. It turned green over time!"],
+ Zn:["🛡️ 🧴","Coats steel to stop it rusting.","It is in some sun creams."],
+ Ga:["🫠","A metal that can melt in your hand.","It melts at about 30 °C."],
+ Ge:["📡","A metalloid used in electronics.","Named after Germany."],
+ As:["☠️","A metalloid that is poisonous.","Used as a poison in old mystery stories."],
+ Se:["🌰","Our body needs a tiny amount.","Brazil nuts contain lots of it."],
+ Br:["🟤 💧","A red-brown liquid at room temperature.","One of only two elements that are liquid at room temperature."],
+ Kr:["📸","A gas used in some camera flashes.","Superman’s “kryptonite” is named after it (but it’s made up)."],
+ Rb:["⏱️","A very soft, very reactive metal used in super-accurate clocks.","It reacts violently with water."],
+ Sr:["🎆","Makes fireworks glow bright red.","Named after a village in Scotland, Strontian."],
+ Y:["💡 📺","Used in LED lights and screens.","Named after a village in Sweden, Ytterby."],
+ Zr:["💍","Used to make fake diamonds (cubic zirconia).","It can stand very high heat."],
+ Nb:["🧲 🏥","Used in super-strong magnets in hospital MRI scanners.","Mixed into steel for pipelines."],
+ Mo:["🔧 🌱","Makes steel very hard for tools.","Plants need a tiny amount to grow."],
+ Tc:["🏥","Made in labs. Doctors use it for body scans.","It was the first element made by people."],
+ Ru:["🖊️","A hard metal used in electronics.","Named after Russia."],
+ Rh:["🚗","Helps clean car exhaust fumes.","One of the most expensive metals."],
+ Pd:["🚗 💍","Cleans car exhaust and is used in jewellery.","It can soak up hydrogen like a sponge."],
+ Ag:["🥈 🍴","Shiny metal for jewellery, medals and cutlery.","The best electrical conductor of all metals."],
+ Cd:["🔋","Used in some old rechargeable batteries.","It is toxic, so it is used less now."],
+ In:["📱","Used in touchscreens.","So soft you can scratch it with a fingernail."],
+ Sn:["🥫","Coats steel food cans (tin cans).","Mix tin with copper and you get bronze!"],
+ Sb:["🔥 🧯","Helps make materials fire-resistant.","Used as eye make-up in ancient Egypt."],
+ Te:["☀️","Used in some solar panels.","Named after the Latin word for Earth (tellus)."],
+ I:["🩹","Used to clean cuts. Our body needs a little.","Added to some table salt."],
+ Xe:["🚘 🚀","Glows bright blue-white in some car headlights.","Some spacecraft engines use xenon."],
+ Cs:["⏰","Used in atomic clocks that keep world time.","It melts on a hot day (about 28 °C)."],
+ Ba:["🩻 🎆","Doctors use it so your stomach shows up on X-rays.","Makes fireworks glow green."],
+ La:["📷","Used in camera lenses and some car batteries.","Its name means “hidden” in Greek."],
+ Hf:["⚛️","Used in nuclear power station control rods.","Named after Copenhagen (Hafnia in Latin)."],
+ Ta:["📱 💻","Tiny parts inside phones and laptops.","The body accepts it, so it is used in implants."],
+ W:["💡","The thin glowing wire inside old light bulbs.","It has the highest melting point of any metal."],
+ Re:["🚀","Used in jet engines.","One of the rarest elements on Earth."],
+ Os:["🖋️ 🏋️","The densest element: very heavy for its size.","Used in tough fountain-pen tips."],
+ Ir:["☄️","A very hard metal found in meteorites.","A layer of it in rocks hints at the asteroid that ended the dinosaurs."],
+ Pt:["💍","A precious silver-white metal for jewellery.","Also helps clean car exhaust."],
+ Au:["🥇 👑","A shiny yellow precious metal for jewellery and medals.","Asante was called the Kingdom of Gold!"],
+ Hg:["🌡️","The only metal that is liquid at room temperature.","It was used in old thermometers. It is toxic."],
+ Tl:["⚠️","A very poisonous metal.","It is rarely used."],
+ Pb:["⚖️ 🩻","A heavy, soft metal. It blocks X-rays.","Pencils use graphite, never real lead."],
+ Bi:["🌈","Makes rainbow-coloured staircase crystals.","Used in some pink tummy medicines."],
+ Po:["☢️","Very radioactive and very rare.","Found by Marie Curie and named after Poland."],
+ At:["☢️","One of the rarest elements on Earth.","There is less than 1 gram in the whole Earth’s crust at any time."],
+ Rn:["☢️ 🏠","A radioactive gas that can seep out of the ground.","Some homes are tested for radon."]
+};
+const GAS=new Set("H He N O F Ne Cl Ar Kr Xe Rn".split(" ")), LIQ=new Set(["Br","Hg"]), RADIO=new Set(["Tc","Po","At","Rn"]);
+const stateOf=s=>GAS.has(s)?["💨","Gas"]:LIQ.has(s)?["💧","Liquid"]:["🧊","Solid"];
 const ptg=document.getElementById("ptg"), ptp=document.getElementById("ptp");
 let ptF="all";
 const typeOf=s=>MIDS.has(s)?"mid":NONM.has(s)?"non":"metal";
@@ -432,18 +523,41 @@ ROWS.forEach((row,ri)=>{
     const t=typeOf(e[1]);
     d.className="el"+(COURSE.has(e[1])?" course":""); d.style.setProperty("--c",C[t]);
     d.tabIndex=0; d.setAttribute("role","button"); d.setAttribute("aria-label",e[2]+", "+TN[t]);
-    d.innerHTML=`<small>${ri+1}</small>${e[1]}`;
+    d.innerHTML=`<small>${ri+1}</small>${e[1]}<span class="emo" aria-hidden="true">${(KIDS[e[1]]||[""])[0].split(" ")[0]}</span>`;
+    d.title=e[2];
     d.onclick=()=>pickEl(e,t,ri+1,d); d.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();pickEl(e,t,ri+1,d)}};
     ptg.appendChild(d); cells.push({d,t});
   }
 });
 function pickEl(e,t,p,d){
   cells.forEach(c=>c.d.classList.remove("sel")); d.classList.add("sel");
-  const props={metal:"Shiny · malleable · ductile · sonorous · good conductor · high density · high melting point",non:"Dull · brittle · poor conductor · low density · low melting point · not sonorous",mid:"Between metals and non-metals · semi-conductor · solid"}[t];
-  ptp.innerHTML=`<span class="tag" style="--c:${C[t]}">${TN[t]}</span><h2><span style="font-size:34px">${e[1]}</span> &nbsp;${e[2]}</h2>
-  <p class="ph">Group ${e[0]} · Period ${p}</p><p class="big">${props}</p>${NOTES[e[1]]?`<p class="ph" style="border-left:3px solid #E6C76A;padding-left:10px">★ ${NOTES[e[1]]}</p>`:""}`;
+  const k=KIDS[e[1]]||["🔬","",""], st=stateOf(e[1]);
+  const props={metal:"Shiny · malleable · ductile · good conductor",non:"Dull · brittle · poor conductor",mid:"In between · semi-conductor"}[t];
+  ptp.innerHTML=`<div class="kid-pic" style="--c:${C[t]}"><div class="kid-emo" aria-hidden="true">${k[0]}</div><div class="kid-sym">${e[1]}</div></div>
+  <h2 style="margin-top:10px">${e[2]}</h2>
+  <div class="kid-tags"><span class="tag" style="--c:${C[t]}">${TN[t]}</span><span class="tag" style="--c:#cfc6b8">${st[0]} ${st[1]}</span>${RADIO.has(e[1])?'<span class="tag" style="--c:#E6C76A">☢️ Radioactive</span>':""}</div>
+  <p class="kid-what">${k[1]}</p>
+  ${k[2]?`<div class="kid-fun"><b>🤩 Fun fact</b>${k[2]}</div>`:""}
+  ${NOTES[e[1]]?`<div class="kid-fun" style="border-color:#E6C76A"><b>★ From the lesson</b>${NOTES[e[1]]}</div>`:""}
+  <figure class="kid-photo" id="kphoto"><div class="ph" style="font-size:12.5px">Loading a real photo…</div></figure>
+  <p class="ph" style="font-size:12.5px;margin:6px 0 0">Group ${e[0]} · Period ${p} · ${props}</p>`;
+  loadPhoto(e[1],e[2]);
 }
-ptp.innerHTML=`<h2>Click an element</h2><p class="ph">Colour shows its type. ★ = named in the lesson.</p><p class="ph">Periods 1-6 shown. Lanthanides and period 7 left out to keep it simple.</p>`;
+ptp.innerHTML=`<h2>Click an element</h2><p class="ph">Each box shows a picture clue. Click it to learn what the element is and where you see it.</p><p class="ph">Colour shows its type. ★ = named in the lesson.</p><p class="ph">Periods 1-6 shown. Lanthanides and period 7 left out to keep it simple.</p>`;
+
+// Real photo from Wikipedia when online. Offline, the picture clue and text still work.
+const PHOTO_CACHE={}, WIKI_TITLE={Hg:"Mercury_(element)"};
+function loadPhoto(sym,name){
+  const fig=document.getElementById("kphoto"), title=WIKI_TITLE[sym]||name;
+  const show=src=>{const f=document.getElementById("kphoto");if(!f||f.dataset.sym!==sym)return;
+    f.innerHTML=src?`<img src="${src}" alt="Photo of ${name}"><figcaption>Real ${name} · photo from Wikipedia · <a href="https://simple.wikipedia.org/wiki/${encodeURIComponent(title)}" target="_blank" rel="noopener">Read more (Simple Wikipedia)</a></figcaption>`
+      :`<div class="ph" style="font-size:12.5px">📶 Connect to the internet to see a real photo.</div>`};
+  fig.dataset.sym=sym;
+  if(sym in PHOTO_CACHE){show(PHOTO_CACHE[sym]);return}
+  fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(title))
+    .then(r=>r.ok?r.json():null).then(j=>{PHOTO_CACHE[sym]=j&&j.thumbnail?j.thumbnail.source:null;show(PHOTO_CACHE[sym])})
+    .catch(()=>show(null));
+}
 function drawPtF(){
   const host=document.getElementById("ptf");host.innerHTML="";
   [["all","All","#ecebe8"],["metal","Metals",C.metal],["non","Non-metals",C.non],["mid","Metalloids",C.mid],["course","★ In the lesson","#E6C76A"]].forEach(([v,l,c])=>{

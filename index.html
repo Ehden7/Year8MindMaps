@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Revision Pages</title>
+<script>
+/* =====================================================================
+   ADD A NEW PAGE HERE
+   ---------------------------------------------------------------------
+   1. Put the new .html file in the SAME folder as this index page.
+   2. Copy one block below, paste it at the end of the list, and change:
+        title   : the name shown on the card
+        subject : History, Chemistry, Biology, Physics, Maths, English...
+        file    : the exact file name (same folder)
+        icon    : any emoji
+        color   : any colour code (pick from the COLOURS list below)
+        note    : a few words about the page
+        date    : test date or when you made it (optional, "" if none)
+   3. Save, then refresh the page in the browser.
+
+   COLOURS you can use:
+     "#FF6B6B" red    "#FFA94D" orange  "#FFD43B" yellow  "#69DB7C" green
+     "#38D9A9" teal   "#4DABF7" blue    "#748FFC" indigo  "#DA77F2" purple
+     "#F783AC" pink
+   ===================================================================== */
+const PAGES = [
+  {
+    title:   "West African Kingdoms",
+    subject: "History",
+    file:    "West_African_Kingdoms_MindMap.html",
+    icon:    "👑",
+    color:   "#FFA94D",
+    note:    "Mali, Songhay, Benin, Asante · timeline · skills",
+    date:    ""
+  },
+  {
+    title:   "Metals and Non-Metals",
+    subject: "Chemistry",
+    file:    "Metals_NonMetals_MindMap.html",
+    icon:    "⚗️",
+    color:   "#4DABF7",
+    note:    "Periodic Table · properties · lab tests",
+    date:    ""
+  },
+  // <-- paste the next page here
+];
+</script>
+<style>
+  :root{--bg:#0d0d0f;--card:#17171c;--text:#f1f0ec;--muted:#a3a1a8;--line:#2a2a31}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;min-height:100vh}
+  .top{height:6px;background:linear-gradient(90deg,#FF6B6B,#FFA94D,#FFD43B,#69DB7C,#4DABF7,#DA77F2)}
+  header{padding:34px 32px 10px;max-width:1200px;margin:0 auto}
+  h1{margin:0;font-size:34px}
+  h1 span{background:linear-gradient(90deg,#FFA94D,#FFD43B,#69DB7C,#4DABF7,#DA77F2);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);margin-top:6px;font-size:15px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:20px}
+  .chip{background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:14px;cursor:pointer}
+  .chip[aria-pressed="true"]{color:#111;background:var(--c,#f1f0ec);border-color:var(--c,#f1f0ec);font-weight:700}
+  .chip:focus-visible,a.card:focus-visible,input:focus-visible{outline:2px solid #FFD43B;outline-offset:2px}
+  input{margin-left:auto;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;min-width:220px}
+  main{max-width:1200px;margin:0 auto;padding:18px 32px 40px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  a.card{display:block;text-decoration:none;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s}
+  a.card:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 28px -12px var(--c)}
+  .band{height:92px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 45%,#17171c))}
+  .band .ic{font-size:44px}
+  .band .subj{background:rgba(0,0,0,.35);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;letter-spacing:.5px;text-transform:uppercase}
+  .body{padding:14px 20px 18px}
+  .body h2{margin:0 0 4px;font-size:19px}
+  .body p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+  .body .d{margin-top:10px;font-size:12.5px;color:var(--c);font-weight:700}
+  .open{margin-top:12px;font-size:13.5px;color:var(--c);font-weight:700}
+  .empty{grid-column:1/-1;color:var(--muted);text-align:center;padding:40px}
+  footer{max-width:1200px;margin:0 auto;padding:0 32px 30px;color:#5f5d65;font-size:12.5px}
+  @media (prefers-reduced-motion:reduce){a.card{transition:none}a.card:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="top"></div>
+<header>
+  <h1>📚 My <span>Revision Pages</span></h1>
+  <div class="sub" id="count"></div>
+  <div class="bar" id="bar">
+    <input id="q" type="search" placeholder="Search..." aria-label="Search pages">
+  </div>
+</header>
+<main id="grid"></main>
+<footer>To add a page: open this file in a text editor and add a block to the PAGES list at the top.</footer>
+
+<script>
+// Nothing below needs changing when you add a page.
+let subject = "All";
+const grid = document.getElementById("grid"), q = document.getElementById("q"), bar = document.getElementById("bar");
+
+function subjectColor(s){ const p = PAGES.find(x => x.subject === s); return p ? p.color : "#f1f0ec"; }
+
+function drawChips(){
+  bar.querySelectorAll(".chip").forEach(c => c.remove());
+  ["All", ...new Set(PAGES.map(p => p.subject))].forEach(s => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = s;
+    b.style.setProperty("--c", s === "All" ? "#f1f0ec" : subjectColor(s));
+    b.setAttribute("aria-pressed", s === subject);
+    b.onclick = () => { subject = s; drawChips(); draw(); };
+    bar.insertBefore(b, q);
+  });
+}
+
+function draw(){
+  const text = q.value.toLowerCase();
+  const list = PAGES.filter(p => (subject === "All" || p.subject === subject) &&
+    (p.title + p.subject + p.note).toLowerCase().includes(text));
+  grid.innerHTML = list.length ? list.map(p => `
+    <a class="card" href="${encodeURI(p.file)}" style="--c:${p.color}">
+      <div class="band"><span class="ic" aria-hidden="true">${p.icon}</span><span class="subj">${p.subject}</span></div>
+      <div class="body">
+        <h2>${p.title}</h2>
+        <p>${p.note}</p>
+        ${p.date ? `<div class="d">📅 ${p.date}</div>` : ""}
+        <div class="open">Open →</div>
+      </div>
+    </a>`).join("") : `<div class="empty">No pages found.</div>`;
+  document.getElementById("count").textContent =
+    `${PAGES.length} page${PAGES.length === 1 ? "" : "s"} · ${new Set(PAGES.map(p => p.subject)).size} subjects`;
+}
+
+q.oninput = draw;
+drawChips(); draw();
+</script>
+</body>
+</html>
