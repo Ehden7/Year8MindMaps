@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metals and Non-Metals - Revision Mind Map</title>
+<style>
+  :root{
+    --bg:#0d0d0f; --panel:#16161a; --panel2:#1d1d22; --line:#2a2a31; --text:#ecebe8; --muted:#a3a1a8;
+    --key:#E3B341; --metal:#5AA9E6; --non:#6CC08B; --mid:#A98BDB; --exc:#D0875A; --lab:#cfc6b8; --warn:#E6C76A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{padding:18px 26px 6px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  h1{margin:0;font-size:24px;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .legend{display:flex;gap:14px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--c);vertical-align:-1px}
+  nav{display:flex;gap:6px;padding:10px 26px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  nav button{background:transparent;color:var(--muted);border:1px solid var(--line);padding:8px 14px;border-radius:999px;font-size:14px;cursor:pointer}
+  nav button:hover{color:var(--text);border-color:#44444d}
+  nav button[aria-selected="true"]{background:var(--panel2);color:var(--text);border-color:#55555f}
+  button:focus-visible,.chip:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+  nav .hint{margin-left:auto;color:#6f6d75;font-size:12px;align-self:center}
+  section{display:none;padding:18px 26px 30px}
+  section.on{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){section.on,.open .more,.flip.open .a{animation:none!important}*{transition:none!important}}
+  .ph{color:var(--muted);font-size:14.5px;line-height:1.6}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .box h3{margin:0 0 10px;font-size:17px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13px}
+  .chip[aria-pressed="true"]{color:var(--text);border-color:var(--c,#777);background:var(--panel2)}
+
+  /* mind map */
+  .mapwrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px}
+  @media (max-width:1100px){.mapwrap{grid-template-columns:1fr}}
+  .mapbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px}
+  svg{width:100%;height:auto;display:block}
+  .link{fill:none;stroke-width:2.2;opacity:.55;transition:opacity .25s}
+  .node{cursor:pointer}
+  .node text{pointer-events:none}
+  .dim .link{opacity:.12}
+  .dim .node{opacity:.35}
+  .dim .node.hl,.dim .link.hl{opacity:1}
+  .node.sel rect{stroke-width:3;filter:drop-shadow(0 0 8px var(--glow))}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-height:300px}
+  .panel h2{margin:0 0 6px;font-size:19px}
+  .tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid var(--c);color:var(--c);margin-bottom:10px}
+  .panel ul{margin:8px 0 0;padding-left:18px;line-height:1.55;font-size:14.5px}
+  .big{font-size:16px;line-height:1.55}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid var(--c);border-radius:7px;padding:3px 9px;font-size:13px;margin:3px 4px 3px 0}
+  .remember{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+  .remember div{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px;padding:10px 12px;font-size:13.5px}
+
+  /* periodic table */
+  .ptwrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px}
+  @media (max-width:1100px){.ptwrap{grid-template-columns:1fr}}
+  .pt{display:grid;grid-template-columns:repeat(18,1fr);gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .el{aspect-ratio:1/1;border-radius:6px;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 18%,#16161a);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-weight:800;font-size:clamp(10px,1.2vw,16px);transition:opacity .25s,transform .2s;position:relative}
+  .el small{font-size:9px;font-weight:400;color:var(--muted);position:absolute;top:2px;left:4px}
+  .el.course::after{content:"★";position:absolute;top:1px;right:3px;font-size:9px;color:var(--warn)}
+  .el.fade{opacity:.15}
+  .el.sel{transform:scale(1.12);box-shadow:0 0 0 2px var(--text);z-index:2}
+  .el:hover{transform:scale(1.08)}
+  .gl{font-size:11px;color:#6f6d75;text-align:center;align-self:end}
+  .zones{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .zone{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:10px;padding:10px 12px;font-size:13.5px}
+  .zone b{color:var(--c);display:block;font-size:15px}
+
+  /* words */
+  .words{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .w{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:10px;padding:10px 12px}
+  .w b{display:block;font-size:15px}
+  .w span{color:var(--muted);font-size:13.5px}
+  .w em{display:block;font-style:normal;font-size:11.5px;color:var(--c);margin-top:4px}
+  .search{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:9px;font-size:14px;min-width:240px}
+
+  /* test yourself */
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:1000px){.tgrid{grid-template-columns:1fr}}
+  .flip{background:var(--panel2);border:1px solid var(--line);border-top:4px solid var(--c,#777);border-radius:16px;min-height:190px;display:flex;flex-direction:column;justify-content:center;padding:22px;cursor:pointer;margin:10px 0;text-align:center}
+  .flip .q{font-size:24px;font-weight:700}
+  .flip .a{font-size:18px;margin-top:14px;line-height:1.45;display:none}
+  .flip.open .a{display:block;animation:fade .3s ease}
+  .flip .k{font-size:12px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+  .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .btn{background:var(--panel2);color:var(--text);border:1px solid #44444d;padding:9px 16px;border-radius:10px;font-size:14.5px;cursor:pointer}
+  .btn.ok{border-color:var(--non)} .btn.again{border-color:var(--exc)}
+  .bar{height:6px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-top:12px}
+  .bar i{display:block;height:100%;background:var(--non);width:0;transition:width .4s}
+  .stat{color:var(--muted);font-size:13px;margin-top:6px;text-align:center}
+  .clue{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+  .clue span{background:var(--panel2);border:1px solid #44444d;border-radius:8px;padding:8px 12px;font-size:15px}
+  .res{text-align:center;min-height:24px;margin-top:8px;font-size:15px}
+  .qq{border-top:1px solid var(--line);padding:10px 0}
+  .qq p{margin:0 0 6px;font-size:14.5px}
+  .opts{display:flex;gap:6px;flex-wrap:wrap}
+  .opts button{background:var(--panel2);color:var(--text);border:1px solid #44444d;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13.5px}
+  .opts button.right{border-color:var(--non);color:var(--non)}
+  .opts button.wrong{border-color:var(--exc);color:var(--exc)}
+  .qq small{display:block;color:var(--muted);margin-top:4px}
+
+  /* skills */
+  .sk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
+  @media (max-width:1000px){.sk-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:640px){.sk-grid{grid-template-columns:1fr}}
+  .sk{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:12px;padding:14px 16px;cursor:pointer}
+  .sk:hover{border-color:#55555f;border-top-color:var(--c)}
+  .sk .ic{font-size:24px}
+  .sk h4{margin:4px 0 2px;font-size:16px}
+  .sk .what{color:var(--muted);font-size:13.5px}
+  .sk .more{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:13.5px;line-height:1.5}
+  .sk.open .more{display:block;animation:fade .3s ease}
+  .sk .more b{color:var(--c)}
+  .sk .more ul{margin:4px 0 8px;padding-left:18px}
+  .sk .ex{background:var(--panel2);border-radius:8px;padding:7px 10px;margin-top:4px}
+  .sk .warn{color:var(--warn);margin-top:6px}
+  .sk .open-hint{font-size:11.5px;color:#6f6d75;margin-top:6px}
+  .sk.open .open-hint{display:none}
+  table.t{width:100%;border-collapse:collapse;font-size:14px}
+  table.t th{text-align:left;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+  table.t td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+  .rv{cursor:pointer;color:#6f6d75}
+  .rv.shown{color:var(--text)}
+  .safety{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+  .safety div{background:var(--panel2);border-left:3px solid var(--warn);border-radius:8px;padding:9px 11px;font-size:13.5px}
+  .safety b{display:block;font-size:20px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  @media (max-width:900px){.two{grid-template-columns:1fr}}
+
+  /* exam */
+  .cmp{display:grid;grid-template-columns:1fr 90px 1fr;gap:6px;align-items:center;font-size:14.5px}
+  .cmp .m{background:color-mix(in srgb,var(--metal) 14%,#16161a);border:1px solid var(--metal);border-radius:8px;padding:7px 10px;text-align:right}
+  .cmp .n{background:color-mix(in srgb,var(--non) 14%,#16161a);border:1px solid var(--non);border-radius:8px;padding:7px 10px}
+  .cmp .v{text-align:center;color:var(--muted);font-size:12px}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+  .step{flex:1;min-width:120px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+  .step b{display:block;font-size:20px;color:var(--key)}
+  .step span{font-size:12.5px;color:var(--muted)}
+  .model{font-size:14.5px;line-height:1.6;color:#d8d6d2;background:var(--panel2);border-radius:10px;padding:12px 14px;border-left:3px solid var(--key)}
+  .model u{text-decoration:none;color:var(--key);font-weight:700}
+  .ck label{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:14px;cursor:pointer}
+  .ck input{margin-top:3px;accent-color:#E3B341}
+  .band{margin-top:10px;font-size:15px;font-weight:700}
+  footer{color:#5f5d65;font-size:12px;padding:0 26px 22px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Metals and Non-Metals</h1>
+    <div class="sub">Chemistry · Lesson 2 · Revision mind map</div>
+  </div>
+  <div class="legend">
+    <span style="--c:var(--key)">Key ideas</span><span style="--c:var(--metal)">Metals</span><span style="--c:var(--non)">Non-metals</span>
+    <span style="--c:var(--mid)">Metalloids</span><span style="--c:var(--exc)">Exceptions</span>
+  </div>
+</header>
+<nav role="tablist">
+  <button role="tab" data-t="map" aria-selected="true">1 · Mind map</button>
+  <button role="tab" data-t="pt">2 · Periodic Table</button>
+  <button role="tab" data-t="words">3 · Key words</button>
+  <button role="tab" data-t="test">4 · Test yourself</button>
+  <button role="tab" data-t="skills">5 · Science skills</button>
+  <button role="tab" data-t="exam">6 · Exam answer</button>
+  <span class="hint">Keys 1-6 switch tabs</span>
+</nav>
+
+<section id="map" class="on">
+  <div class="mapwrap">
+    <div class="mapbox"><svg id="mm" viewBox="0 0 1200 780" role="img" aria-label="Mind map of metals and non-metals"></svg></div>
+    <div class="panel" id="panel" aria-live="polite"></div>
+  </div>
+  <div class="remember" id="remember"></div>
+</section>
+
+<section id="pt">
+  <div class="filters" id="ptf"></div>
+  <div class="ptwrap">
+    <div>
+      <div class="pt" id="ptg"></div>
+      <div class="zones">
+        <div class="zone" style="--c:var(--metal)"><b>Metals</b>Left side and middle. Most elements.</div>
+        <div class="zone" style="--c:var(--mid)"><b>Metalloids</b>On the “steps” in between.</div>
+        <div class="zone" style="--c:var(--non)"><b>Non-metals</b>Top right of the steps.</div>
+      </div>
+    </div>
+    <div class="panel" id="ptp" aria-live="polite"></div>
+  </div>
+</section>
+
+<section id="words">
+  <div class="filters" id="wf"><input class="search" id="ws" placeholder="Search a word..." aria-label="Search key words"></div>
+  <div class="words" id="wl"></div>
+</section>
+
+<section id="test">
+  <div class="tgrid">
+    <div class="box">
+      <h3>Flashcards</h3>
+      <div class="filters" id="cf"></div>
+      <div class="flip" id="flip" tabindex="0" role="button" aria-label="Flashcard, press Space to turn">
+        <div class="k" id="fk"></div><div class="q" id="fq"></div><div class="a" id="fa"></div>
+      </div>
+      <div class="btns">
+        <button class="btn" id="bShow">Show (Space)</button>
+        <button class="btn again" id="bAgain">Again (A)</button>
+        <button class="btn ok" id="bOk">Got it (G)</button>
+      </div>
+      <div class="bar"><i id="fbar"></i></div>
+      <div class="stat" id="fstat"></div>
+    </div>
+    <div class="box">
+      <h3>Metal or non-metal? (mini whiteboard)</h3>
+      <p class="ph" style="margin:0">Read the clues. Pick one.</p>
+      <div class="clue" id="clue"></div>
+      <div class="btns">
+        <button class="btn" data-g="Metal" style="border-color:var(--metal)">Metal</button>
+        <button class="btn" data-g="Non-metal" style="border-color:var(--non)">Non-metal</button>
+        <button class="btn" id="cNext">Next round →</button>
+      </div>
+      <div class="res" id="cres" aria-live="polite"></div>
+      <div class="stat" id="cstat"></div>
+    </div>
+  </div>
+  <div class="box" style="margin-top:16px">
+    <h3>Class quiz (8 questions)</h3>
+    <div id="quiz"></div>
+    <div class="stat" id="qstat" style="text-align:left"></div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="sk-grid" id="skg"></div>
+  <div class="box" style="margin-top:16px">
+    <h3>Practical: test a mystery material</h3>
+    <p class="ph" style="margin:0 0 8px">Click a result cell to show it.</p>
+    <table class="t" id="tests"></table>
+  </div>
+  <div class="two">
+    <div class="box"><h3>Safety rules</h3><div class="safety" id="safety"></div></div>
+    <div class="box"><h3>Class results (samples A-G)</h3><div id="results"></div></div>
+  </div>
+</section>
+
+<section id="exam">
+  <div class="box">
+    <h3>“Compare the properties of metals and non-metals.” (4 marks)</h3>
+    <div class="steps">
+      <div class="step"><b>1-2</b><span>Basic description · 2+ points</span></div>
+      <div class="step"><b>3-4</b><span>Detailed comparison · 4+ points</span></div>
+      <div class="step"><b>↔</b><span>Pair each metal fact with a non-metal fact</span></div>
+      <div class="step"><b>Aa</b><span>Clear order, good spelling</span></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="box">
+      <h3>Metals vs non-metals, side by side</h3>
+      <div class="cmp" id="cmp"></div>
+    </div>
+    <div class="box">
+      <h3>Check your own answer</h3>
+      <p class="ph" style="margin:0 0 6px">Tick each point you wrote.</p>
+      <div class="ck" id="ck"></div>
+      <label style="display:flex;gap:8px;font-size:14px;margin-top:6px;cursor:pointer"><input type="checkbox" id="ckc" style="accent-color:#E3B341"> I used compare words (whereas, but, while)</label>
+      <div class="band" id="band"></div>
+    </div>
+  </div>
+  <div class="box" style="margin-top:16px">
+    <h3>Model answer (practice, 4 marks)</h3>
+    <div class="model">Metals are usually <u>solid</u>, <u>whereas</u> non-metals are usually gases or liquids. Metals are <u>shiny</u>, malleable, ductile and sonorous, <u>but</u> non-metals are <u>dull</u>, brittle and not sonorous. Metals are <u>good conductors</u> of heat and electricity, <u>while</u> non-metals are <u>poor conductors</u>. Metals have <u>high melting points and high densities</u>, <u>whereas</u> non-metals have <u>low melting points and low densities</u>. One similarity is that both are elements found on the Periodic Table.</div>
+  </div>
+</section>
+
+<footer>Made from the class Lesson 2 slides only. Works offline.</footer>
+
+<script>
+const C={key:"#E3B341",metal:"#5AA9E6",non:"#6CC08B",mid:"#A98BDB",exc:"#D0875A",lab:"#cfc6b8",warn:"#E6C76A"};
+
+/* ---------- mind map data ---------- */
+const BR=[
+ {id:"key",name:"Key ideas",sub:"Atoms & elements",side:"L",c:C.key,kids:[
+  ["Element","A substance with <b>one type of atom</b>. It cannot be broken down into other substances."],
+  ["Periodic Table","A table of <b>all the elements</b>. Elements with similar properties are grouped together."],
+  ["Property","A <b>characteristic</b> of a substance: how it looks, behaves and reacts."],
+  ["Symbols","<span class='pill' style='--c:#E3B341'>C carbon</span><span class='pill' style='--c:#E3B341'>Cl chlorine</span><span class='pill' style='--c:#E3B341'>Au gold</span><span class='pill' style='--c:#E3B341'>Fe iron</span>"],
+  ["Density","Mass of 1 cm³: <b>gold 19.3 g</b>, <b>silicon 2.33 g</b>. Gold is denser: more mass in the same space."],
+  ["Where on the table","<b>Left</b> = metals. <b>Top right of the steps</b> = non-metals. <b>Middle (steps)</b> = metalloids."],
+  ["CO₂ challenge","Group 4, period 2 = <b>carbon</b>. Group 6, period 2 = <b>oxygen</b>. 1 C + 2 O = <b>CO₂</b> (carbon dioxide)."]
+ ]},
+ {id:"metal",name:"Metals",sub:"Left of the table",side:"L",c:C.metal,kids:[
+  ["Solid & strong","Usually <b>solid</b> at room temperature and <b>strong</b>."],
+  ["Shiny","Reflects light (metallic lustre)."],
+  ["Malleable","Can be <b>hammered into shape</b> without breaking."],
+  ["Ductile","Can be <b>pulled into wires</b>."],
+  ["Sonorous","Makes a <b>ringing sound</b> when hit."],
+  ["Good conductor","Conducts <b>heat and electricity</b> well."],
+  ["High density","<b>Heavy for its size.</b> Sinks in water."],
+  ["High melting point","Needs a lot of heat to melt."]
+ ]},
+ {id:"non",name:"Non-metals",sub:"Top right",side:"R",c:C.non,kids:[
+  ["Dull","Not shiny."],
+  ["Brittle","<b>Breaks easily</b>. Cracks when bent or hit."],
+  ["Poor conductor","Poor at conducting <b>heat and electricity</b>."],
+  ["Low density","<b>Light for its size.</b> May float on water."],
+  ["Low melt & boil","Low melting and boiling points."],
+  ["Not sonorous","No ringing sound."],
+  ["Not ductile","Cannot be pulled into wires."]
+ ]},
+ {id:"mid",name:"Metalloids",sub:"Semi-metals",side:"R",c:C.mid,kids:[
+  ["In the middle","On the <b>steps</b> between metals and non-metals."],
+  ["Halfway properties","Some ways like metals, some ways like non-metals."],
+  ["Semi-conductors","They act as <b>semi-conductors</b>."],
+  ["The 7 metalloids","<span class='pill' style='--c:#A98BDB'>B boron</span><span class='pill' style='--c:#A98BDB'>Si silicon</span><span class='pill' style='--c:#A98BDB'>Ge germanium</span><span class='pill' style='--c:#A98BDB'>As arsenic</span><span class='pill' style='--c:#A98BDB'>Sb antimony</span><span class='pill' style='--c:#A98BDB'>Te tellurium</span><span class='pill' style='--c:#A98BDB'>At astatine</span><br>All are <b>solid</b> at room temperature."]
+ ]},
+ {id:"exc",name:"Exceptions",sub:"Not all follow the rules",side:"R",c:C.exc,kids:[
+  ["Graphite conducts","Graphite is carbon, a <b>non-metal</b>, but it <b>conducts electricity</b>."],
+  ["Lithium & sodium are soft","They are metals but can be <b>cut with a knife</b>. Most metals are hard."],
+  ["Silicon is in between","Silicon is a <b>metalloid</b>, so its properties are between the two."]
+ ]}
+];
+const REMEMBER=[
+ "These are <b>general</b> properties. Not every metal has all of them.",
+ "<b>Graphite</b> (non-metal) conducts electricity.",
+ "<b>Lithium & sodium</b> (metals) are soft enough to cut.",
+ "<b>Malleable</b> = hammer into shape. <b>Ductile</b> = pull into wires.",
+ "Test conducting with a <b>battery + bulb circuit</b>. Bulb lights = conductor."
+];
+
+/* ---------- tabs ---------- */
+const tabs=[...document.querySelectorAll("nav button")];
+function show(id){
+  tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.t===id));
+  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));
+  try{history.replaceState(null,"","#"+id)}catch(e){}
+}
+tabs.forEach(b=>b.onclick=()=>show(b.dataset.t));
+
+/* ---------- mind map ---------- */
+const NS="http://www.w3.org/2000/svg", svg=document.getElementById("mm");
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
+const CX=600,CY=390, pos={};
+function layout(side,x0,xb){
+  const bs=BR.filter(b=>b.side===side);
+  const total=bs.reduce((s,b)=>s+b.kids.length,0)+(bs.length-1)*0.7, step=740/total;
+  let y=20+step/2;
+  bs.forEach(b=>{const ys=[];b.kids.forEach((k,i)=>{pos[b.id+i]={x:x0,y};ys.push(y);y+=step});pos[b.id]={x:xb,y:(ys[0]+ys[ys.length-1])/2};y+=step*.7});
+}
+layout("L",140,410); layout("R",1060,790);
+const linksG=el("g",{}), nodesG=el("g",{}), links=[], nodes=[];
+const curve=(x1,y1,x2,y2)=>{const m=(x1+x2)/2;return `M${x1},${y1} C${m},${y1} ${m},${y2} ${x2},${y2}`};
+BR.forEach(b=>{
+  const p=pos[b.id];
+  links.push({p:el("path",{d:curve(CX,CY,p.x,p.y),stroke:b.c,class:"link","stroke-width":3.2},linksG),k:b.id});
+  b.kids.forEach((k,i)=>{const c=pos[b.id+i];links.push({p:el("path",{d:curve(p.x,p.y,c.x,c.y),stroke:b.c,class:"link"},linksG),k:b.id})});
+});
+function node(x,y,w,h,label,sub,color,id,k,big){
+  const g=el("g",{class:"node",tabindex:0,role:"button","aria-label":label,style:`--glow:${color}`},nodesG);
+  el("rect",{x:x-w/2,y:y-h/2,width:w,height:h,rx:big?16:10,fill:big?color:"#1d1d22",stroke:color,"stroke-width":big?0:1.6},g);
+  const t=el("text",{x,y:sub?y-3:y+5,"text-anchor":"middle","font-size":big?18:13.5,"font-weight":700,fill:big?"#111":"#ecebe8"},g);t.textContent=label;
+  if(sub){const s=el("text",{x,y:y+14,"text-anchor":"middle","font-size":11.5,fill:big?"#222":color},g);s.textContent=sub}
+  g.onclick=()=>select(id); g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(id)}};
+  g.onmouseenter=()=>hover(k); g.onmouseleave=()=>hover(null);
+  nodes.push({g,id,k});
+}
+node(CX,CY,220,74,"Metals & Non-Metals","Elements · properties · tests","#ecebe8","centre",null,true);
+BR.forEach(b=>{const p=pos[b.id];node(p.x,p.y,160,56,b.name,b.sub,b.c,b.id,b.id,true);b.kids.forEach((k,i)=>{const c=pos[b.id+i];node(c.x,c.y,200,32,k[0],"",b.c,b.id+"|"+i,b.id,false)})});
+node(CX,CY+140,180,44,"Lab tests","Tab 5","#cfc6b8","lab",null,false);
+node(CX,CY-140,180,44,"Exam question","Tab 6 · 4 marks","#cfc6b8","examN",null,false);
+el("path",{d:`M${CX},${CY+37} L${CX},${CY+118}`,stroke:"#cfc6b8",class:"link"},linksG);
+el("path",{d:`M${CX},${CY-37} L${CX},${CY-118}`,stroke:"#cfc6b8",class:"link"},linksG);
+function hover(k){
+  if(!k){svg.classList.remove("dim");return}
+  svg.classList.add("dim");
+  nodes.forEach(n=>n.g.classList.toggle("hl",n.k===k||n.id==="centre"));
+  links.forEach(l=>l.p.classList.toggle("hl",l.k===k));
+}
+const panel=document.getElementById("panel");
+function select(id){
+  nodes.forEach(n=>n.g.classList.toggle("sel",n.id===id));
+  let h="";
+  if(id==="centre"){
+    h=`<h2>Metals & Non-Metals</h2><p class="ph">The Periodic Table splits elements into <b>metals</b> and <b>non-metals</b>. <b>Metalloids</b> sit in between. We sort them by their <b>properties</b>.</p>
+    <table class="t"><tr><th></th><th style="color:${C.metal}">Metal</th><th style="color:${C.non}">Non-metal</th></tr>
+    <tr><td>Look</td><td>Shiny</td><td>Dull</td></tr><tr><td>Shape</td><td>Malleable, ductile</td><td>Brittle</td></tr>
+    <tr><td>Conduct</td><td>Good</td><td>Poor</td></tr><tr><td>Density</td><td>High</td><td>Low</td></tr>
+    <tr><td>Melting</td><td>High</td><td>Low</td></tr><tr><td>Sound</td><td>Sonorous</td><td>Not sonorous</td></tr></table>
+    <p class="ph" style="margin-top:10px">Click any box on the map.</p>`;
+  } else if(id==="lab"){
+    h=`<span class="tag" style="--c:#cfc6b8">Practical</span><h2>Lab tests</h2><ul><li>Circuit with battery + bulb → conducts?</li><li>Hammer or bend → malleable?</li><li>Pull & twist → ductile?</li><li>Tap with metal → sonorous?</li><li>Polish → shiny?</li><li>Compare weight, same size → density?</li></ul><p class="ph">Full table and safety rules in tab 5.</p>`;
+  } else if(id==="examN"){
+    h=`<span class="tag" style="--c:#cfc6b8">Exam</span><h2>Compare metals and non-metals</h2><p class="ph">4 marks. Give <b>4+ points</b> and pair them up: “Metals are…, <b>whereas</b> non-metals are…”.</p><p class="ph">Model answer and self-check in tab 6.</p>`;
+  } else if(id.includes("|")){
+    const [b,i]=id.split("|"), br=BR.find(x=>x.id===b), k=br.kids[i];
+    h=`<span class="tag" style="--c:${br.c}">${br.name}</span><h2>${k[0]}</h2><p class="big">${k[1]}</p>`;
+  } else {
+    const br=BR.find(x=>x.id===id);
+    h=`<span class="tag" style="--c:${br.c}">Branch</span><h2 style="color:${br.c}">${br.name}</h2><ul>${br.kids.map(k=>`<li><b>${k[0]}</b> · ${k[1].replace(/<[^>]+>/g,"")}</li>`).join("")}</ul>`;
+  }
+  panel.innerHTML=h;
+}
+select("centre");
+document.getElementById("remember").innerHTML=REMEMBER.map(r=>`<div>${r}</div>`).join("");
+
+/* ---------- periodic table ---------- */
+const NONM=new Set("H He C N O F Ne P S Cl Ar Se Br Kr I Xe Rn".split(" "));
+const MIDS=new Set("B Si Ge As Sb Te At".split(" "));
+const COURSE=new Set("C Cl Au Fe O K Cu Al Si Li Na Y B Ge As Sb Te At".split(" "));
+const ROWS=[
+ [[1,"H","Hydrogen"],[18,"He","Helium"]],
+ [[1,"Li","Lithium"],[2,"Be","Beryllium"],[13,"B","Boron"],[14,"C","Carbon"],[15,"N","Nitrogen"],[16,"O","Oxygen"],[17,"F","Fluorine"],[18,"Ne","Neon"]],
+ [[1,"Na","Sodium"],[2,"Mg","Magnesium"],[13,"Al","Aluminium"],[14,"Si","Silicon"],[15,"P","Phosphorus"],[16,"S","Sulfur"],[17,"Cl","Chlorine"],[18,"Ar","Argon"]],
+ "K Potassium,Ca Calcium,Sc Scandium,Ti Titanium,V Vanadium,Cr Chromium,Mn Manganese,Fe Iron,Co Cobalt,Ni Nickel,Cu Copper,Zn Zinc,Ga Gallium,Ge Germanium,As Arsenic,Se Selenium,Br Bromine,Kr Krypton",
+ "Rb Rubidium,Sr Strontium,Y Yttrium,Zr Zirconium,Nb Niobium,Mo Molybdenum,Tc Technetium,Ru Ruthenium,Rh Rhodium,Pd Palladium,Ag Silver,Cd Cadmium,In Indium,Sn Tin,Sb Antimony,Te Tellurium,I Iodine,Xe Xenon",
+ "Cs Caesium,Ba Barium,La Lanthanum,Hf Hafnium,Ta Tantalum,W Tungsten,Re Rhenium,Os Osmium,Ir Iridium,Pt Platinum,Au Gold,Hg Mercury,Tl Thallium,Pb Lead,Bi Bismuth,Po Polonium,At Astatine,Rn Radon"
+].map(r=>typeof r==="string"?r.split(",").map((s,i)=>[i+1,...s.split(" ")]):r);
+const NOTES={C:"Carbon. Graphite (a form of carbon) conducts electricity, which is unusual for a non-metal.",Li:"Lithium. A metal soft enough to cut with a knife.",Na:"Sodium. A metal soft enough to cut with a knife.",K:"Potassium. A metal (Do Now answer).",O:"Oxygen. A non-metal (Do Now answer).",Cl:"Chlorine. A non-metal (Do Now answer).",Si:"Silicon. A metalloid. Density 2.33 g per cm³.",Au:"Gold. A metal. Density 19.3 g per cm³.",Fe:"Iron. A metal (Do Now answer).",Cu:"Copper. A metal (Do Now answer).",Al:"Aluminium. A metal (Do Now answer).",Y:"Yttrium. Challenge question: it is a metal, so predict shiny, malleable, ductile, good conductor, high density."};
+const ptg=document.getElementById("ptg"), ptp=document.getElementById("ptp");
+let ptF="all";
+const typeOf=s=>MIDS.has(s)?"mid":NONM.has(s)?"non":"metal";
+const TN={metal:"Metal",non:"Non-metal",mid:"Metalloid"};
+// group number header
+for(let g=1;g<=18;g++){const d=document.createElement("div");d.className="gl";d.textContent=g;ptg.appendChild(d)}
+const cells=[];
+ROWS.forEach((row,ri)=>{
+  const map={};row.forEach(e=>map[e[0]]=e);
+  for(let g=1;g<=18;g++){
+    const e=map[g], d=document.createElement("div");
+    if(!e){ptg.appendChild(d);continue}
+    const t=typeOf(e[1]);
+    d.className="el"+(COURSE.has(e[1])?" course":""); d.style.setProperty("--c",C[t]);
+    d.tabIndex=0; d.setAttribute("role","button"); d.setAttribute("aria-label",e[2]+", "+TN[t]);
+    d.innerHTML=`<small>${ri+1}</small>${e[1]}`;
+    d.onclick=()=>pickEl(e,t,ri+1,d); d.onkeydown=ev=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();pickEl(e,t,ri+1,d)}};
+    ptg.appendChild(d); cells.push({d,t});
+  }
+});
+function pickEl(e,t,p,d){
+  cells.forEach(c=>c.d.classList.remove("sel")); d.classList.add("sel");
+  const props={metal:"Shiny · malleable · ductile · sonorous · good conductor · high density · high melting point",non:"Dull · brittle · poor conductor · low density · low melting point · not sonorous",mid:"Between metals and non-metals · semi-conductor · solid"}[t];
+  ptp.innerHTML=`<span class="tag" style="--c:${C[t]}">${TN[t]}</span><h2><span style="font-size:34px">${e[1]}</span> &nbsp;${e[2]}</h2>
+  <p class="ph">Group ${e[0]} · Period ${p}</p><p class="big">${props}</p>${NOTES[e[1]]?`<p class="ph" style="border-left:3px solid #E6C76A;padding-left:10px">★ ${NOTES[e[1]]}</p>`:""}`;
+}
+ptp.innerHTML=`<h2>Click an element</h2><p class="ph">Colour shows its type. ★ = named in the lesson.</p><p class="ph">Periods 1-6 shown. Lanthanides and period 7 left out to keep it simple.</p>`;
+function drawPtF(){
+  const host=document.getElementById("ptf");host.innerHTML="";
+  [["all","All","#ecebe8"],["metal","Metals",C.metal],["non","Non-metals",C.non],["mid","Metalloids",C.mid],["course","★ In the lesson","#E6C76A"]].forEach(([v,l,c])=>{
+    const b=document.createElement("button");b.className="chip";b.textContent=l;b.style.setProperty("--c",c);b.setAttribute("aria-pressed",ptF===v);
+    b.onclick=()=>{ptF=v;cells.forEach(x=>x.d.classList.toggle("fade",!(v==="all"||x.t===v||(v==="course"&&x.d.classList.contains("course")))));drawPtF()};host.appendChild(b);
+  });
+}
+drawPtF();
+
+/* ---------- key words ---------- */
+const WORDS=[
+ ["Element","One type of atom; cannot be broken down","key"],["Periodic Table","Table of all elements, similar ones grouped","key"],
+ ["Property","A characteristic of a substance","key"],["Metal","Element on the left; shiny, conducts","metal"],
+ ["Non-metal","Element top right; dull, poor conductor","non"],["Metalloid","Element with in-between properties","mid"],
+ ["Malleable","Can be hammered into shape without breaking","metal"],["Ductile","Can be pulled into wires","metal"],
+ ["Sonorous","Rings when hit","metal"],["Conductor","Lets heat or electricity pass through","metal"],
+ ["Density","Mass per unit of volume (heavy for its size)","key"],["Brittle","Cracks or breaks when bent or hit","non"],
+ ["Dull","Not shiny","non"],["Melting point","Temperature where a solid melts","key"],
+ ["Semi-conductor","Conducts a bit; metalloids are these","mid"],["Lustre","Shine (metallic lustre)","metal"],
+ ["Oxide","A compound of an element with oxygen *","key"],["Oxidation","A reaction with oxygen *","key"]
+];
+let wF="all"; const wl=document.getElementById("wl"), ws=document.getElementById("ws");
+function drawW(){const q=ws.value.toLowerCase();wl.innerHTML=WORDS.filter(w=>(wF==="all"||w[2]===wF)&&(w[0]+w[1]).toLowerCase().includes(q)).map(w=>`<div class="w" style="--c:${C[w[2]]}"><b>${w[0]}</b><span>${w[1]}</span><em>${{key:"Key idea",metal:"Metals",non:"Non-metals",mid:"Metalloids"}[w[2]]}</em></div>`).join("")+`<p class="ph" style="grid-column:1/-1;font-size:12.5px">* Listed as key terms on the slide, but not explained in it. Simple meaning added.</p>`}
+(function(){const host=document.getElementById("wf");[["all","All","#ecebe8"],["key","Key ideas",C.key],["metal","Metals",C.metal],["non","Non-metals",C.non],["mid","Metalloids",C.mid]].forEach(([v,l,c])=>{const b=document.createElement("button");b.className="chip";b.textContent=l;b.style.setProperty("--c",c);b.setAttribute("aria-pressed",wF===v);b.onclick=()=>{wF=v;host.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b));drawW()};host.appendChild(b)})})();
+ws.oninput=drawW; drawW();
+
+/* ---------- flashcards ---------- */
+const PROPS=[["Shiny","Metal","metal"],["Malleable","Metal","metal"],["Ductile","Metal","metal"],["Sonorous","Metal","metal"],["Good conductor","Metal","metal"],["High density","Metal","metal"],["High melting point","Metal","metal"],
+ ["Dull","Non-metal","non"],["Brittle","Non-metal","non"],["Poor conductor","Non-metal","non"],["Low density","Non-metal","non"],["Low melting point","Non-metal","non"],["Not sonorous","Non-metal","non"],["Semi-conductor","Metalloid","mid"]];
+const TESTS=[["Does it conduct electricity?","Put it in a circuit with a battery and bulb"],["Is it malleable?","Hammer or flatten it"],["Is it ductile?","Pull and twist it"],["Is it sonorous?","Tap it with a metal object"],["Is it shiny?","Rub it with a polish cloth"],["Is it dense?","Compare its weight with the same size of another material"],["Is it strong?","Try to scratch or break it"]];
+const DECKS={
+  props:()=>PROPS.map(p=>({k:"Metal, non-metal or metalloid?",q:p[0],a:p[1],c:p[2]})),
+  words:()=>WORDS.map(w=>({k:"What does it mean?",q:w[0],a:w[1].replace(" *",""),c:w[2]})),
+  tests:()=>TESTS.map(t=>({k:"How do you test it?",q:t[0],a:t[1],c:"lab"})),
+  odd:()=>[{k:"Why is this unusual?",q:"Graphite conducts electricity",a:"Graphite is carbon, a non-metal",c:"exc"},{k:"Why is this unusual?",q:"Lithium and sodium cut with a knife",a:"Most metals are hard",c:"exc"},{k:"Why?",q:"Silicon is between metal and non-metal",a:"It is a metalloid",c:"exc"},{k:"Predict",q:"5 properties of yttrium (Y)",a:"It is a metal: shiny, malleable, ductile, good conductor, high density",c:"exc"},{k:"What compound am I?",q:"1 atom from group 4 period 2 + 2 atoms from group 6 period 2",a:"Carbon dioxide, CO₂",c:"key"}]
+};
+let deck=[],ok=0,total=0,mode="props"; const flip=document.getElementById("flip");
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function startDeck(m){mode=m;deck=shuffle(DECKS[m]());ok=0;total=deck.length;showCard();drawCF()}
+function showCard(){
+  flip.classList.remove("open");
+  if(!deck.length){flip.style.setProperty("--c",C.non);fk.textContent="Done";fq.textContent="All cards learned 🎓";fa.textContent=""}
+  else{const c=deck[0];flip.style.setProperty("--c",C[c.c]);fk.textContent=c.k;fq.textContent=c.q;fa.textContent=c.a}
+  document.getElementById("fbar").style.width=(ok/total*100)+"%";
+  document.getElementById("fstat").textContent=`${ok} of ${total} learned · ${deck.length} left`;
+}
+const fk=document.getElementById("fk"),fq=document.getElementById("fq"),fa=document.getElementById("fa");
+const reveal=()=>flip.classList.toggle("open");
+const again=()=>{if(!deck.length)return;const c=deck.shift();deck.splice(Math.min(3,deck.length),0,c);showCard()};
+const got=()=>{if(!deck.length)return;deck.shift();ok++;showCard()};
+flip.onclick=reveal;document.getElementById("bShow").onclick=reveal;document.getElementById("bAgain").onclick=again;document.getElementById("bOk").onclick=got;
+function drawCF(){const host=document.getElementById("cf");host.innerHTML="";[["props","Properties",C.metal],["words","Key words",C.key],["tests","Lab tests",C.lab],["odd","Challenges",C.exc]].forEach(([v,l,c])=>{const b=document.createElement("button");b.className="chip";b.textContent=l;b.style.setProperty("--c",c);b.setAttribute("aria-pressed",mode===v);b.onclick=()=>startDeck(v);host.appendChild(b)})}
+startDeck("props");
+
+/* mini whiteboard */
+const ROUNDS=[[["Brittle","Low density","Low melting point"],"Non-metal"],[["High melting point","Shiny"],"Metal"],[["Good conductor of electricity","Sinks in water"],"Metal"],[["Solid at room temperature","Rings when struck"],"Metal"],[["Dull black surface","Floats on water"],"Non-metal"]];
+let rI=0,rDone=false,rScore=0,rSeen=0;
+function drawRound(){const r=ROUNDS[rI];document.getElementById("clue").innerHTML=r[0].map(c=>`<span>${c}</span>`).join("");document.getElementById("cres").textContent="";rDone=false;document.getElementById("cstat").textContent=`Round ${rI+1} of ${ROUNDS.length} · ${rScore} right so far`}
+document.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{if(rDone)return;rDone=true;rSeen++;const ans=ROUNDS[rI][1],okk=b.dataset.g===ans;if(okk)rScore++;const r=document.getElementById("cres");r.innerHTML=okk?`<span style="color:${C.non}">✓ Yes, ${ans.toLowerCase()}.</span>`:`<span style="color:${C.exc}">✗ It is a ${ans.toLowerCase()}.</span>`;document.getElementById("cstat").textContent=`Round ${rI+1} of ${ROUNDS.length} · ${rScore} right so far`});
+document.getElementById("cNext").onclick=()=>{rI=(rI+1)%ROUNDS.length;if(rI===0)rScore=0;drawRound()};
+drawRound();
+
+/* class quiz */
+const QUIZ=[
+ ["Which test checks if a material conducts electricity?",["Hit it with a hammer","Place it in a simple circuit","Drop it in water","Scratch it with a nail"],1],
+ ["True or false: malleable means it can be hammered into shape without breaking.",["True","False"],0],
+ ["Comparing how heavy a material feels for its size tests…",["Density","Sonority","Conductivity","Strength"],0],
+ ["If a material can be pulled into thin wires, it is…",["Brittle","Ductile","Sonorous","Dull"],1],
+ ["Gently hitting a material to hear a ringing sound tests…",["Strength","Sonority","Hardness","Conductivity"],1],
+ ["True or false: non-metals usually conduct heat and electricity very well.",["True","False"],1],
+ ["Best way to test if a material is malleable?",["Try to hammer or flatten it","Shine a light on it","Connect it to a circuit","Heat one end in water"],0],
+ ["One visible property that helps tell metals from non-metals?",["Shiny (metallic lustre)","Low density","Brittle","Poor conductor"],0]
+];
+let qRight=0,qDone=0;
+document.getElementById("quiz").innerHTML=QUIZ.map((q,i)=>`<div class="qq" data-i="${i}"><p><b>${i+1}.</b> ${q[0]}</p><div class="opts">${q[1].map((o,j)=>`<button data-j="${j}">${o}</button>`).join("")}</div><small></small></div>`).join("");
+document.querySelectorAll(".qq").forEach(d=>d.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+  if(d.dataset.done)return;d.dataset.done=1;qDone++;const q=QUIZ[d.dataset.i],j=+b.dataset.j,okk=j===q[2];if(okk)qRight++;
+  b.classList.add(okk?"right":"wrong");if(!okk)d.querySelectorAll("button")[q[2]].classList.add("right");
+  d.querySelector("small").textContent=okk?"✓ Correct":"✗ Answer: "+q[1][q[2]];
+  document.getElementById("qstat").textContent=`Score: ${qRight} / ${qDone}`;
+}));
+
+/* ---------- science skills ---------- */
+const SK=[
+ {ic:"🔬",t:"Classify using observations",w:"Decide metal or non-metal from what you see",c:C.key,
+  how:["Do several tests, not just one.","Write down what you see for each.","Count which side most results match."],
+  ex:"Shiny + conducts + rings → metal. Dull + brittle + floats → non-metal.",warn:"One result alone can trick you (graphite conducts)."},
+ {ic:"🧪",t:"Plan a test",w:"Pick the right test for each property",c:C.lab,
+  how:["Name the property.","Choose a method that shows it.","Say what result you expect."],
+  ex:"Conducts? Battery + bulb circuit. Bulb lights → conductor.",warn:"Test one property at a time."},
+ {ic:"⚖️",t:"Fair comparison",w:"Compare like with like",c:C.metal,
+  how:["Use pieces of the same size.","Change only one thing.","Compare with a known material."],
+  ex:"Density: same size pieces. Heavier one is denser.",warn:"Gold 19.3 g vs silicon 2.33 g per 1 cm³."},
+ {ic:"🧭",t:"Use the Periodic Table to predict",w:"Position tells you the type",c:C.mid,
+  how:["Find the element.","Left = metal, top right = non-metal, steps = metalloid.","List the matching properties."],
+  ex:"Yttrium (Y) is on the left side → metal → shiny, malleable, ductile, conducts, dense.",warn:"These are general rules."},
+ {ic:"❗",t:"Spot exceptions",w:"Explain results that don’t fit",c:C.exc,
+  how:["Notice the odd result.","Check the element’s place in the table.","Explain why it is unusual."],
+  ex:"Sample G (graphite) is a non-metal but conducted electricity.",warn:"Lithium and sodium are soft metals."},
+ {ic:"🦺",t:"Work safely",w:"Spot the risk, name the rule",c:C.warn,
+  how:["List the equipment you use.","Ask what could go wrong.","Match a safety rule to it."],
+  ex:"Hot water → take care with the kettle; touch samples carefully.",warn:"Electricity and water never mix."}
+];
+document.getElementById("skg").innerHTML=SK.map(s=>`<div class="sk" tabindex="0" role="button" aria-expanded="false" style="--c:${s.c}"><div class="ic" aria-hidden="true">${s.ic}</div><h4>${s.t}</h4><div class="what">${s.w}</div><div class="open-hint">Click to open</div><div class="more"><b>How to do it</b><ul>${s.how.map(h=>`<li>${h}</li>`).join("")}</ul><b>Example</b><div class="ex">${s.ex}</div><div class="warn">⚠ ${s.warn}</div></div></div>`).join("");
+document.querySelectorAll(".sk").forEach(c=>{const t=()=>{c.classList.toggle("open");c.setAttribute("aria-expanded",c.classList.contains("open"))};c.onclick=t;c.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();t()}}});
+const LAB=[
+ ["⚡ Conducts electricity","Put it in a circuit with a battery and bulb","Bulb lights","Bulb stays off"],
+ ["🔨 Malleable","Use tools to shape or bend it","Bends, changes shape","Cracks or breaks (brittle)"],
+ ["🧵 Ductile","Pull and twist it","Stretches without breaking","Snaps"],
+ ["🔔 Sonorous","Tap it with a metal object","Rings","Dull thud"],
+ ["✨ Shiny","Rub with a polish cloth","Reflects light","Stays dull"],
+ ["🪨 Density","Compare weight with same-size piece","Heavy for its size, sinks","Light for its size, may float"],
+ ["💪 Strength","Try to scratch or break it","Hard to break","Breaks easily"],
+ ["🧲 Magnet","See if a magnet attracts it","Some metals (e.g. iron) are attracted","Not attracted"]
+];
+document.getElementById("tests").innerHTML=`<tr><th>Property</th><th>What to do</th><th style="color:${C.metal}">Metal result</th><th style="color:${C.non}">Non-metal result</th></tr>`+LAB.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td class="rv" tabindex="0">click to show</td><td class="rv" tabindex="0">click to show</td></tr>`).join("");
+document.querySelectorAll("#tests tr").forEach((tr,i)=>{if(!i)return;tr.querySelectorAll(".rv").forEach((td,j)=>{const go=()=>{td.textContent=LAB[i-1][2+j];td.classList.add("shown")};td.onclick=go;td.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}})});
+document.getElementById("safety").innerHTML=[["💧","Keep electrical kit away from water."],["🔌","Switch the circuit off when not in use."],["♨️","Touch samples carefully after hot water."],["🫖","Take care with the kettle and hot water."],["📌","Avoid the sharp points on the nails."]].map(s=>`<div><b aria-hidden="true">${s[0]}</b>${s[1]}</div>`).join("");
+document.getElementById("results").innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap">${"ABCDEFG".split("").map(l=>{const t=l==="G"?"exc":"ABDF".includes(l)?"metal":"non";return `<div style="flex:1;min-width:70px;text-align:center;background:var(--panel2);border:1px solid ${C[t]};border-radius:10px;padding:10px"><div style="font-size:24px;font-weight:800;color:${C[t]}">${l}</div><div style="font-size:12px;color:var(--muted)">${t==="metal"?"Metal":t==="non"?"Non-metal":"Non-metal*"}</div></div>`}).join("")}</div>
+<p class="ph" style="margin-top:10px">Metals: <b>A, B, D, F</b>. Non-metals: <b>C, E, G</b>.<br>* <b>G is graphite</b>: a non-metal that conducts. It was hard to classify.</p>`;
+
+/* ---------- exam ---------- */
+const PTS=[["Usually solid","Usually gases or liquids"],["Shiny","Dull"],["Malleable, ductile","Brittle"],["Sonorous","Not sonorous"],["Good conductors of heat & electricity","Poor conductors of heat & electricity"],["High melting points","Low melting points"],["High densities","Low densities"]];
+document.getElementById("cmp").innerHTML=`<div class="v" style="text-align:right;color:${C.metal};font-weight:700">METALS</div><div></div><div class="v" style="text-align:left;color:${C.non};font-weight:700">NON-METALS</div>`+PTS.map(p=>`<div class="m">${p[0]}</div><div class="v">whereas</div><div class="n">${p[1]}</div>`).join("");
+const CK=["Metals are usually solid.","Metals are shiny, malleable, ductile and sonorous.","Non-metals are usually gases or liquids.","Non-metals are dull, brittle and not sonorous.","Metals are good conductors of heat and electricity.","Non-metals are poor conductors of heat and electricity.","Metals have high melting points and high densities.","Non-metals have low melting points and low densities."];
+document.getElementById("ck").innerHTML=CK.map((c,i)=>`<label><input type="checkbox" data-i="${i}"> ${c}</label>`).join("");
+function band(){const n=document.querySelectorAll("#ck input:checked").length,cmp=document.getElementById("ckc").checked,b=document.getElementById("band");
+  b.style.color=n>=4&&cmp?C.non:n>=2?C.key:C.exc;
+  b.textContent=n===0?"Tick the points you wrote.":n<2?`${n} point · add more`:n<4?`${n} points · about 1-2 marks. Add ${4-n} more.`:cmp?`${n} points + comparison · aiming for 3-4 marks`:`${n} points · pair them with “whereas” to reach 3-4 marks`}
+document.querySelectorAll("#ck input,#ckc").forEach(i=>i.onchange=band); band();
+
+/* ---------- keys + deep link ---------- */
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT")return;
+  const m={"1":"map","2":"pt","3":"words","4":"test","5":"skills","6":"exam"}[e.key];
+  if(m){show(m);return}
+  if(document.getElementById("test").classList.contains("on")){
+    if(e.key===" "&&(e.target===document.body||e.target===flip)){e.preventDefault();reveal()}
+    else if(e.key.toLowerCase()==="a")again(); else if(e.key.toLowerCase()==="g")got();
+  }
+});
+const h0=location.hash.slice(1);const s0=document.getElementById(h0);if(s0&&s0.tagName==="SECTION"){show(h0);setTimeout(()=>scrollTo(0,0),0)}
+</script>
+</body>
+</html>

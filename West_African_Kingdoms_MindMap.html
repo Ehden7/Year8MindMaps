@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>West African Kingdoms - Revision Mind Map</title>
+<style>
+  :root{
+    --bg:#0d0d0f; --panel:#16161a; --panel2:#1d1d22; --line:#2a2a31; --text:#ecebe8; --muted:#a3a1a8;
+    --mali:#E3B341; --songhay:#5AA9E6; --benin:#D0875A; --asante:#6CC08B; --skills:#A98BDB; --warn:#E6C76A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{padding:18px 26px 6px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  h1{margin:0;font-size:24px;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .legend{display:flex;gap:14px;font-size:13px;color:var(--muted)}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--c);vertical-align:-1px}
+  nav{display:flex;gap:6px;padding:10px 26px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  nav button{background:transparent;color:var(--muted);border:1px solid var(--line);padding:8px 14px;border-radius:999px;font-size:14px;cursor:pointer}
+  nav button:hover{color:var(--text);border-color:#44444d}
+  nav button[aria-selected="true"]{background:var(--panel2);color:var(--text);border-color:#55555f}
+  nav button:focus-visible,button:focus-visible,.chip:focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+  nav .hint{margin-left:auto;color:#6f6d75;font-size:12px;align-self:center}
+  section{display:none;padding:18px 26px 30px}
+  section.on{display:block;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){section.on{animation:none}*{transition:none!important}}
+
+  /* mind map */
+  .mapwrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:18px}
+  @media (max-width:1100px){.mapwrap{grid-template-columns:1fr}}
+  .mapbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px}
+  svg{width:100%;height:auto;display:block}
+  .link{fill:none;stroke-width:2.2;opacity:.55;transition:opacity .25s,stroke-width .25s}
+  .node{cursor:pointer}
+  .node rect{transition:filter .25s,stroke-width .25s}
+  .node text{pointer-events:none}
+  .dim .link{opacity:.12}
+  .dim .node{opacity:.35}
+  .dim .node.hl,.dim .link.hl{opacity:1}
+  .node.sel rect{stroke-width:3;filter:drop-shadow(0 0 8px var(--glow))}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-height:300px}
+  .panel h2{margin:0 0 4px;font-size:19px}
+  .panel .tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid var(--c);color:var(--c);margin-bottom:10px}
+  .panel ul{margin:8px 0 0;padding-left:18px;line-height:1.55;font-size:14.5px}
+  .panel li{margin-bottom:4px}
+  .dates{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+  .date{background:var(--panel2);border:1px solid var(--c);color:var(--text);font-weight:700;font-size:13px;padding:3px 9px;border-radius:7px}
+  .date small{font-weight:400;color:var(--muted);margin-left:5px}
+  .kw{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .kw div{font-size:13.5px;margin:4px 0;color:var(--muted)}
+  .kw b{color:var(--text)}
+  .ph{color:var(--muted);font-size:14.5px;line-height:1.6}
+  .remember{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+  .remember div{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px;padding:10px 12px;font-size:13.5px}
+
+  /* timeline */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13px}
+  .chip[aria-pressed="true"]{color:var(--text);border-color:var(--c,#777);background:var(--panel2)}
+  .eras{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px 8px;margin-bottom:16px}
+  .eras h3,.tl h3{margin:0 0 8px;font-size:14px;color:var(--muted);font-weight:600}
+  .tl{position:relative;padding-left:4px}
+  .ev{display:grid;grid-template-columns:110px 22px 1fr;align-items:start;gap:10px;padding:6px 0}
+  .ev .yr{font-weight:800;font-size:19px;text-align:right;color:var(--c)}
+  .ev .dot{width:14px;height:14px;border-radius:50%;background:var(--c);margin-top:5px;box-shadow:0 0 0 4px rgba(255,255,255,.04);position:relative}
+  .ev .card{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:10px;padding:8px 12px;font-size:14.5px}
+  .ev .card small{color:var(--muted);display:block;margin-top:2px}
+  .ev .star{color:var(--warn);margin-left:6px;font-size:12px}
+  .rail{position:absolute;left:131px;top:0;bottom:0;width:2px;background:var(--line)}
+  .gap{grid-column:3;color:#6f6d75;font-size:12px;padding:2px 0 2px 2px}
+
+  /* words */
+  .words{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .w{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:10px;padding:10px 12px}
+  .w b{display:block;font-size:15px}
+  .w span{color:var(--muted);font-size:13.5px}
+  .w em{display:block;font-style:normal;font-size:11.5px;color:var(--c);margin-top:4px}
+  .search{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:9px;font-size:14px;min-width:240px}
+
+  /* flashcards */
+  .fc{max-width:640px;margin:0 auto;text-align:center}
+  .flip{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--c,#777);border-radius:16px;min-height:230px;display:flex;flex-direction:column;justify-content:center;padding:26px;cursor:pointer;margin:14px 0}
+  .flip .q{font-size:26px;font-weight:700}
+  .flip .a{font-size:19px;color:var(--text);margin-top:16px;line-height:1.45;display:none}
+  .flip.open .a{display:block;animation:fade .3s ease}
+  .flip .k{font-size:12px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+  .btns{display:flex;gap:10px;justify-content:center}
+  .btn{background:var(--panel2);color:var(--text);border:1px solid #44444d;padding:10px 18px;border-radius:10px;font-size:15px;cursor:pointer}
+  .btn.ok{border-color:var(--asante)} .btn.again{border-color:var(--benin)}
+  .bar{height:6px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-top:14px}
+  .bar i{display:block;height:100%;background:var(--asante);width:0;transition:width .4s}
+  .stat{color:var(--muted);font-size:13px;margin-top:6px}
+
+  /* exam */
+  .exam{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:900px){.exam{grid-template-columns:1fr}}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .box h3{margin:0 0 10px;font-size:17px}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+  .step{flex:1;min-width:110px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
+  .step b{display:block;font-size:22px;color:var(--skills)}
+  .step span{font-size:12.5px;color:var(--muted)}
+  .model{font-size:14px;line-height:1.55;color:#d8d6d2;background:var(--panel2);border-radius:10px;padding:10px 12px;border-left:3px solid var(--skills)}
+  .qs{margin-top:16px}
+  details{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:10px;padding:9px 13px;margin-bottom:8px}
+  summary{cursor:pointer;font-size:14.5px}
+  details p{margin:8px 0 2px;font-size:14px;line-height:1.55;color:#d8d6d2}
+  details p b{color:var(--c)}
+  /* historical skills */
+  .sk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:start}
+  @media (max-width:1000px){.sk-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:640px){.sk-grid{grid-template-columns:1fr}}
+  .sk{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--skills);border-radius:12px;padding:14px 16px;cursor:pointer;transition:border-color .25s}
+  .sk:hover{border-color:#55555f}
+  .sk .ic{font-size:24px}
+  .sk h4{margin:4px 0 2px;font-size:16px}
+  .sk .what{color:var(--muted);font-size:13.5px}
+  .sk .more{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:8px;font-size:13.5px;line-height:1.5}
+  .sk.open .more{display:block;animation:fade .3s ease}
+  .sk .more b{color:var(--skills)}
+  .sk .more ul{margin:4px 0 8px;padding-left:18px}
+  .sk .ex{background:var(--panel2);border-radius:8px;padding:7px 10px;margin-top:4px}
+  .sk .warn{color:var(--warn)}
+  .sk .open-hint{font-size:11.5px;color:#6f6d75;margin-top:6px}
+  .sk.open .open-hint{display:none}
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:4px 0}
+  .chain span{background:var(--panel2);border:1px solid var(--c);border-radius:7px;padding:3px 7px;font-size:12px}
+  .chain i{color:var(--muted);font-style:normal}
+  .sk-two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  @media (max-width:900px){.sk-two{grid-template-columns:1fr}}
+  .plaque-wrap{display:grid;grid-template-columns:260px 1fr;gap:14px;align-items:start}
+  @media (max-width:600px){.plaque-wrap{grid-template-columns:1fr}}
+  .hot{cursor:pointer}
+  .hot:hover>*,.hot:focus>*,.hot.on>*{stroke:var(--warn);stroke-width:2.5}
+  .plq-ans{background:var(--panel2);border-radius:10px;padding:12px;font-size:14px;line-height:1.5;min-height:120px}
+  .plq-ans b{color:var(--benin)}
+  .si{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+  .si button{background:var(--panel2);color:var(--text);border:1px solid #44444d;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px}
+  .si.right button.pick{border-color:var(--asante);color:var(--asante)}
+  .si.wrong button.pick{border-color:var(--benin);color:var(--benin)}
+  .si small{grid-column:1/-1;color:var(--muted)}
+  footer{color:#5f5d65;font-size:12px;padding:0 26px 22px}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>West African Kingdoms</h1>
+    <div class="sub">Year 8 History · Repton Al Barsha · Revision mind map</div>
+  </div>
+  <div class="legend">
+    <span style="--c:var(--mali)">Mali</span><span style="--c:var(--songhay)">Songhay</span>
+    <span style="--c:var(--benin)">Benin</span><span style="--c:var(--asante)">Asante</span><span style="--c:var(--skills)">Exam skills</span>
+  </div>
+</header>
+<nav role="tablist">
+  <button role="tab" data-t="map" aria-selected="true">1 · Mind map</button>
+  <button role="tab" data-t="time">2 · Timeline</button>
+  <button role="tab" data-t="words">3 · Key words & people</button>
+  <button role="tab" data-t="cards">4 · Test yourself</button>
+  <button role="tab" data-t="skillz">5 · Historical skills</button>
+  <button role="tab" data-t="exam">6 · Exam answers</button>
+  <span class="hint">Keys 1-6 switch tabs</span>
+</nav>
+
+<section id="map" class="on">
+  <div class="mapwrap">
+    <div class="mapbox"><svg id="mm" viewBox="0 0 1200 760" role="img" aria-label="Mind map of the four West African kingdoms"></svg></div>
+    <div class="panel" id="panel" aria-live="polite"></div>
+  </div>
+  <div class="remember" id="remember"></div>
+</section>
+
+<section id="time">
+  <div class="filters" id="tf"></div>
+  <div class="eras"><h3>When each kingdom was strong (they overlap)</h3><svg id="eras" viewBox="0 0 1100 190"></svg></div>
+  <div class="tl" id="tl"><div class="rail"></div></div>
+</section>
+
+<section id="words">
+  <div class="filters" id="wf"><input class="search" id="ws" placeholder="Search a word or name..." aria-label="Search key words"></div>
+  <div class="words" id="wl"></div>
+</section>
+
+<section id="cards">
+  <div class="fc">
+    <div class="filters" id="cf" style="justify-content:center"></div>
+    <div class="flip" id="flip" tabindex="0" role="button" aria-label="Flashcard, press Space to turn">
+      <div class="k" id="fk"></div><div class="q" id="fq"></div><div class="a" id="fa"></div>
+    </div>
+    <div class="btns">
+      <button class="btn" id="bShow">Show answer (Space)</button>
+      <button class="btn again" id="bAgain">Again (A)</button>
+      <button class="btn ok" id="bOk">Got it (G)</button>
+    </div>
+    <div class="bar"><i id="fbar"></i></div>
+    <div class="stat" id="fstat"></div>
+  </div>
+</section>
+
+<section id="skillz">
+  <div class="sk-grid" id="skg"></div>
+  <div class="sk-two">
+    <div class="box">
+      <h3>Practice: read a Benin plaque</h3>
+      <p class="ph" style="margin:0 0 8px">Click each part. Say what it shows.</p>
+      <div class="plaque-wrap">
+        <svg id="plq" viewBox="0 0 320 300" role="img" aria-label="Simple drawing of a Benin plaque"></svg>
+        <div id="plqA" class="plq-ans" aria-live="polite"><span class="ph">Pick a part of the plaque.</span></div>
+      </div>
+    </div>
+    <div class="box">
+      <h3>Practice: says or infers?</h3>
+      <p class="ph" style="margin:0 0 8px">Source: “Mansa Musa gave away so much gold in Cairo that its value fell.”</p>
+      <div id="sayinf"></div>
+      <div class="stat" id="sayS"></div>
+    </div>
+  </div>
+</section>
+
+<section id="exam">
+  <div class="exam">
+    <div class="box">
+      <h3>“What impression…?” (4 marks)</h3>
+      <div class="steps">
+        <div class="step"><b>1</b><span>Say the view</span></div>
+        <div class="step"><b>2</b><span>Quote a short bit</span></div>
+        <div class="step"><b>3</b><span>Explain the word</span></div>
+        <div class="step"><b>4</b><span>Second word</span></div>
+      </div>
+      <div class="model">The extract gives the impression that Timbuktu was an open and important centre of learning. The word “welcomed” suggests scholars were encouraged to share knowledge. “Many lands” suggests it brought together ideas from different places.</div>
+    </div>
+    <div class="box">
+      <h3>“Explain why…?” (4 marks) · one PEEL paragraph</h3>
+      <div class="steps">
+        <div class="step"><b>P</b><span>One reason</span></div>
+        <div class="step"><b>E</b><span>Fact, name, date</span></div>
+        <div class="step"><b>E</b><span>How it caused it</span></div>
+        <div class="step"><b>L</b><span>Therefore…</span></div>
+      </div>
+      <div class="model">One reason Timbuktu became an important centre of trade was its location. It connected routes across West Africa and the Sahara. This helped merchants bring goods into its markets. Therefore, its connections attracted trade and made the city rich.</div>
+    </div>
+    <div class="box" style="grid-column:1/-1">
+      <h3>Reading a source: C · O · P</h3>
+      <div class="steps">
+        <div class="step"><b>C</b><span>Content: what it says or shows</span></div>
+        <div class="step"><b>O</b><span>Origin: who made it, when</span></div>
+        <div class="step"><b>P</b><span>Purpose: why it was made</span></div>
+        <div class="step"><b>!</b><span>Inference must use evidence</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="qs">
+    <div class="filters" id="qf"></div>
+    <div id="ql"></div>
+  </div>
+</section>
+
+<footer>Made from the class Knowledge Organiser and Revision Guide only. Works offline.</footer>
+
+<script>
+const K = {
+  mali:   {name:"Mali",    color:"#E3B341", ruler:"Mansa", where:"Timbuktu, gold areas", wealth:"Gold & salt"},
+  songhay:{name:"Songhay", color:"#5AA9E6", ruler:"Dia / Askia", where:"Niger River: Gao, Timbuktu, Djenne", wealth:"River trade"},
+  benin:  {name:"Benin",   color:"#D0875A", ruler:"Oba", where:"Southern Nigeria, Benin City", wealth:"Ivory, art"},
+  asante: {name:"Asante",  color:"#6CC08B", ruler:"Asantehene", where:"Gold Coast (Ghana)", wealth:"Gold"}
+};
+
+const L = [
+ {k:"mali", n:"01", t:"How do we know?", d:[],
+  f:["4 kinds of evidence: oral traditions, written accounts, buildings, objects.",
+     "Griots pass stories down. Check them with other evidence.",
+     "Scholars and travellers wrote things down. Their views shaped what they wrote.",
+     "Mosques, pottery, metalwork, sculpture show faith, skill and wealth.",
+     "Racism made some historians ignore African history. Oral evidence is valuable when checked."],
+  w:[["Griot","A storyteller who keeps oral history"],["Scholar","A highly educated person"],["Evidence","Information used to study the past"]],
+  q:"Explain why historians use different kinds of evidence to study Mali.",
+  h:"P: Each type shows only part of the story. E: Griots keep memories, but objects like mosques and metalwork show faith and wealth. E: Comparing them checks bias. L: So using many types gives a fuller, fairer picture."},
+ {k:"mali", n:"02", t:"Sunjata & rise of Mali", d:[["1235","Battle of Kirina"]],
+  f:["Earlier states got rich from gold, salt and iron.",
+     "Samanguru, ruler of Susu, blocked Mandinka trade.",
+     "Sunjata led a coalition (team of allies) against him.",
+     "He won the Battle of Kirina in 1235.",
+     "The Mandinka pledged loyalty. Sunjata became mansa.",
+     "Trade + land + unity made Mali strong."],
+  w:[["Mansa","The ruler of Mali"],["Mandinka","People who founded Mali"],["Mari Djata","Title meaning ‘Lion Lord’"]],
+  q:"Explain why Sunjata Keita was important in the rise of Mali.",
+  h:"P: He united people against Samanguru. E: He led a coalition and won at Kirina in 1235; the Mandinka made him mansa. E: Unity and control of trade gave Mali resources. L: So he founded a strong, united kingdom."},
+ {k:"mali", n:"03", t:"Interpretations of Mali", d:[],
+  f:["Interpretation = a view of the past (books, films, paintings).",
+     "Writers choose which evidence and events to stress.",
+     "New evidence, audience and purpose can change an account.",
+     "A griot may stress bravery. That does not make it worthless.",
+     "Know the difference: what a source SAYS vs what you INFER."],
+  w:[["Interpretation","A view or explanation of the past"],["Inference","A conclusion drawn from evidence"],["Oral tradition","Knowledge passed on by speech"]],
+  q:"Explain why interpretations of Mali can differ.",
+  h:"P: Writers pick different evidence. E: A griot may stress Sunjata’s bravery; a film may stress other events. E: Purpose and audience shape the story. L: So accounts of the same ruler can differ."},
+ {k:"mali", n:"04", t:"Mansa Musa’s life", d:[["1312","Becomes ruler"]],
+  f:["Mansa Musa became ruler in 1312.",
+     "Controlled gold and salt trade routes.",
+     "Taxes paid for the army and government.",
+     "Traders linked Mali to North Africa.",
+     "A Muslim: built religious buildings and supported learning.",
+     "Army and trade made each other stronger."],
+  w:[["Taxation","Collecting payments for government"],["Resources","Materials people use or trade"]],
+  q:"Explain why trade helped Mansa Musa strengthen Mali.",
+  h:"P: Trade gave money. E: He controlled gold and salt routes and collected taxes. E: That money paid for the army and government. L: So trade made Mali powerful."},
+ {k:"mali", n:"05", t:"Mansa Musa’s Hajj", d:[["1324","Begins Hajj to Mecca"]],
+  f:["Began his Hajj in 1324, across North Africa to Mecca.",
+     "Showed his Muslim faith. Linked Mali to the Islamic world.",
+     "Huge group of followers and gifts showed great wealth.",
+     "His spending in Cairo lowered the value of gold there.",
+     "Brought back scholars. Built mosques.",
+     "Djinguereber Mosque in Timbuktu linked to him."],
+  w:[["Hajj","Muslim pilgrimage to Mecca"],["Pilgrimage","A journey for religious reasons"],["Patronage","Support for scholars or art"]],
+  q:"Explain why Mansa Musa’s Hajj was important for Mali.",
+  h:"P: It spread Mali’s fame. E: In 1324 his gifts and spending in Cairo changed gold’s value. E: The world learned how rich Mali was, and scholars came back with him. L: So the Hajj boosted Mali’s reputation and learning."},
+ {k:"mali", n:"06", t:"Decline of Mali", d:[],
+  f:["After Musa: family fights over who rules (succession).",
+     "Short, violent reigns weakened government.",
+     "Rivals and raiders attacked the borders.",
+     "Lost trading centres = less money (revenue).",
+     "Less money = armies harder to pay.",
+     "Songhay grew. Decline was slow, not sudden."],
+  w:[["Succession","Passing power to a new ruler"],["Internal conflict","Fighting inside a state"],["Revenue","Money a government receives"]],
+  q:"Explain why Mali declined after Mansa Musa.",
+  h:"P: Fights over succession. E: Rival family branches fought; reigns were short and violent. E: Division weakened defence, so trading centres were lost and revenue fell. L: So Songhay could take over Mali’s land."},
+ {k:"songhay", n:"07", t:"Rise of Songhay", d:[],
+  f:["Grew around Gao on the Niger River.",
+     "Sorko people built boats and fished. Farmers grew crops.",
+     "Traded gold, kola nuts, leather, dates and enslaved people.",
+     "Arab traders brought trade and Islam. Gao’s rulers became Muslim.",
+     "Grew as Mali weakened."],
+  w:[["Gao","Key city on the Niger River"],["Dia","A title for a ruler"],["Trade network","Linked routes and markets"]],
+  q:"Explain why Gao helped Songhay rise to power.",
+  h:"P: Its place on the Niger River. E: River transport carried food, people and goods like gold and kola nuts. E: Trade brought wealth and Arab contacts. L: So Gao made Songhay rich and connected."},
+ {k:"songhay", n:"08", t:"Life & Sonni Ali", d:[["1464","Sonni Ali becomes ruler"],["late 1460s","Takes Timbuktu"]],
+  f:["Farmers, fishers, boatbuilders and merchants all helped.",
+     "Sonni Ali became ruler in 1464.",
+     "Used cavalry (horse soldiers) and a river fleet.",
+     "Took Timbuktu in the late 1460s. Took Djenne after a long siege.",
+     "Controlling the Niger moved armies and cut enemy supplies.",
+     "Scholars wrote harshly of him. He treated them badly."],
+  w:[["Niger River","Big river for trade and travel"],["Cavalry","Soldiers on horseback"],["Siege","Surrounding a place to force surrender"]],
+  q:"Explain why the Niger River was important to Songhay.",
+  h:"P: Transport for trade and armies. E: It carried food and goods; Sonni Ali’s river fleet moved soldiers. E: It cut off enemies’ supplies and helped take Timbuktu and Djenne. L: So the river gave both wealth and military power."},
+ {k:"songhay", n:"10", t:"Askia the Great", d:[["1493","Takes power"],["1496","Hajj"],["1505","Borgu attack fails"],["1528","Forced out by son"]],
+  f:["Took power in 1493 by overthrowing Sonni Ali’s son.",
+     "Made the army stronger. Won more land.",
+     "Did the Hajj in 1496. Took advice from scholar Al-Maghili.",
+     "Supported learning in Timbuktu and Gao.",
+     "Failed to invade Borgu in 1505.",
+     "Forced out by his son Musa in 1528."],
+  w:[["Reform","A change to improve a system"]],
+  q:"Explain why Askia Mohammed became known as Askia the Great.",
+  h:"P: He supported faith and learning. E: Hajj in 1496, advice from Al-Maghili, schools in Timbuktu and Gao. E: Scholars wrote well of him. L: So he is remembered as ‘the Great’ (but remember Borgu 1505 failed)."},
+ {k:"songhay", n:"09", t:"Fall of Songhay", d:[["1492","Sonni Ali dies"],["1588","Civil war"]],
+  f:["Fights over who would rule weakened the royal family.",
+     "Civil war in 1588 when Askia Ishaq II took power.",
+     "Inside fighting made defence hard.",
+     "Morocco’s ruler Mulay Ahmed wanted the trade and gold.",
+     "Moroccan forces invaded.",
+     "Inner weakness + invasion = fall."],
+  w:[["Civil war","Fighting between groups in one country"],["Invasion","An armed attack on another land"],["Division","Lack of unity"]],
+  q:"Explain why internal conflict contributed to Songhay’s decline.",
+  h:"P: Fights over succession. E: Civil war in 1588 with Askia Ishaq II. E: A divided empire could not defend itself. L: So Morocco’s invasion could succeed."},
+ {k:"benin", n:"11", t:"Kingdom of Benin", d:[["c.1200","Eweka: founding Oba"]],
+  f:["In southern Nigeria. NOT the modern Republic of Benin.",
+     "Edo farming villages joined together. Benin City = centre.",
+     "First rulers: the Ogiso.",
+     "Oranmiyan came from Ife. Some did not accept an outsider.",
+     "His son Eweka (Edo mother) became founding Oba c.1200.",
+     "Warrior Obas grew the kingdom. Art showed their power."],
+  w:[["Edo","People of the Kingdom of Benin"],["Oba","The ruler of Benin"],["Dynasty","A family of rulers"]],
+  q:"Explain why royal authority was important in the Kingdom of Benin.",
+  h:"P: It united the Edo people. E: Eweka, with an Edo mother, was accepted as founding Oba c.1200. E: Local roots made his rule accepted; later warrior Obas expanded. L: So strong royal authority held Benin together."},
+ {k:"benin", n:"12", t:"Benin Bronzes", d:[],
+  f:["Brass and bronze plaques, heads and figures. They record court life.",
+     "Oba in the middle and bigger = high status.",
+     "Coral = wealth. Kneeling servants = hierarchy (ranks).",
+     "Europeans shown = trade with overseas.",
+     "Ivory mask = Queen Idia, Oba Esigie’s mother and adviser. Title: Iyoba.",
+     "Not every Benin artwork is bronze."],
+  w:[["Plaque","A decorated flat panel"],["Iyoba","Title of Queen Mother"],["Ivory","Material from animal tusks"]],
+  q:"Explain why the Benin Bronzes are valuable historical evidence.",
+  h:"P: They record court life. E: The Oba is shown larger and central; Europeans appear on plaques. E: This shows status, hierarchy and overseas trade. L: So they help historians understand Benin (with oral and written sources)."},
+ {k:"benin", n:"13", t:"Benin & Europe", d:[["1897","British invasion, Sack of Benin"]],
+  f:["Sold ivory and palm oil to Europeans. Enslaved people were also sold.",
+     "1800s: more British pressure for trade and land.",
+     "1897: a British party was attacked; most were killed.",
+     "Britain sent an army. Benin City was burned. Palace looted.",
+     "The Oba was exiled (sent away).",
+     "Benin lost independence. Art scattered abroad."],
+  w:[["Colonial rule","Control by an outside power"],["Looting","Taking things by force"],["Exile","Forced to live away from home"]],
+  q:"Explain why the Sack of Benin had lasting consequences.",
+  h:"P: Royal and religious objects were taken. E: In 1897 British forces looted the palace and art went to collections abroad. E: Benin lost access to its own heritage, and its independence. L: So the effects still matter today."},
+ {k:"asante", n:"14", t:"Founding of Asante", d:[["1471","Portuguese reach Gold Coast"],["1482","Elmina fort"],["1701","Osei Tutu beats Denkyira"]],
+  f:["Gold Coast = modern Ghana.",
+     "Portuguese arrived 1471 to trade for gold.",
+     "Built a fort at Elmina in 1482.",
+     "Osei Tutu led Kwaman and made alliances against Denkyira.",
+     "Beat Denkyira in 1701. First Asantehene.",
+     "Golden Stool = the soul and unity of the Asante."],
+  w:[["Akan","Related groups in the Gold Coast"],["Asantehene","The ruler of Asante"],["Golden Stool","Sacred symbol of Asante unity"]],
+  q:"Explain why Osei Tutu was able to unite Asante communities.",
+  h:"P: Alliances and a shared symbol. E: He allied states against Denkyira, won in 1701, and the Golden Stool stood for unity. E: A common enemy and sacred symbol bound people together. L: So he became the first Asantehene."},
+ {k:"asante", n:"15", t:"Wars with Britain", d:[["1823-1896","Anglo-Asante wars"],["1900","War of the Golden Stool"]],
+  f:["Wars with Britain in 1823-24, 1863-64, 1873-74, 1895-96.",
+     "Causes: trade, land and control.",
+     "1900: War of the Golden Stool.",
+     "The British interfered with the sacred stool. This angered people.",
+     "Asante resisted foreign rule.",
+     "Lost wars, but culture and identity survived."],
+  w:[["Resistance","Fighting outside control"],["Sovereignty","Right to rule yourself"],["Anglo-Asante wars","Wars between Britain and Asante"]],
+  q:"Explain why the Golden Stool became a focus of Asante resistance.",
+  h:"P: It was sacred. E: It stood for the soul of the people; British interference led to the 1900 War. E: Protecting it meant protecting their identity. L: So it became the heart of resistance."},
+ {k:"asante", n:"16", t:"Kingdom of Gold", d:[["mid-1700s","Controls Akan gold mines"]],
+  f:["By the mid-1700s, controlled Akan gold mines.",
+     "Gold from the surface and deep mines.",
+     "Gold used to pay and trade.",
+     "Muslim merchants took gold across the Sahara. Europeans traded on the coast.",
+     "Swapped for cloth and salt.",
+     "Goldsmiths made jewellery to show wealth and rank."],
+  w:[["Goldsmith","A person who shapes gold"],["Currency","Something used to pay"],["Status","A person’s rank in society"]],
+  q:"Explain why Asante is remembered as the Kingdom of Gold.",
+  h:"P: Gold was the base of its wealth. E: It controlled Akan mines; gold went across the Sahara and to Europeans. E: Gold paid for power, and goldsmiths showed rank. L: So it is called the Kingdom of Gold."}
+];
+
+const PEOPLE = [
+ ["Sunjata Keita","Founded Mali; won Kirina 1235","mali"],["Samanguru","Susu ruler; blocked Mandinka trade","mali"],
+ ["Mansa Musa","Mali ruler 1312; Hajj 1324","mali"],["Sonni Ali","Songhay ruler 1464; took Timbuktu & Djenne","songhay"],
+ ["Askia Mohammed","‘The Great’; power 1493; Hajj 1496","songhay"],["Al-Maghili","Scholar who advised Askia","songhay"],
+ ["Musa (Askia’s son)","Forced Askia out in 1528","songhay"],["Askia Ishaq II","Took power in 1588 civil war","songhay"],
+ ["Mulay Ahmed","Moroccan ruler; invaded Songhay","songhay"],["Al-Sa’di","Wrote Tarikh al-Sudan (history)","songhay"],
+ ["Oranmiyan","Came from Ife; Eweka’s father","benin"],["Eweka","Founding Oba c.1200","benin"],
+ ["Oba Esigie","Benin ruler; son of Queen Idia","benin"],["Queen Idia","Esigie’s mother & adviser; Iyoba","benin"],
+ ["Osei Tutu","First Asantehene; beat Denkyira 1701","asante"]
+];
+
+const EVENTS = [
+ ["c.1200","Eweka becomes founding Oba","benin",1,1200],
+ ["1235","Sunjata wins the Battle of Kirina","mali",1,1235],
+ ["1312","Mansa Musa becomes ruler","mali",1,1312],
+ ["1324","Mansa Musa begins his Hajj","mali",1,1324],
+ ["1464","Sonni Ali becomes ruler","songhay",1,1464],
+ ["late 1460s","Sonni Ali captures Timbuktu","songhay",0,1468],
+ ["1471","Portuguese reach the Gold Coast","asante",1,1471],
+ ["1482","Portuguese fort built at Elmina","asante",1,1482],
+ ["1492","Sonni Ali dies","songhay",0,1492],
+ ["1493","Askia Mohammed takes power","songhay",1,1493],
+ ["1496","Askia performs the Hajj","songhay",1,1496],
+ ["1505","Askia’s invasion of Borgu fails","songhay",0,1505],
+ ["1528","Askia forced from power by his son","songhay",1,1528],
+ ["1588","Civil war weakens Songhay","songhay",1,1588],
+ ["1701","Osei Tutu defeats Denkyira; first Asantehene","asante",1,1701],
+ ["1823-1896","Anglo-Asante wars (4 wars)","asante",0,1823],
+ ["1897","British invasion and Sack of Benin","benin",1,1897],
+ ["1900","War of the Golden Stool","asante",1,1900]
+];
+
+const REMEMBER = [
+ "Benin was in <b>Nigeria</b>, not the modern Republic of Benin.",
+ "<b>Songhay</b> is also spelled <b>Songhai</b>.",
+ "The kingdoms <b>overlapped</b> in time. They did not just replace each other.",
+ "The Queen Idia mask is <b>ivory</b>. Not every Benin artwork is bronze.",
+ "Songhay lessons: <b>10 (Askia)</b> comes before <b>09 (Fall)</b> in time."
+];
+
+/* ---------- tabs ---------- */
+const tabs=[...document.querySelectorAll("nav button")];
+function show(id){
+  tabs.forEach(b=>b.setAttribute("aria-selected",b.dataset.t===id));
+  document.querySelectorAll("section").forEach(s=>s.classList.toggle("on",s.id===id));
+  try{history.replaceState(null,"","#"+id)}catch(e){}
+}
+tabs.forEach(b=>b.onclick=()=>show(b.dataset.t));
+
+/* ---------- mind map ---------- */
+const svg=document.getElementById("mm"), NS="http://www.w3.org/2000/svg";
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
+const CX=600, CY=380;
+const side={mali:"L",benin:"L",songhay:"R",asante:"R"};
+const groups={mali:[],songhay:[],benin:[],asante:[]};
+L.forEach(l=>groups[l.k].push(l));
+const pos={};
+function layoutSide(keys,x0,xk){
+  const total=keys.reduce((s,k)=>s+groups[k].length,0)+ (keys.length-1)*0.8;
+  const step=700/total; let y=30+step/2;
+  keys.forEach(k=>{
+    const ys=[];
+    groups[k].forEach(l=>{pos[l.n]={x:x0,y};ys.push(y);y+=step});
+    pos[k]={x:xk,y:(ys[0]+ys[ys.length-1])/2};
+    y+=step*0.8;
+  });
+}
+layoutSide(["mali","benin"],150,420);
+layoutSide(["songhay","asante"],1050,780);
+
+const linksG=el("g",{}), nodesG=el("g",{});
+function curve(x1,y1,x2,y2){const mx=(x1+x2)/2;return `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`}
+const allLinks=[];
+Object.keys(K).forEach(k=>{
+  const p=pos[k];
+  allLinks.push({path:el("path",{d:curve(CX,CY,p.x,p.y),stroke:K[k].color,class:"link","stroke-width":3.2},linksG),k});
+  groups[k].forEach(l=>{
+    const c=pos[l.n];
+    allLinks.push({path:el("path",{d:curve(p.x,p.y,c.x,c.y),stroke:K[k].color,class:"link"},linksG),k,n:l.n});
+  });
+});
+
+const nodes=[];
+function node(x,y,w,h,label,sub,color,id,k,big){
+  const g=el("g",{class:"node",tabindex:0,role:"button","aria-label":label,style:`--glow:${color}`},nodesG);
+  el("rect",{x:x-w/2,y:y-h/2,width:w,height:h,rx:big?16:10,fill:big?color:"#1d1d22",stroke:color,"stroke-width":big?0:1.6,"fill-opacity":big?.95:1},g);
+  const t=el("text",{x,y:sub?y-3:y+5,"text-anchor":"middle","font-size":big?19:13.5,"font-weight":700,fill:big?"#111":"#ecebe8"},g);
+  t.textContent=label;
+  if(sub){const s=el("text",{x,y:y+14,"text-anchor":"middle","font-size":big?12:11.5,fill:big?"#222":color,"font-weight":big?500:700},g);s.textContent=sub}
+  g.onclick=()=>select(id); g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(id)}};
+  g.onmouseenter=()=>hover(k,id); g.onmouseleave=()=>hover(null);
+  nodes.push({g,id,k}); return g;
+}
+// centre
+node(CX,CY,220,74,"West African Kingdoms","4 kingdoms · 16 lessons","#ecebe8","centre",null,true);
+Object.keys(K).forEach(k=>{const p=pos[k];node(p.x,p.y,150,58,K[k].name,K[k].ruler,K[k].color,k,k,true)});
+L.forEach(l=>{
+  const c=pos[l.n];
+  const dt=l.d.length?l.d.map(d=>d[0]).slice(0,3).join(" · "):"";
+  node(c.x,c.y,230,dt?44:36,l.n+"  "+l.t,dt,K[l.k].color,l.n,l.k,false);
+});
+// skills + remember nodes under centre
+node(CX,CY+130,170,44,"Exam skills","Impression · PEEL","#A98BDB","skills",null,false);
+node(CX,CY-130,170,44,"Must remember","5 traps","#E6C76A","traps",null,false);
+el("path",{d:`M${CX},${CY+37} L${CX},${CY+108}`,stroke:"#A98BDB",class:"link"},linksG);
+el("path",{d:`M${CX},${CY-37} L${CX},${CY-108}`,stroke:"#E6C76A",class:"link"},linksG);
+
+function hover(k,id){
+  if(!k){svg.classList.remove("dim");nodes.forEach(n=>n.g.classList.remove("hl"));allLinks.forEach(l=>l.path.classList.remove("hl"));return}
+  svg.classList.add("dim");
+  nodes.forEach(n=>n.g.classList.toggle("hl",n.k===k||n.id==="centre"));
+  allLinks.forEach(l=>l.path.classList.toggle("hl",l.k===k));
+}
+
+const panel=document.getElementById("panel");
+function kw(list){return list.length?`<div class="kw">${list.map(w=>`<div><b>${w[0]}</b> · ${w[1]}</div>`).join("")}</div>`:""}
+function select(id){
+  nodes.forEach(n=>n.g.classList.toggle("sel",n.id===id));
+  let h="";
+  if(id==="centre"){
+    h=`<h2>West African Kingdoms</h2><p class="ph">Mali, Songhay, Benin and Asante grew strong through <b>trade</b>, <b>leaders</b> and <b>shared identity</b>. We know them from oral stories, writings, buildings and objects.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px">
+    <tr style="color:var(--muted)"><td>Kingdom</td><td>Ruler title</td><td>Where</td><td>Riches</td></tr>
+    ${Object.keys(K).map(k=>`<tr style="border-top:1px solid var(--line)"><td style="color:${K[k].color};font-weight:700;padding:6px 0">${K[k].name}</td><td>${K[k].ruler}</td><td>${K[k].where}</td><td>${K[k].wealth}</td></tr>`).join("")}
+    </table><p class="ph" style="margin-top:12px">Click any box on the map.</p>`;
+  } else if(K[id]){
+    const k=K[id], ls=groups[id], ds=ls.flatMap(l=>l.d);
+    const lead={mali:"Sunjata Keita, Mansa Musa",songhay:"Sonni Ali, Askia Mohammed",benin:"Eweka, Esigie (and Queen Idia)",asante:"Osei Tutu"}[id];
+    const big={mali:"Gold & salt trade · Islamic learning · oral traditions",songhay:"River trade · army growth · centres of learning",benin:"Ivory trade · brass & bronze art · royal court",asante:"Gold mining & craft · Golden Stool · unity"}[id];
+    h=`<span class="tag" style="--c:${k.color}">Kingdom</span><h2 style="color:${k.color}">${k.name}</h2>
+    <div class="kw" style="border:0;padding:0"><div><b>Where</b> · ${k.where}</div><div><b>Ruler title</b> · ${k.ruler}</div><div><b>Key leaders</b> · ${lead}</div><div><b>Famous for</b> · ${big}</div></div>
+    <div class="dates" style="margin-top:12px">${ds.map(d=>`<span class="date" style="--c:${k.color}">${d[0]}<small>${d[1]}</small></span>`).join("")}</div>
+    <ul>${ls.map(l=>`<li><b>${l.n}</b> ${l.t}</li>`).join("")}</ul>`;
+  } else if(id==="skills"){
+    h=`<span class="tag" style="--c:#A98BDB">Exam</span><h2>Exam skills</h2><p class="ph">All questions are <b>4 marks</b>.</p>
+    <ul><li><b>Impression:</b> say the view → quote → explain the word → second word.</li><li><b>Explain why:</b> one PEEL paragraph. Point, Evidence, Explain, Link.</li><li><b>Sources:</b> Content, Origin, Purpose.</li><li>Always use <b>names, dates, examples</b>.</li></ul><p class="ph">See tab 5 for historical skills and tab 6 for model answers.</p>`;
+  } else if(id==="traps"){
+    h=`<span class="tag" style="--c:#E6C76A">Watch out</span><h2>Must remember</h2><ul>${REMEMBER.map(r=>`<li>${r}</li>`).join("")}</ul>`;
+  } else {
+    const l=L.find(x=>x.n===id), c=K[l.k].color;
+    h=`<span class="tag" style="--c:${c}">${K[l.k].name} · Lesson ${l.n}</span><h2>${l.t}</h2>
+    ${l.d.length?`<div class="dates">${l.d.map(d=>`<span class="date" style="--c:${c}">${d[0]}<small>${d[1]}</small></span>`).join("")}</div>`:""}
+    <ul>${l.f.map(f=>`<li>${f}</li>`).join("")}</ul>${kw(l.w)}`;
+  }
+  panel.innerHTML=h;
+}
+select("centre");
+document.getElementById("remember").innerHTML=REMEMBER.map(r=>`<div>${r}</div>`).join("");
+
+/* ---------- timeline ---------- */
+const tf=document.getElementById("tf"), tl=document.getElementById("tl");
+let tFilter="all", tKey=false;
+function chips(host,items,cur,cb){
+  host.querySelectorAll(".chip").forEach(c=>c.remove());
+  items.forEach(([v,lab,col])=>{const b=document.createElement("button");b.className="chip";b.textContent=lab;b.style.setProperty("--c",col||"#888");b.setAttribute("aria-pressed",v===cur());b.onclick=()=>{cb(v);chips(host,items,cur,cb)};host.appendChild(b)});
+}
+const kItems=[["all","All kingdoms","#ecebe8"],...Object.keys(K).map(k=>[k,K[k].name,K[k].color])];
+function drawTL(){
+  tl.innerHTML='<div class="rail"></div>';
+  let last=null;
+  EVENTS.filter(e=>(tFilter==="all"||e[2]===tFilter)&&(!tKey||e[3])).forEach(e=>{
+    if(last&&e[4]-last>=100){const g=document.createElement("div");g.className="ev";g.innerHTML=`<div></div><div></div><div class="gap">… ${Math.round((e[4]-last)/10)*10} years later …</div>`;tl.appendChild(g)}
+    last=e[4];
+    const d=document.createElement("div");d.className="ev";d.style.setProperty("--c",K[e[2]].color);
+    d.innerHTML=`<div class="yr">${e[0]}</div><div class="dot"></div><div class="card">${e[1]}${e[3]?'<span class="star">★ key date</span>':""}<small>${K[e[2]].name}</small></div>`;
+    tl.appendChild(d);
+  });
+}
+function drawTFilters(){
+  chips(tf,kItems,()=>tFilter,v=>{tFilter=v;drawTL()});
+  const b=document.createElement("button");b.className="chip";b.textContent="★ Key dates only";b.style.setProperty("--c","#E6C76A");b.setAttribute("aria-pressed",tKey);
+  b.onclick=()=>{tKey=!tKey;b.setAttribute("aria-pressed",tKey);drawTL()};tf.appendChild(b);
+}
+drawTFilters(); drawTL();
+
+// era bars
+(function(){
+  const s=document.getElementById("eras"), x=y=>60+(y-1200)/(1900-1200)*1010;
+  const ns=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);s.appendChild(e);return e};
+  for(let y=1200;y<=1900;y+=100){ns("line",{x1:x(y),x2:x(y),y1:10,y2:165,stroke:"#2a2a31"});const t=ns("text",{x:x(y),y:182,"text-anchor":"middle","font-size":12,fill:"#a3a1a8"});t.textContent=y}
+  const bars=[["mali",1235,1500,"1235 Kirina → slow decline"],["songhay",1464,1600,"1464 Sonni Ali → 1588 civil war"],["benin",1200,1897,"c.1200 Eweka → 1897 Sack"],["asante",1701,1900,"1701 Osei Tutu → 1900 Golden Stool"]];
+  const defs=ns("defs",{});
+  bars.forEach((b,i)=>{
+    const y=18+i*37, c=K[b[0]].color;
+    const gid="g"+i, gr=document.createElementNS(NS,"linearGradient");gr.id=gid;defs.appendChild(gr);
+    const fadeEnd=b[0]==="mali"||b[0]==="songhay";
+    [[0,1],[fadeEnd?.7:1,1],[1,fadeEnd?0:1]].forEach(([o,op])=>{const st=document.createElementNS(NS,"stop");st.setAttribute("offset",o);st.setAttribute("stop-color",c);st.setAttribute("stop-opacity",op*.85);gr.appendChild(st)});
+    ns("rect",{x:x(b[1]),y,width:x(b[2])-x(b[1]),height:26,rx:7,fill:`url(#${gid})`});
+    const outside=b[0]==="songhay";
+    const t=ns("text",{x:outside?x(b[2])+8:x(b[1])+8,y:y+17.5,"font-size":12.5,"font-weight":700,fill:outside?c:"#111"});t.textContent=K[b[0]].name+"  ·  "+b[3];
+  });
+})();
+
+/* ---------- words & people ---------- */
+const WORDS=[...L.flatMap(l=>l.w.map(w=>({a:w[0],b:w[1],k:l.k,s:"Lesson "+l.n}))),...PEOPLE.map(p=>({a:p[0],b:p[1],k:p[2],s:"Person"}))];
+let wFilter="all";
+const wf=document.getElementById("wf"), ws=document.getElementById("ws"), wl=document.getElementById("wl");
+function drawW(){
+  const q=ws.value.toLowerCase();
+  wl.innerHTML=WORDS.filter(w=>(wFilter==="all"||w.k===wFilter||(wFilter==="people"&&w.s==="Person"))&&(w.a+w.b).toLowerCase().includes(q))
+   .map(w=>`<div class="w" style="--c:${K[w.k].color}"><b>${w.a}</b><span>${w.b}</span><em>${K[w.k].name} · ${w.s}</em></div>`).join("");
+}
+chips(wf,[...kItems,["people","People only","#A98BDB"]],()=>wFilter,v=>{wFilter=v;drawW()});
+ws.oninput=drawW; drawW();
+
+/* ---------- flashcards ---------- */
+const DECKS={
+  dates:()=>EVENTS.map(e=>({k:"What happened in…",q:e[0],a:e[1],c:e[2]})),
+  rev:()=>EVENTS.map(e=>({k:"When did this happen?",q:e[1],a:e[0],c:e[2]})),
+  words:()=>WORDS.filter(w=>w.s!=="Person").map(w=>({k:"What does it mean?",q:w.a,a:w.b,c:w.k})),
+  people:()=>PEOPLE.map(p=>({k:"Who was…?",q:p[0],a:p[1],c:p[2]}))
+};
+let deck=[],idx=0,ok=0,total=0,mode="dates";
+const flip=document.getElementById("flip");
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startDeck(m){mode=m;deck=shuffle(DECKS[m]());idx=0;ok=0;total=deck.length;showCard()}
+function showCard(){
+  flip.classList.remove("open");
+  if(!deck.length){flip.style.setProperty("--c","#6CC08B");document.getElementById("fk").textContent="Done";document.getElementById("fq").textContent="All cards learned 🎓";document.getElementById("fa").textContent="";}
+  else{const c=deck[0];flip.style.setProperty("--c",K[c.c].color);document.getElementById("fk").textContent=c.k+"  ·  "+K[c.c].name;document.getElementById("fq").textContent=c.q;document.getElementById("fa").textContent=c.a}
+  document.getElementById("fbar").style.width=(ok/total*100)+"%";
+  document.getElementById("fstat").textContent=`${ok} of ${total} learned · ${deck.length} left`;
+}
+function reveal(){flip.classList.toggle("open")}
+function again(){if(!deck.length)return;const c=deck.shift();deck.splice(Math.min(3,deck.length),0,c);showCard()}
+function got(){if(!deck.length)return;deck.shift();ok++;showCard()}
+flip.onclick=reveal; document.getElementById("bShow").onclick=reveal;
+document.getElementById("bAgain").onclick=again; document.getElementById("bOk").onclick=got;
+chips(document.getElementById("cf"),[["dates","Date → event","#E3B341"],["rev","Event → date","#5AA9E6"],["words","Key words","#D0875A"],["people","People","#6CC08B"]],()=>mode,v=>startDeck(v));
+startDeck("dates");
+
+/* ---------- exam questions ---------- */
+let qFilter="all";
+const ql=document.getElementById("ql");
+function drawQ(){
+  ql.innerHTML=L.filter(l=>qFilter==="all"||l.k===qFilter).map(l=>`<details style="--c:${K[l.k].color}"><summary><b style="color:${K[l.k].color}">L${l.n}</b> ${l.q} <span style="color:var(--muted)">(4 marks)</span></summary><p>${l.h.replace(/(P:|E:|L:)/g,"<br><b>$1</b>").replace(/^<br>/,"")}</p></details>`).join("");
+}
+chips(document.getElementById("qf"),kItems,()=>qFilter,v=>{qFilter=v;drawQ()});
+drawQ();
+
+/* ---------- historical skills ---------- */
+const SKILLS=[
+ {ic:"🔎",t:"Using evidence",w:"Information used to study the past",
+  how:["Know the 4 types: oral traditions, written accounts, buildings, objects.","Use more than one type.","Compare them before you decide."],
+  ex:"Mali: griots’ stories + scholars’ writing + the Djinguereber Mosque + metalwork.",
+  warn:"Racism made some early historians ignore oral evidence. It is valuable when checked."},
+ {ic:"📜",t:"Reading a source: C·O·P",w:"Who made it, when, and why",
+  how:["<b>Content</b>: what it says or shows.","<b>Origin</b>: who made it and when.","<b>Purpose</b>: why it was made."],
+  ex:"Al-Sa’di, a scholar, later wrote Songhay’s history in the Tarikh al-Sudan.",
+  warn:"Compare all three before saying what the source proves."},
+ {ic:"🎬",t:"Interpretations",w:"A later view or explanation of the past",
+  how:["Found in books, films, paintings, griots’ stories.","They differ because writers pick different evidence.","Audience, purpose and new evidence change them too."],
+  ex:"A griot stresses Sunjata’s bravery. That does not make the story worthless.",
+  warn:"Ask: what does this account choose to stress?"},
+ {ic:"💭",t:"Inference & impression",w:"What a source suggests, not just says",
+  how:["<b>Says</b> = written in the source.","<b>Infer</b> = what you work out from it.","<b>Impression</b> = the overall view. Quote a short bit and explain the word."],
+  ex:"“Welcomed” scholars → Timbuktu was open to learning.",
+  warn:"Every inference must be backed by evidence."},
+ {ic:"🏺",t:"Reading objects & art",w:"Objects as evidence",
+  how:["Size and position = status.","Materials (coral, gold) = wealth.","Poses (kneeling) = hierarchy. New people (Europeans) = contact."],
+  ex:"Benin plaques show the Oba big and in the centre.",
+  warn:"Art can show the ruler in a good light. Not every Benin artwork is bronze (Idia mask = ivory)."},
+ {ic:"⚖️",t:"Perspective & bias",w:"Who wrote it changes what it says",
+  how:["Ask how the writer was treated.","Look for what is left out.","Weigh successes AND setbacks."],
+  ex:"Scholars wrote harshly of Sonni Ali (he treated them badly). They praised Askia (he supported them), but Borgu 1505 failed.",
+  warn:"A positive account still needs checking."},
+ {ic:"🔗",t:"Causation",w:"Why things happened: causes link up",
+  how:["Find more than one cause.","Show how one cause leads to another.","Mix inside causes and outside causes."],
+  chain:[["Fights over succession","Weak defence","Lost trade centres","Less revenue","Songhay takes over"],"mali"],
+  ex:"Songhay: civil war 1588 (inside) + Moroccan invasion (outside).",
+  warn:"Mali’s decline was slow, not one sudden event."},
+ {ic:"⭐",t:"Significance",w:"Why something mattered",
+  how:["Look past money value.","Think about faith, power and identity.","Think about effects that last."],
+  ex:"The Golden Stool: spiritual and political, not just gold. The Hajj spread Mali’s fame.",
+  warn:"The Sack of Benin (1897) still matters: art is still abroad."},
+ {ic:"🔄",t:"Change & continuity",w:"What changed and what stayed",
+  how:["Kingdoms overlapped in time.","They did not simply replace each other.","Defeat is not the end of a culture."],
+  ex:"Asante lost to Britain in 1900, but its traditions and identity continued.",
+  warn:"Benin (c.1200-1897) lasted through Mali, Songhay and Asante."}
+];
+document.getElementById("skg").innerHTML=SKILLS.map((s,i)=>`<div class="sk" tabindex="0" role="button" aria-expanded="false" data-i="${i}">
+  <div class="ic" aria-hidden="true">${s.ic}</div><h4>${s.t}</h4><div class="what">${s.w}</div>
+  <div class="open-hint">Click to open</div>
+  <div class="more"><b>How to do it</b><ul>${s.how.map(h=>`<li>${h}</li>`).join("")}</ul>
+  ${s.chain?`<div class="chain" style="--c:${K[s.chain[1]].color}">${s.chain[0].map(c=>`<span>${c}</span>`).join("<i>→</i>")}</div>`:""}
+  <b>Course example</b><div class="ex">${s.ex}</div><div class="warn" style="margin-top:6px">⚠ ${s.warn}</div></div></div>`).join("");
+document.querySelectorAll(".sk").forEach(c=>{
+  const t=()=>{c.classList.toggle("open");c.setAttribute("aria-expanded",c.classList.contains("open"))};
+  c.onclick=t; c.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();t()}};
+});
+
+// plaque decoder
+(function(){
+  const s=document.getElementById("plq"), a=document.getElementById("plqA");
+  const ns=(t,at,p)=>{const e=document.createElementNS(NS,t);for(const k in at)e.setAttribute(k,at[k]);(p||s).appendChild(e);return e};
+  ns("rect",{x:10,y:10,width:300,height:280,rx:10,fill:"#2a1d15",stroke:"#D0875A","stroke-width":2});
+  const fig=(g,cx,top,sc,kneel)=>{
+    ns("circle",{cx,cy:top+12*sc,r:11*sc,fill:"#8a5a3a",stroke:"#D0875A","stroke-width":1.2},g);
+    ns("rect",{x:cx-13*sc,y:top+24*sc,width:26*sc,height:(kneel?34:58)*sc,rx:6*sc,fill:"#8a5a3a",stroke:"#D0875A","stroke-width":1.2},g);
+  };
+  const parts=[
+   ["oba","The Oba (big, in the middle)","<b>Size + position = status.</b> The Oba is larger and central. He is the most important person at court."],
+   ["coral","Coral beads","<b>Coral = wealth.</b> Coral ornaments and fine clothes show royal riches."],
+   ["kneel","Kneeling attendants","<b>Kneeling = hierarchy.</b> Servants kneel. The court had clear ranks."],
+   ["euro","European figure","<b>Europeans = overseas contact.</b> It shows trade with Europe."]
+  ];
+  const G={};
+  parts.forEach(p=>{G[p[0]]=ns("g",{class:"hot",tabindex:0,role:"button","aria-label":p[1]})});
+  fig(G.oba,160,60,2.1,false);
+  [0,1,2,3,4].forEach(i=>ns("circle",{cx:146+i*7,cy:120,r:4,fill:"#E06A5A",stroke:"#f0a090","stroke-width":.8},G.coral));
+  ns("rect",{x:138,y:58,width:44,height:14,rx:4,fill:"#E06A5A",stroke:"#f0a090","stroke-width":.8},G.coral);
+  fig(G.kneel,62,150,1.3,true); fig(G.kneel,95,160,1.1,true);
+  fig(G.euro,262,60,1.2,false); ns("rect",{x:246,y:52,width:32,height:8,rx:2,fill:"#cfc6b8",stroke:"#D0875A","stroke-width":1},G.euro);
+  const lab=(x,y,t)=>{const e=ns("text",{x,y,"font-size":11,fill:"#a3a1a8","text-anchor":"middle"});e.textContent=t};
+  lab(160,272,"Oba"); lab(78,272,"attendants"); lab(262,185,"European");
+  parts.forEach(p=>{
+    const go=()=>{Object.values(G).forEach(g=>g.classList.remove("on"));G[p[0]].classList.add("on");
+      a.innerHTML=`<div style="font-weight:700;margin-bottom:4px">${p[1]}</div>${p[2]}<div class="ph" style="margin-top:8px;font-size:12.5px">Remember: the art shows the Oba in a good light. Check it with oral and written evidence.</div>`};
+    G[p[0]].onclick=go; G[p[0]].onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}};
+  });
+})();
+
+// says or infers
+(function(){
+  const items=[
+   ["Musa gave away gold in Cairo.","says"],
+   ["Gold lost value in Cairo.","says"],
+   ["Mali was very rich.","infer"],
+   ["Musa wanted Mali to be famous.","infer"],
+   ["People abroad heard about Mali’s wealth.","infer"]
+  ];
+  const host=document.getElementById("sayinf"), st=document.getElementById("sayS"); let right=0, done=0;
+  items.forEach(([t,ans])=>{
+    const r=document.createElement("div");r.className="si";
+    r.innerHTML=`<span>${t}</span><button data-v="says">Says</button><button data-v="infer">Infers</button><small></small>`;
+    r.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+      if(r.dataset.done)return; r.dataset.done=1; done++;
+      b.classList.add("pick"); const ok=b.dataset.v===ans; if(ok)right++;
+      r.classList.add(ok?"right":"wrong");
+      r.querySelector("small").textContent=(ok?"✓ ":"✗ ")+(ans==="says"?"The source says this directly.":"You work this out. The source does not say it.");
+      st.textContent=`${right} of ${done} right`;
+    });
+    host.appendChild(r);
+  });
+})();
+
+/* ---------- keys + deep link ---------- */
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT")return;
+  const m={"1":"map","2":"time","3":"words","4":"cards","5":"skillz","6":"exam"}[e.key];
+  if(m){show(m);return}
+  if(document.getElementById("cards").classList.contains("on")){
+    if(e.key===" "){e.preventDefault();reveal()} else if(e.key.toLowerCase()==="a")again(); else if(e.key.toLowerCase()==="g")got();
+  }
+});
+const h0=location.hash.slice(1); if(document.getElementById(h0)&&document.getElementById(h0).tagName==="SECTION"){show(h0);setTimeout(()=>scrollTo(0,0),0)}
+</script>
+</body>
+</html>
