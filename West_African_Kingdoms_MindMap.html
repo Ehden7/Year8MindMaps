@@ -102,6 +102,9 @@
   .step{flex:1;min-width:110px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}
   .step b{display:block;font-size:22px;color:var(--skills)}
   .step span{font-size:12.5px;color:var(--muted)}
+  .step.peel{text-align:left;min-width:150px}
+  .step.peel strong{display:block;font-size:14px;margin:2px 0 4px}
+  .step.peel span{line-height:1.4}
   .model{font-size:14px;line-height:1.55;color:#d8d6d2;background:var(--panel2);border-radius:10px;padding:10px 12px;border-left:3px solid var(--skills)}
   .qs{margin-top:16px}
   details{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:10px;padding:9px 13px;margin-bottom:8px}
@@ -235,10 +238,10 @@
     <div class="box">
       <h3>“Explain why…?” (4 marks) · one PEEL paragraph</h3>
       <div class="steps">
-        <div class="step"><b>P</b><span>One reason</span></div>
-        <div class="step"><b>E</b><span>Fact, name, date</span></div>
-        <div class="step"><b>E</b><span>How it caused it</span></div>
-        <div class="step"><b>L</b><span>Therefore…</span></div>
+        <div class="step peel"><b>P</b><strong>Point</strong><span>Start with a clear topic sentence. It states your main argument, the point you want to prove.</span></div>
+        <div class="step peel"><b>E</b><strong>Evidence</strong><span>Give specific historical facts, dates, events, statistics or primary source details that back up your point.</span></div>
+        <div class="step peel"><b>E</b><strong>Explain</strong><span>Analyse the evidence. Explain why it matters, how it works and how it proves your point.</span></div>
+        <div class="step peel"><b>L</b><strong>Link</strong><span>End by connecting your argument back to the essay question, theme or thesis statement.</span></div>
       </div>
       <div class="model">One reason Timbuktu became an important centre of trade was its location. It connected routes across West Africa and the Sahara. This helped merchants bring goods into its markets. Therefore, its connections attracted trade and made the city rich.</div>
     </div>
@@ -563,7 +566,7 @@ function select(id){
     <ul>${ls.map(l=>`<li><b>${l.n}</b> ${l.t}</li>`).join("")}</ul>`;
   } else if(id==="skills"){
     h=`<span class="tag" style="--c:#A98BDB">Exam</span><h2>Exam skills</h2><p class="ph">All questions are <b>4 marks</b>.</p>
-    <ul><li><b>Impression:</b> say the view → quote → explain the word → second word.</li><li><b>Explain why:</b> one PEEL paragraph. Point, Evidence, Explain, Link.</li><li><b>Sources:</b> Content, Origin, Purpose.</li><li>Always use <b>names, dates, examples</b>.</li></ul><p class="ph">See tab 5 for historical skills and tab 6 for model answers.</p>`;
+    <ul><li><b>Impression:</b> say the view → quote → explain the word → second word.</li><li><b>Explain why:</b> one PEEL paragraph.<br><b>P</b>oint: clear topic sentence with your argument.<br><b>E</b>vidence: facts, dates, events, sources.<br><b>E</b>xplain: why it matters and how it proves your point.<br><b>L</b>ink: connect back to the question.</li><li><b>Sources:</b> Content, Origin, Purpose.</li><li>Always use <b>names, dates, examples</b>.</li></ul><p class="ph">See tab 5 for historical skills and tab 6 for model answers.</p>`;
   } else if(id==="traps"){
     h=`<span class="tag" style="--c:#E6C76A">Watch out</span><h2>Must remember</h2><ul>${REMEMBER.map(r=>`<li>${r}</li>`).join("")}</ul>`;
   } else {
@@ -663,7 +666,7 @@ startDeck("dates");
 let qFilter="all";
 const ql=document.getElementById("ql");
 function drawQ(){
-  ql.innerHTML=L.filter(l=>qFilter==="all"||l.k===qFilter).map(l=>`<details style="--c:${K[l.k].color}"><summary><b style="color:${K[l.k].color}">L${l.n}</b> ${l.q} <span style="color:var(--muted)">(4 marks)</span></summary><p>${l.h.replace(/(P:|E:|L:)/g,"<br><b>$1</b>").replace(/^<br>/,"")}</p></details>`).join("");
+  ql.innerHTML=L.filter(l=>qFilter==="all"||l.k===qFilter).map(l=>`<details style="--c:${K[l.k].color}"><summary><b style="color:${K[l.k].color}">L${l.n}</b> ${l.q} <span style="color:var(--muted)">(4 marks)</span></summary><p>${(()=>{const n=["Point","Evidence","Explain","Link"];let i=0;return l.h.replace(/(P:|E:|L:)/g,()=>"<br><b>"+(n[i++]||"")+":</b>").replace(/^<br>/,"")})()}</p></details>`).join("");
 }
 chips(document.getElementById("qf"),kItems,()=>qFilter,v=>{qFilter=v;drawQ()});
 drawQ();
