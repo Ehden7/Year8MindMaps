@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Y8 Periodic Table Mind Map</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b0c;color:#eee;font:14px/1.35 -apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}
+#bar{position:fixed;top:0;left:0;right:0;height:48px;background:#141415;border-bottom:1px solid #2a2a2c;display:flex;align-items:center;gap:10px;padding:0 14px;z-index:5}
+#bar h1{font-size:16px;margin:0 10px 0 0;font-weight:600}
+button{background:#232325;color:#eee;border:1px solid #3a3a3d;border-radius:6px;padding:6px 11px;cursor:pointer;font-size:13px}
+button:hover{background:#333}
+#prog{margin-left:auto;font-size:13px;color:#bbb}
+#pb{display:inline-block;width:120px;height:8px;background:#2a2a2c;border-radius:4px;vertical-align:middle;margin-left:8px;overflow:hidden}
+#pb i{display:block;height:100%;width:0;background:#4cc38a;transition:width .3s}
+#wrap{position:absolute;top:48px;left:0;right:0;bottom:0;overflow:auto}
+#canvas{position:relative}
+svg{position:absolute;left:0;top:0;pointer-events:none}
+.n{position:absolute;border-radius:9px;padding:6px 10px;cursor:pointer;border:1.5px solid;transition:left .35s,top .35s,opacity .3s;display:flex;align-items:center;gap:6px}
+.n.root{font-size:17px;font-weight:700;justify-content:center;text-align:center;background:#1c1c1e;border-color:#ff9900;color:#ff9900}
+.n.leaf{font-size:12.5px;background:#151516;color:#ddd}
+.n.leaf.done{background:#12261c;color:#9fe0bd;text-decoration:line-through;text-decoration-color:#4cc38a88}
+.n .chk{flex:none;width:15px;height:15px;border:1.5px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.n .pm{margin-left:auto;flex:none;font-size:11px;opacity:.8;padding-left:4px}
+.n.hid{opacity:0;pointer-events:none}
+.n:hover{filter:brightness(1.25)}
+#hint{position:fixed;bottom:10px;left:14px;color:#888;font-size:12px}
+
+#ov{display:none;position:fixed;top:48px;left:0;right:0;bottom:0;background:#0b0b0c;z-index:9;overflow:auto;padding:18px 24px}
+#ov.on{display:block}
+#cx{position:absolute;top:12px;right:20px}
+.cols{display:flex;gap:22px;justify-content:center;flex-wrap:wrap}
+.col{width:330px;background:#141415;border:1.5px solid var(--c);border-radius:14px;padding:12px 14px}
+.col h2{margin:0;font-size:18px;color:var(--c)}
+.col .sub{font-size:12.5px;color:#aaa;margin-bottom:8px}
+.body{display:flex;gap:10px}
+.stack{flex:1;display:flex;flex-direction:column;gap:5px}
+.el{display:flex;align-items:center;gap:8px;border-radius:8px;padding:5px 8px;font-size:12.5px;min-height:34px}
+.el b{font-size:17px;width:28px}
+.el span{margin-left:auto;font-size:12px;text-align:right}
+.arr{width:46px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;font-size:11px;text-align:center;color:#ddd}
+.arr i{flex:1;width:3px;background:linear-gradient(#444,var(--c));position:relative;margin:4px 0}
+.arr i:after{content:"";position:absolute;bottom:-4px;left:-5px;border:6.5px solid transparent;border-top:9px solid var(--c);border-bottom:0}
+.facts{margin-top:10px;font-size:13px;line-height:1.7}
+.facts div{border-top:1px solid #2a2a2c;padding-top:3px}
+.vs{display:flex;gap:22px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+.vs div{width:330px;border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.7}
+#ov h3{text-align:center;margin:0 0 12px;font-size:16px;font-weight:600}
+
+.leg{display:flex;gap:14px;justify-content:center;margin-bottom:12px;font-size:13px;flex-wrap:wrap}
+.leg span{padding:3px 10px;border-radius:12px}
+.up{background:#3a2a0a;color:#ffc04d}.dn{background:#0f2a3a;color:#6cc4f0}.no{background:#1b1b1d;color:#aaa}
+.tbl{display:grid;grid-template-columns:170px repeat(3,minmax(200px,260px));gap:6px;justify-content:center}
+.tbl .h{text-align:center;font-weight:700;font-size:15px;color:var(--c);border-bottom:3px solid var(--c);padding:6px;line-height:1.3}
+.tbl .h small{display:block;font-weight:400;font-size:11.5px;color:#aaa;margin-top:2px}
+.tbl .r{display:flex;align-items:center;font-weight:600;font-size:13px;padding:6px}
+.tbl .c{border-radius:8px;padding:8px 10px;font-size:13.5px;font-weight:600;display:flex;flex-direction:column;justify-content:center;min-height:46px}
+.tbl .c small{font-weight:400;font-size:11.5px;opacity:.85;margin-top:2px}
+.tbl .c i{display:inline-block;width:16px;height:16px;border-radius:4px;margin-right:3px;vertical-align:middle}
+.tbl .c.no{font-weight:400}
+.col .facts div{padding:4px 0}
+</style></head><body>
+<div id="bar"><h1>🧪 Y8 The Periodic Table</h1>
+<button id="ea">Open all</button><button id="ca">Close all</button><button id="rs">Reset ticks</button><button id="cmp" style="border-color:#ff9900;color:#ff9900">🎨 Compare the groups</button>
+<span id="prog"></span></div>
+<div id="wrap"><div id="canvas"><svg id="sv"></svg></div></div>
+<div id="hint">Click a bubble to open it. Click a small “I can” note to tick it.</div>
+<div id="ov"><button id="cx">✕ Close</button>
+<h3>1 · Compare the groups: what changes as you go DOWN each group?</h3>
+<div style="text-align:center;margin:0 0 10px;font-size:14px;color:#f2c94c">👇 The arrows describe what happens as you go <b>DOWN</b> a group (top element to bottom element). They show if the property rises or falls.</div>
+<div class="leg"><span class="up">⬆ gets MORE / higher / darker</span><span class="dn">⬇ gets LESS / lower / softer</span><span class="no">— no change or not needed</span></div>
+<div class="tbl">
+<div class="h"></div>
+<div class="h" style="--c:#ff9900">Group 1<br>Alkali metals<small>Li Na K Rb Cs Fr</small></div>
+<div class="h" style="--c:#4cc38a">Group 7<br>Halogens<small>F Cl Br I At</small></div>
+<div class="h" style="--c:#2dd4bf">Group 0<br>Noble gases<small>He Ne Ar Kr Xe Rn</small></div>
+
+<div class="r">Type</div><div class="c">Metals</div><div class="c">Non-metals</div><div class="c">Non-metals (gases)</div>
+<div class="r">⚡ Reactivity</div><div class="c up">⬆ MORE reactive<small>Francium is the most</small></div><div class="c dn">⬇ LESS reactive<small>Fluorine is the most</small></div><div class="c no">— Not reactive<small>full outer shell</small></div>
+<div class="r">🌡 Melting / boiling point</div><div class="c dn">⬇ LOWER</div><div class="c up">⬆ HIGHER<small>bigger molecules</small></div><div class="c up">⬆ Boiling point HIGHER</div>
+<div class="r">🧈 Hardness</div><div class="c dn">⬇ SOFTER<small>Li hard, K very easy to cut</small></div><div class="c no">— brittle when solid</div><div class="c no">— gases</div>
+<div class="r">⚖ Density</div><div class="c up">⬆ Generally HIGHER<small>but K is less than Na</small></div><div class="c no">—</div><div class="c no">—</div>
+<div class="r">🎨 Colour</div><div class="c no">Shiny silver when freshly cut</div><div class="c up">⬆ DARKER<small><i style="background:#e9e49a"></i><i style="background:#9bd36b"></i><i style="background:#a0432a"></i><i style="background:#4a3a5c"></i> F → Cl → Br → I</small></div><div class="c no">Colourless</div>
+<div class="r">🧊 State at room temp</div><div class="c no">Solid</div><div class="c no">F, Cl gas → Br liquid → I solid</div><div class="c no">Gas</div>
+<div class="r">💧 With water</div><div class="c up">⬆ Faster and more violent<small>fizz → flame → explosion</small></div><div class="c no">—</div><div class="c no">No reaction</div>
+</div>
+
+<h3 style="margin-top:26px">2 · Extra facts for each group</h3>
+<div class="cols">
+<div class="col" style="--c:#ff9900"><h2>Group 1 extras</h2>
+<div class="facts"><div>🛢 Stored in oil: stops reaction with oxygen</div><div>🔪 Soft: cut with a knife</div><div>🏊 Li, Na and K float on water</div><div>🫧 Li slow fizz · Na melts to a ball · K lilac flame</div><div>💜 Universal indicator turns purple (alkali)</div><div>🧪 Metal + water → hydroxide + hydrogen</div><div>🌫 Tarnish: dull oxide layer (Li slow, K very quick)</div><div>🧪 Metal + oxygen → metal oxide (Na₂O)</div><div>🔮 Caesium: even more violent than potassium</div></div></div>
+<div class="col" style="--c:#4cc38a"><h2>Group 7 extras</h2>
+<div class="facts"><div>🧂 “Halogen” means salt-former</div><div>🚫 Never found free in nature: too reactive</div><div>👯 Diatomic: pairs of atoms (Cl₂, Br₂)</div><div>☠ Toxic and smelly</div><div>🏊 Chlorine kills bacteria in water and pools</div><div>🧂 Halogen + metal → metal halide (salt)</div><div>🔁 Displacement: Cl > Br > I. A stronger halogen pushes out a weaker one</div><div>🧶 Iron wool test: reactivity falls down the group</div></div></div>
+<div class="col" style="--c:#2dd4bf"><h2>Group 0 extras</h2>
+<div class="facts"><div>🔒 Full outer shell of electrons</div><div>😴 Inert: they do not react</div><div>🎈 Helium: balloons</div><div>💡 Argon: light bulbs</div><div>🪧 Neon: signs</div><div>📍 Far right of the table</div></div></div>
+</div>
+
+<h3 style="margin-top:26px">3 · Metals vs non-metals</h3>
+<div class="vs">
+<div style="background:#2a2410;border:1.5px solid #f2c94c"><b style="color:#f2c94c">🔨 METALS (left side)</b><br>Shiny · strong · bend (malleable) · pull to wire (ductile) · ring when hit (sonorous) · carry heat and electricity · dense</div>
+<div style="background:#1a1a1c;border:1.5px solid #888"><b>💔 NON-METALS (top right)</b><br>Dull · brittle · poor conductors · light · low melting point · no ring<br><span style="color:#aaa">Between them: metalloids (B, Si, Ge) = semi-conductors</span></div>
+</div>
+<div class="vs" style="margin-top:14px"><div style="width:720px;background:#141415;border:1px solid #2a2a2c;text-align:center">Memory trick: Group 1 metals want to GIVE, halogens want to GRAB, noble gases are happy as they are.</div></div>
+</div>
+<script>
+const D={t:"Periodic Table",c:[
+{t:"1 Groups & Periods",col:"#ff9900",c:[
+ {t:"What is an element?",c:["Pure substance, only one type of atom","Cannot be broken into other substances","3 particles: protons, neutrons, electrons","Compounds (CO₂, H₂O) are not on the table"]},
+ {t:"How the table grew",c:["Dalton 1808: ordered by mass","Newlands 1864: “octaves” of 8","Mendeleev 1869: patterns in properties","Mendeleev left gaps to predict new elements"]},
+ {t:"Modern table",c:["Ordered by atomic number","Groups = columns, periods = rows","Hydrogen and helium make period 1","Sodium: group 1, period 3","Carbon: group 4, period 2","Group 4, period 6 = lead (Pb)"]},
+ {t:"Element box",c:["Atomic number = number of protons","Atomic mass = protons + neutrons"]},
+ {t:"Properties",c:["Same group = similar properties","Physical: what we see or measure (colour, melting point)","Chemical: how it reacts (burning, rusting)"]}]},
+{t:"2 Metals & Non-Metals",col:"#f2c94c",c:[
+ {t:"Where on the table",c:["Metals: left-hand side","Non-metals: top right of the “steps”","Metalloids: along the steps"]},
+ {t:"Metals",c:["Solid, strong, malleable, ductile","Good conductors of heat and electricity","High density, shiny, sonorous"]},
+ {t:"Non-metals",c:["Brittle, dull, not ductile, not sonorous","Poor conductors of heat and electricity","Low density, low melting and boiling points"]},
+ {t:"Exceptions",c:["General properties only","Alkali metals are soft and easily cut","Graphite: non-metal that conducts electricity"]},
+ {t:"Metalloids",c:["e.g. boron, silicon, germanium","Solids between metals and non-metals","Act as semi-conductors"]},
+ {t:"Classify and test",c:["Dull, floats on water → non-metal","Circuit = conductivity","Hammering = malleability","Striking = sonority","Polishing = shininess","Compare mass for size = density"]},
+ {t:"Safety",c:["Keep electrical apparatus away from water","Switch off circuits","Care with hot water and sharp nails"]},
+ {t:"Exam skill",c:["Write a 4-mark answer comparing metals and non-metals"]}]},
+{t:"3 Alkali Metals + Water",col:"#eb5757b0",c:[
+ {t:"Who and why",c:["Group 1: lithium, sodium, potassium, rubidium, caesium, francium","Called alkali: react with water to make alkaline compounds","Stored in oil: stops reaction with oxygen in air"]},
+ {t:"Different from metals",c:["Soft: cut with a knife","Low density: Li, Na, K float","Low melting and boiling points"]},
+ {t:"Same as metals",c:["Shiny when freshly cut","Good conductors of heat and electricity"]},
+ {t:"The demo",c:["Lithium: hard to cut, floats, fizzes slowly","Sodium: easier to cut, melts to a ball, more vigorous","Potassium: very easy to cut, violent, lilac flame","Universal indicator turns purple: alkaline solution"]},
+ {t:"Equations",c:["Alkali metal + water → alkali metal hydroxide + hydrogen","Sodium + water → sodium hydroxide + hydrogen","Challenge: 2Na(s) + 2H₂O(l) → 2NaOH(aq) + H₂(g)"]},
+ {t:"Reactivity",c:["Reactivity increases down Group 1","Predict: caesium reacts even more violently"]}]},
+{t:"4 Trends in Group 1",col:"#bb87fc",c:[
+ {t:"Tarnishing",c:["Alkali metal reacts with oxygen: dull metal oxide layer","Speed increases down: Li slow, Na quick, K very quick"]},
+ {t:"Oxidation equations",c:["Alkali metal + oxygen → alkali metal oxide","Lithium + oxygen → lithium oxide","Sodium oxide is Na₂O (2 Na per O)","Challenge: 4Li + O₂ → 2Li₂O"]},
+ {t:"Trends down the group",c:["Reactivity increases","Hardness decreases (softer)","Melting and boiling points decrease","Density generally increases (K less dense than Na)"]},
+ {t:"Using data",c:["Density below 1 floats: Li, Na, K","Use tables to describe a trend and predict a missing value","Francium would be the most reactive"]},
+ {t:"Exam skill",c:["4-mark paragraph: physical, chemical, trends, word equations"]}]},
+{t:"5 Displacement",col:"#56ccf2",c:[
+ {t:"The idea",c:["More reactive element displaces a less reactive one from a compound","More reactive halogen displaces a less reactive halide in solution"]},
+ {t:"Signs of reaction",c:["Fizzing / gas","Colour change (the key observation here)","Temperature change","Reactants used up, new substance"]},
+ {t:"Class practical",c:["Chlorine water + potassium bromide → yellow/brown (bromine)","Chlorine water + potassium iodide → brown (iodine)","Bromine water + potassium iodide → brown (iodine)","Iodine water: no reaction with any; nothing reacts with KCl"]},
+ {t:"Order and equations",c:["Reactivity: chlorine > bromine > iodine","Chlorine displaced both; bromine only iodine","Chlorine + potassium bromide → potassium chloride + bromine","Chlorine will not react with lithium fluoride (fluorine more reactive)"]}]},
+{t:"6 Trends in Group 7",col:"#4cc38a",c:[
+ {t:"Halogens",c:["Fluorine, chlorine, bromine, iodine, astatine","Halo-gen = “salt-former”","Never free in nature: too reactive"]},
+ {t:"Properties",c:["Non-metals, diatomic (Cl₂, Br₂)","Low melting and boiling points","Poor conductors, toxic, smelly","Brittle and crumbly when solid"]},
+ {t:"Colour and state",c:["Fluorine pale yellow gas","Chlorine green gas","Bromine red-brown liquid","Iodine dark grey/purple solid"]},
+ {t:"Trends",c:["Melting and boiling points increase down the group (bigger molecules)","Predict a halogen's state at 20 °C from data","Reactivity DEcreases down (opposite of Group 1)","Astatine: very slow with iron wool, least reactive"]},
+ {t:"Uses and salts",c:["Chlorine kills bacteria in drinking water and pools","Halogens + metals → metal halides (e.g. copper(II) chloride)","Iron wool experiment shows reactivity falls down the group"]}]},
+{t:"7 Noble Gases (Group 0)",col:"#2dd4bf",c:[
+ {t:"Who and where",c:["Helium, neon, argon, krypton, xenon, radon","Group 0, far right of the table","Colourless gases at room temperature"]},
+ {t:"Why unreactive",c:["Inert: full outer shell of electrons","Boiling points increase down the group"]},
+ {t:"Uses",c:["Helium: balloons","Argon: light bulbs","Neon: signs"]},
+ {t:"Note",c:["Next lesson: check against the slides when you have them"]}]},
+{t:"Key Words",col:"#f2994a",c:[
+ {t:"A to D",c:["Element: pure substance, one type of atom","Compound: 2+ elements chemically bonded","Group: column with similar properties","Period: a row of elements","Atomic number: protons in an atom","Atomic mass: protons + neutrons","Property: a characteristic (physical or chemical)","Metalloid: between metal and non-metal","Malleable: hammered into shape without breaking","Ductile: can be pulled into wires","Sonorous: rings when hit","Brittle: breaks easily","Density: how heavy for its size"]},
+ {t:"E to Z",c:["Alkali metals: Group 1 elements","Reactivity: how easily it reacts","Vigorous: fast, energetic reaction","Tarnish: dull oxide layer on metal","Oxidation: combines with oxygen","Trend: pattern down a group or across a period","Halogens: Group 7 elements","Diatomic: molecule of two atoms (Cl₂)","Metal halide: salt from halogen + metal","Displacement: more reactive element replaces a less reactive one"]}]}
+]};
+const NW={0:170,1:230,2:250,3:440},GAP=50,VG=7;
+let uid=0,tick=JSON.parse(localStorage.getItem('pt_ticks')||'{}');
+function norm(n,d,col){ if(typeof n==='string')n={t:n}; n.id=++uid;n.d=d;n.col=n.col||col||'#ff9900';n.leaf=!n.c; n.open=false;
+ if(n.c)n.c=n.c.map(x=>norm(x,d+1,n.col)); return n;}
+norm(D,0); D.open=true;
+const cv=document.getElementById('canvas'),sv=document.getElementById('sv');
+function est(n){const w=NW[n.d]-30-(n.leaf?20:20),cpl=Math.floor(w/6.4);return Math.max(1,Math.ceil(n.t.length/cpl))*(n.d==0?22:17)+16;}
+function layout(n,x){ n.x=x; n.w=NW[n.d]; n.h=els[n.id].offsetHeight||est(n);
+ const kids=n.open&&n.c?n.c:[];
+ if(!kids.length){n.y=layout.y;n.sh=n.h;layout.y+=n.h+VG;return;}
+ const start=layout.y; kids.forEach(k=>layout(k,x+n.w+GAP));
+ const first=kids[0],last=kids[kids.length-1];
+ n.y=(first.y+last.y+last.h)/2-n.h/2; if(n.y<start){const dy=start-n.y;n.y=start;} layout.y=Math.max(layout.y,n.y+n.h+VG);
+}
+function vis(n,a){a.push(n);if(n.open&&n.c)n.c.forEach(k=>vis(k,a));return a;}
+const els={};
+function all(n,a=[]){a.push(n);(n.c||[]).forEach(k=>all(k,a));return a;}
+all(D).forEach(n=>{const e=document.createElement('div');e.className='n '+(n.d==0?'root':n.leaf?'leaf':'');
+ e.style.borderColor=n.col;e.style.width=NW[n.d]+'px';
+ if(n.d>0&&!n.leaf){e.style.background=n.col+(n.d==1?'33':'1a');e.style.fontWeight=n.d==1?'600':'500';e.style.fontSize=n.d==1?'14px':'13px';}
+ if(n.leaf){e.innerHTML='<span class="chk"></span><span>'+n.t+'</span>';}
+ else e.innerHTML='<span>'+n.t+'</span><span class="pm"></span>';
+ e.onclick=()=>{ if(n.leaf){tick[n.id]=!tick[n.id];localStorage.setItem('pt_ticks',JSON.stringify(tick));}
+  else{ if(n.open&&n.c)all(n).forEach(m=>{if(m!==n)m.open=false}); n.open=!n.open; if(n.open&&n.d>0)(parentOf(n).c||[]).forEach(s=>{if(s!==n){all(s).forEach(m=>m.open=false)}});}
+  render();};
+ cv.appendChild(e);els[n.id]=e;});
+function parentOf(t,n=D){for(const k of n.c||[]){if(k===t)return n;const r=parentOf(t,k);if(r)return r;}}
+function render(){ layout.y=20; layout(D,20);
+ const V=vis(D,[]),vs=new Set(V.map(n=>n.id)); let W=0,H=0;
+ all(D).forEach(n=>{const e=els[n.id];
+  if(vs.has(n.id)){e.classList.remove('hid');e.style.left=n.x+'px';e.style.top=n.y+'px';W=Math.max(W,n.x+n.w);H=Math.max(H,n.y+n.h);}
+  else{e.classList.add('hid');const p=parentOf(n);e.style.left=(p?p.x:0)+'px';e.style.top=(p?p.y:0)+'px';}
+  if(n.leaf){e.classList.toggle('done',!!tick[n.id]);e.querySelector('.chk').textContent=tick[n.id]?'✓':'';}
+  else if(n.d>0){const p=e.querySelector('.pm');const dn=all(n).filter(x=>x.leaf&&tick[x.id]).length,tt=all(n).filter(x=>x.leaf).length;p.textContent=(n.open?'−':'+')+(n.d==1?'  '+dn+'/'+tt:'');}
+ });
+ W+=60;H+=40;cv.style.width=W+'px';cv.style.height=H+'px';sv.setAttribute('width',W);sv.setAttribute('height',H);
+ let p='';V.forEach(n=>{if(n.open&&n.c)n.c.forEach(k=>{const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,m=(x1+x2)/2;
+  p+=`<path d="M${x1} ${y1}C${m} ${y1} ${m} ${y2} ${x2} ${y2}" stroke="${k.col}" stroke-width="2" fill="none" opacity=".7"/>`;});});
+ sv.innerHTML=p;
+ const L=all(D).filter(x=>x.leaf),dn=L.filter(x=>tick[x.id]).length;
+ document.getElementById('prog').innerHTML='I can: '+dn+' / '+L.length+'<span id="pb"><i style="width:'+(100*dn/L.length)+'%"></i></span>';
+}
+document.getElementById('ea').onclick=()=>{all(D).forEach(n=>n.open=true);render();};
+document.getElementById('ca').onclick=()=>{all(D).forEach(n=>n.open=false);D.open=true;render();};
+document.getElementById('rs').onclick=()=>{if(confirm('Clear all ticks?')){tick={};localStorage.removeItem('pt_ticks');render();}};
+render();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);
+window.addEventListener('load',()=>{render();setTimeout(render,150);});
+window.addEventListener('resize',render);
+document.getElementById('cmp').onclick=()=>document.getElementById('ov').classList.add('on');
+document.getElementById('cx').onclick=()=>document.getElementById('ov').classList.remove('on');
+</script></body></html>
