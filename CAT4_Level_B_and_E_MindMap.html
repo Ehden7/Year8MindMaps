@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CAT4 Mind Map - Level B and Level E</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#e8f4ff,#fff6e8 55%,#f3eaff);color:#1d2b3a;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:18px}
+h1{margin:0;font-size:28px}.sub{color:#5d6d80;margin:4px 0 14px}
+.bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.seg{display:inline-flex;background:#fff;border-radius:14px;padding:4px;box-shadow:0 3px 12px rgba(30,60,120,.12)}
+.seg button{font:inherit;border:0;background:none;padding:9px 18px;border-radius:11px;cursor:pointer;font-weight:600;color:#4a5b70}
+.seg button.on{background:#3a86ff;color:#fff}
+.legend{font-size:14px;color:#4a5b70}
+#map{position:relative;display:grid;grid-template-columns:170px 200px 1fr;grid-template-rows:repeat(8,auto);gap:10px 46px;background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 24px rgba(30,60,120,.12)}
+#lines{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.node{position:relative;z-index:1;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.center{grid-column:1;grid-row:1/9;align-self:center;justify-content:center;text-align:center;flex-direction:column;background:linear-gradient(135deg,#ffd166,#ff9f1c);color:#3b2600;font-size:30px;font-weight:800;padding:26px 10px;box-shadow:0 6px 16px rgba(255,159,28,.35)}
+.center small{font-size:13px;font-weight:600;margin-top:6px}
+.br{grid-column:2;color:#fff;font-weight:700;font-size:19px;align-self:center;box-shadow:0 5px 14px rgba(0,0,0,.15)}
+.br small{display:block;font-weight:500;font-size:12px;opacity:.95}
+.lf{grid-column:3;background:#fff;border:3px solid;cursor:pointer;font-weight:600;transition:.15s;justify-content:space-between}
+.lf:hover{transform:translateX(4px)}
+.lf.on{box-shadow:0 6px 18px rgba(0,0,0,.18);transform:translateX(8px)}
+.lf .ic{font-size:24px}.lf .nm{flex:1}
+.lf .chips span{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:#eef3fa;color:#4a5b70;margin-left:4px}
+#panel{background:#fff;border-radius:20px;padding:24px;margin-top:16px;box-shadow:0 6px 24px rgba(30,60,120,.12)}
+#panel h2{margin:0 0 4px;font-size:26px}
+.tag{display:inline-block;color:#fff;font-weight:700;font-size:13px;padding:3px 12px;border-radius:99px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+.box{border-radius:14px;padding:14px 16px;background:#f5f9ff}
+.box h3{margin:0 0 6px;font-size:16px}
+.box ol{margin:0;padding-left:20px}.box li{margin:3px 0}
+.up{background:#fff6dc}
+.ex{border:3px solid #dbe6f5;border-radius:16px;padding:16px;margin-top:14px}
+.ex.B{border-color:#9ad0ff}.ex.E{border-color:#c8a6ff}
+.ex .lv{font-weight:800;margin-bottom:6px}
+.q{font-size:18px;margin:6px 0 10px;line-height:1.5}
+.vis{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#f6faff;border-radius:12px;padding:10px;margin:8px 0}
+.arr{font-size:26px;color:#6b7a8c}
+.fig{width:92px;height:92px;background:#fff;border:2px solid #d6e4f5;border-radius:10px}
+.qm{width:92px;height:92px;border:3px dashed #ff9f1c;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:36px;color:#ff9f1c;font-weight:700;background:#fff}
+.mat2{display:grid;grid-template-columns:repeat(2,92px);gap:8px}
+.opts{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.opt{border:3px solid #d6e4f5;border-radius:12px;padding:8px 12px;text-align:center;background:#fff;min-width:64px}
+.opt.t{font-size:17px}.opt small{display:block;color:#6b7a8c;font-size:12px;margin-top:2px}
+.revealed .opt.good{border-color:#2ec47a;background:#e5f9ee}
+.revealed .hid{stroke:#e63946!important;stroke-width:4!important}
+button.show{font:inherit;cursor:pointer;border:0;border-radius:11px;padding:9px 18px;background:#3a86ff;color:#fff;font-weight:600;margin-top:10px}
+.why{display:none;margin-top:10px;background:#e5f9ee;border-radius:10px;padding:10px 14px}
+.revealed .why{display:block}
+@media(max-width:760px){#map{grid-template-columns:90px 120px 1fr;gap:8px 24px;padding:12px}.center{font-size:20px}.two{grid-template-columns:1fr}.lf .chips{display:none}}
+</style></head><body><div class="wrap">
+<h1>🧠 CAT4 mind map</h1>
+<p class="sub">Level B (Year 5) and Level E (Year 8). Click a box on the right to see examples.</p>
+<div class="bar"><div class="seg" id="lv"><button data-v="B">Level B · Year 5</button><button data-v="E">Level E · Year 8</button><button data-v="BE" class="on">Both</button></div>
+<span class="legend">Examples come from the two sample papers. Pictures are redrawn by me.</span></div>
+<div id="map"><svg id="lines"></svg></div>
+<div id="panel"></div>
+</div>
+<script>
+// ---------- drawing helpers ----------
+let U=0;
+const PD={v:'<line x1="3" y1="0" x2="3" y2="6" stroke="#222" stroke-width="1.6"/>',h:'<line x1="0" y1="3" x2="6" y2="3" stroke="#222" stroke-width="1.6"/>',
+ d:'<circle cx="3" cy="3" r="1.4" fill="#222"/>',x:'<line x1="3" y1="0" x2="3" y2="6" stroke="#222" stroke-width="1.3"/><line x1="0" y1="3" x2="6" y2="3" stroke="#222" stroke-width="1.3"/>',
+ c:'<rect width="3" height="3" fill="#222"/><rect x="3" y="3" width="3" height="3" fill="#222"/>'};
+function mk(fn){let defs='';const P=k=>{if(k==='n')return '#fff';if(k==='k')return '#111';const id='p'+(++U);defs+=`<pattern id="${id}" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#fff"/>${PD[k]}</pattern>`;return `url(#${id})`};
+ const inner=fn(P);return `<svg class="fig" viewBox="0 0 100 100"><defs>${defs}</defs>${inner}</svg>`}
+const ST='stroke="#222" stroke-width="2.5" stroke-linejoin="round"';
+const rawsvg=s=>`<svg class="fig" viewBox="0 0 100 100">${s}</svg>`;
+const BL='#cfe3fb',BS='#4a77b8';
+const hole=h=>h.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#fff" stroke="${BS}" stroke-width="1.6"/>`).join('');
+const sqH=h=>rawsvg(`<rect x="10" y="10" width="80" height="80" fill="${BL}" stroke="${BS}" stroke-width="2"/>${hole(h)}`);
+const pn=(r,line,h)=>rawsvg(`<rect x="10" y="10" width="80" height="80" fill="none" stroke="#b8c7dd" stroke-dasharray="3 3"/><rect x="${r[0]}" y="${r[1]}" width="${r[2]-r[0]}" height="${r[3]-r[1]}" fill="${BL}" stroke="${BS}" stroke-width="2"/>${line?`<line x1="${line[0]}" y1="${line[1]}" x2="${line[2]}" y2="${line[3]}" stroke="#e63946" stroke-width="2.5" stroke-dasharray="5 3"/>`:''}${hole(h||[])}`);
+const AR='<span class="arr">→</span>';
+function grid(xs,ys){const o=[];xs.forEach(x=>ys.forEach(y=>o.push([x,y])));return o}
+function fr(P,mode,ox,oy,extra,hid){const w=Math.max(...P.map(p=>p[0])),h=Math.max(...P.map(p=>p[1]));let tf=`translate(${ox} ${oy})`;
+ if(mode==='m')tf+=` translate(${w} 0) scale(-1 1)`;if(mode==='r')tf+=` rotate(90 ${w/2} ${h/2})`;if(mode==='r2')tf+=` rotate(180 ${w/2} ${h/2})`;
+ return rawsvg(`${extra}<polygon ${hid?'class="hid"':''} points="${P.map(p=>p.join(',')).join(' ')}" transform="${tf}" fill="none" stroke="#222" stroke-width="2.4" stroke-linejoin="round"/>`)}
+const CL=['<circle cx="62" cy="40" r="26" fill="none" stroke="#222" stroke-width="1.5"/><line x1="8" y1="20" x2="92" y2="70" stroke="#222" stroke-width="1.5"/><line x1="70" y1="6" x2="40" y2="94" stroke="#222" stroke-width="1.5"/>',
+ '<circle cx="40" cy="62" r="24" fill="none" stroke="#222" stroke-width="1.5"/><line x1="10" y1="80" x2="90" y2="30" stroke="#222" stroke-width="1.5"/><line x1="25" y1="8" x2="60" y2="92" stroke="#222" stroke-width="1.5"/>',
+ '<rect x="34" y="30" width="46" height="40" fill="none" stroke="#222" stroke-width="1.5"/><line x1="6" y1="50" x2="94" y2="62" stroke="#222" stroke-width="1.5"/><line x1="20" y1="8" x2="80" y2="90" stroke="#222" stroke-width="1.5"/>'];
+// ---------- content ----------
+const BR={V:{n:'Verbal',s:'words',c:'#3a86ff',e:'💬'},Q:{n:'Quantitative',s:'numbers',c:'#ff9f1c',e:'🔢'},N:{n:'Non-verbal',s:'shapes and patterns',c:'#2ec4b6',e:'🧩'},S:{n:'Spatial',s:'turning and folding',c:'#9b5de5',e:'📐'}};
+const T=(q,opts,ans,why)=>({q,opts,ans,why});
+const LEAVES=[
+{id:'vc',b:'V',ic:'🗂️',name:'Verbal Classification',what:'Three words go together. Pick the word that fits the same group.',
+ steps:['Read the three words.','Find what links them. Think of meaning, not spelling.','Pick the word with the same link. Drop words from other groups.'],
+ up:'Level B uses everyday things. Level E uses jobs and harder groups.',
+ B:T('<b>pencil | crayon | marker</b><br>Which word goes with them?',['chalk','brush','paper','ink','board'],0,'All three are hand-held tools for writing or drawing. Paper and board are what you write on. Ink goes inside a tool.'),
+ E:T('<b>Pilot | Flight attendant | Air traffic controller</b><br>Which word goes with them?',['engineer','airport','aviation','airline mechanic','passenger'],3,'All are jobs in aviation. An airport is a place. Aviation is the whole field. A passenger is not a job.')},
+{id:'va',b:'V',ic:'🔗',name:'Verbal Analogies',what:'The first two words have a link. Make the second pair work the same way.',
+ steps:['Say how the first two words are linked.','Say it in one sentence.','Use the same sentence for the second pair.'],
+ up:'Level B links are simple, like opposites. Level E links are about what things are made of or used for.',
+ B:T('<b>slow → fast : dark → ?</b>',['dim','bright','night','shadow','dusk'],1,'Slow and fast are opposites. The opposite of dark is bright.'),
+ E:T('<b>Brick : Wall :: Leather : ?</b>',['Jacket','House','Car','Roof','Room'],0,'Bricks are the material for a wall. Leather is the material for a jacket.')},
+{id:'na',b:'Q',ic:'➗',name:'Number Analogies',what:'Two number pairs show a rule. Use the rule on the third pair.',
+ steps:['Look at the first pair. How does the first number become the second?','Check the same rule on the second pair.','Use it on the last number.'],
+ up:'Level B has one step, like +8. Level E has two steps, like divide then subtract.',
+ B:T('<b>[11 → 19] &nbsp; [25 → 33] &nbsp; [45 → ?]</b>',['55','53','54','58','52'],1,'Each pair adds 8. 45 + 8 = 53.'),
+ E:T('<b>[80 → 19] &nbsp; [40 → 9] &nbsp; [36 → ?]</b>',['7','8','9','10','11'],1,'Divide by 4, then take away 1. 80 ÷ 4 = 20, minus 1 = 19. 36 ÷ 4 = 9, minus 1 = 8. A second sample: [4 → 11] [5 → 13] [6 → ?] doubles and adds 3, so the answer is 15.')},
+{id:'ns',b:'Q',ic:'📈',name:'Number Series',what:'A row of numbers follows a pattern. Find the next one.',
+ steps:['Write the jump between each pair of numbers.','Look for a pattern that repeats.','Apply the next step of the pattern.'],
+ up:'Level B repeats 2 steps. Level E repeats 3 steps, or mixes two patterns.',
+ B:T('<b>12 &nbsp; 10 &nbsp; 11 &nbsp; 9 &nbsp; 10 &nbsp; 8 &nbsp; 9 &nbsp; 7 &nbsp; ?</b>',['6','7','8','9','10'],2,'The jumps are −2, +1, −2, +1 and so on. After 9 → 7 (−2) comes +1. 7 + 1 = 8.'),
+ E:T('<b>41 &nbsp; 39 &nbsp; 37 &nbsp; 40 &nbsp; 38 &nbsp; 36 &nbsp; 39 &nbsp; 37 &nbsp; ?</b>',['33','34','35','37','39'],2,'The jumps are −2, −2, +3 and repeat. After 39 → 37 (−2) comes another −2. 37 − 2 = 35. A second sample: 81 73 78 70 75 67 72 64 ? goes −8, +5, so the answer is 69.')},
+{id:'fc',b:'N',ic:'🔷',name:'Figure Classification',what:'Three figures share a trait. Pick the choice that shares it.',
+ steps:['Find what the three figures have in common.','Say the rule out loud.','Cross out any choice that breaks even one part of the rule.'],
+ up:'Level B has one rule, like the kind of shading. Level E mixes size, place and position.',
+ B:{q:'Three shapes are shown. Which choice goes with them?',vis:mk(P=>`<circle cx="50" cy="50" r="32" fill="${P('v')}" ${ST}/>`)+mk(P=>`<rect x="15" y="28" width="70" height="44" fill="${P('h')}" ${ST}/>`)+mk(P=>`<polygon points="20,15 50,15 50,55 82,55 82,85 20,85" fill="${P('h')}" ${ST}/>`),
+  opts:[mk(P=>`<rect x="18" y="18" width="64" height="64" fill="${P('d')}" ${ST}/>`),mk(P=>`<circle cx="50" cy="50" r="32" fill="${P('x')}" ${ST}/>`),mk(P=>`<rect x="18" y="18" width="64" height="64" fill="${P('c')}" ${ST}/>`),mk(P=>`<polygon points="50,15 88,82 12,82" fill="${P('h')}" ${ST}/>`),mk(P=>`<polygon points="50,15 88,82 12,82" fill="#fff" ${ST}/>`)],ans:3,
+  why:'All three are filled with straight parallel lines in one direction. Only choice 4 has the same shading. Choice 5 is empty.'},
+ E:{q:'Three figures are shown. Which choice goes with them?',vis:rawsvg(`<polygon points="10,80 54,80 32,28" fill="#fff" ${ST}/><polygon points="68,78 90,78 79,58" fill="#fff" ${ST}/>`)+rawsvg(`<rect x="10" y="42" width="42" height="38" fill="#fff" ${ST}/><rect x="66" y="34" width="26" height="12" fill="#fff" ${ST}/>`)+rawsvg(`<circle cx="32" cy="55" r="22" fill="#fff" ${ST}/><ellipse cx="78" cy="44" rx="12" ry="7" transform="rotate(-20 78 44)" fill="#fff" ${ST}/>`),
+  opts:[rawsvg(`<circle cx="50" cy="50" r="34" fill="#fff" ${ST}/><circle cx="50" cy="50" r="20" fill="#fff" ${ST}/>`),rawsvg(`<circle cx="32" cy="55" r="22" fill="#fff" ${ST}/><ellipse cx="78" cy="42" rx="12" ry="7" transform="rotate(-25 78 42)" fill="#fff" ${ST}/>`),rawsvg(`<path d="M15 25 C40 30 55 60 85 85" fill="none" ${ST}/><path d="M85 25 C60 30 45 60 15 85" fill="none" ${ST}/>`),rawsvg(`<rect x="12" y="38" width="52" height="34" fill="#fff" ${ST}/><rect x="38" y="52" width="46" height="26" fill="#fff" ${ST}/>`),rawsvg(`<polygon points="10,86 90,86 50,32" fill="#fff" ${ST}/><polygon points="38,32 62,32 50,16" fill="#fff" ${ST}/>`)],ans:1,
+  why:'Each figure has a big shape and a smaller, squashed shape next to it. They do not touch or overlap. Choice 2 is the only one like that.'}},
+{id:'fm',b:'N',ic:'🔲',name:'Figure Matrices',what:'A grid of figures has one gap. Find the rule across and down. Fill the gap.',
+ steps:['Look at the first row or column.','Say how each shape changes.','Apply the same change to find the missing piece.'],
+ up:'Level B moves one dot step by step. Level E cuts and flips whole shapes.',
+ B:{q:'The black dot moves one step round the corner of the square each time. Which comes next?',vis:[[30,30],[70,30],[70,70]].map(d=>rawsvg(`<rect x="12" y="12" width="76" height="76" fill="#fff" ${ST}/><circle cx="${d[0]}" cy="${d[1]}" r="8" fill="#111"/>`)).join('')+'<div class="qm">?</div>',
+  opts:[[30,30],[70,30],[70,70],[30,70],[50,50]].map(d=>rawsvg(`<rect x="12" y="12" width="76" height="76" fill="#fff" ${ST}/><circle cx="${d[0]}" cy="${d[1]}" r="8" fill="#111"/>`)),ans:3,
+  why:'The dot goes clockwise: top left, top right, bottom right. The next corner is bottom left.'},
+ E:{q:'Top row: a black square becomes half of its outline. What does the black circle become?',vis:'<div class="mat2">'+rawsvg('<rect x="22" y="22" width="56" height="56" fill="#111"/>')+rawsvg('<polyline points="78,22 78,78 22,78" fill="none" stroke="#111" stroke-width="3"/>')+rawsvg('<circle cx="50" cy="50" r="30" fill="#111"/>')+'<div class="qm">?</div></div>',
+  opts:[rawsvg('<polygon points="25,75 25,25 75,75" fill="#111"/>'),rawsvg('<path d="M29 71 A30 30 0 0 1 71 29" fill="none" stroke="#111" stroke-width="3"/>'),rawsvg('<path d="M71 29 A30 30 0 0 1 29 71" fill="none" stroke="#111" stroke-width="3"/>'),rawsvg('<path d="M22 45 A28 28 0 0 0 78 45" fill="none" stroke="#111" stroke-width="3"/>'),rawsvg('<rect x="22" y="22" width="56" height="56" fill="#111"/>')],ans:2,
+  why:'Black becomes an outline, and only half of it is kept: the bottom and right sides of the square. For the circle, the same half is the arc on the bottom right.'}},
+{id:'fa',b:'S',ic:'📄',name:'Figure Analysis',what:'Paper is folded and holes are punched. Picture the paper when it is opened flat.',
+ steps:['Follow each fold in order.','Note where the holes are.','Open the folds last one first. Each hole is copied across the fold, like in a mirror.'],
+ up:'Level B has 1 fold. Level E has 3 folds and 8 holes.',
+ B:{q:'The square is folded along the red dashed diagonal. Two holes are punched. What does it look like opened out?',vis:rawsvg(`<rect x="10" y="10" width="80" height="80" fill="${BL}" stroke="${BS}" stroke-width="2"/><line x1="10" y1="10" x2="90" y2="90" stroke="#e63946" stroke-width="2.5" stroke-dasharray="5 3"/>`)+AR+rawsvg(`<rect x="10" y="10" width="80" height="80" fill="none" stroke="#b8c7dd" stroke-dasharray="3 3"/><polygon points="10,10 10,90 90,90" fill="${BL}" stroke="${BS}" stroke-width="2"/>${hole([[25,60],[35,80]])}`),
+  opts:[sqH([[25,60],[35,80]]),sqH([[25,60],[35,80],[60,25],[80,35]]),sqH([[25,60],[35,80],[75,60],[65,80]]),sqH([[25,60],[35,80],[40,75],[20,65]])],ans:1,
+  why:'Each hole is copied to the other side of the diagonal, like a mirror. 2 holes become 4.'},
+ E:{q:'The paper is folded 3 times. One hole is punched in the last fold. What does it look like opened out?',vis:pn([10,10,90,90],[10,50,90,50])+AR+pn([10,50,90,90],[50,50,50,90])+AR+pn([50,50,90,90],[50,70,90,70])+AR+pn([50,70,90,90],null,[[75,80]]),
+  opts:[sqH(grid([25,75],[60,80])),sqH(grid([25,75],[20,40,60,80])),sqH(grid([75],[20,40,60,80])),sqH(grid([25,75],[15,35,65,85])),sqH(grid([25,75],[40,60,80]))],ans:1,
+  why:'1 hole, 3 folds: 1 → 2 → 4 → 8 holes. Open the last fold first, then the one before, then the first. Choice 2 is the only one with 8 holes in matching mirror places.'}},
+{id:'fr',b:'S',ic:'🔍',name:'Figure Recognition',what:'A red target shape is hidden in one busy figure. Find the figure that holds it.',
+ steps:['Study the target. Note its size and direction.','Search each figure for the same outline.','Ignore extra lines. A shape that is turned or flipped is wrong.'],
+ up:'Level B hides a simple four-sided shape. Level E hides odd shapes, like an arrow, in busier pictures.',
+ B:(()=>{const P=[[14,0],[44,0],[30,26],[0,26]];return{q:'Which figure contains the red shape, the same size and facing the same way?',vis:rawsvg(`<polygon points="${P.map(p=>[p[0]+28,p[1]+34].join(',')).join(' ')}" fill="#e63946"/>`),
+  opts:[fr(P,'m',30,40,CL[0],false),fr(P,'n',36,38,CL[1],true),fr(P,'r',34,26,CL[2],false)],ans:1,why:'Choice 2 holds the same four-sided shape leaning to the right. Choice 1 is flipped over. Choice 3 is turned on its side.'}})(),
+ E:(()=>{const P=[[20,0],[40,22],[28,22],[28,48],[12,48],[12,22],[0,22]];return{q:'Which figure contains the red arrow, the same size and pointing the same way?',vis:rawsvg(`<polygon points="${P.map(p=>[p[0]+30,p[1]+26].join(',')).join(' ')}" fill="#e63946"/>`),
+  opts:[fr(P,'r',34,28,CL[1],false),fr(P,'r2',36,24,CL[0],false),fr(P,'n',38,30,CL[2],true)],ans:2,why:'Choice 3 holds an arrow that points up, like the red one. Choice 1 points sideways. Choice 2 points down.'}})()}
+];
+// ---------- app ----------
+const $=id=>document.getElementById(id);
+let level='BE',cur='vc';
+const showAns=location.hash.includes('ans');
+function buildMap(){const m=$('map');let h='<svg id="lines"></svg><div class="node center" id="c0">CAT4<small>4 areas · 8 question types</small></div>';
+ Object.keys(BR).forEach((k,i)=>{const b=BR[k];h+=`<div class="node br" id="b${k}" style="background:${b.c};grid-row:${2*i+1}/span 2">${b.e}<div>${b.n}<small>${b.s}</small></div></div>`});
+ LEAVES.forEach((l,i)=>{const c=BR[l.b].c;h+=`<div class="node lf" id="l${l.id}" data-id="${l.id}" style="border-color:${c};grid-row:${i+1}"><span class="ic">${l.ic}</span><span class="nm">${l.name}</span><span class="chips"><span>B</span><span>E</span></span></div>`});
+ m.innerHTML=h;m.querySelectorAll('.lf').forEach(n=>n.onclick=()=>{cur=n.dataset.id;render();$('panel').scrollIntoView({behavior:'smooth',block:'start'})});
+ lines()}
+function lines(){const m=$('map'),svg=$('lines'),R=m.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${R.width} ${R.height}`);let d='';
+ const pt=(el,side)=>{const r=el.getBoundingClientRect();return[(side==='r'?r.right:r.left)-R.left,r.top+r.height/2-R.top]};
+ const link=(a,b,c)=>{const p=pt(a,'r'),q=pt(b,'l'),mx=(p[0]+q[0])/2;d+=`<path d="M${p[0]} ${p[1]} C${mx} ${p[1]} ${mx} ${q[1]} ${q[0]} ${q[1]}" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round" opacity=".75"/>`};
+ Object.keys(BR).forEach(k=>link($('c0'),$('b'+k),BR[k].c));
+ LEAVES.forEach(l=>link($('b'+l.b),$('l'+l.id),BR[l.b].c));svg.innerHTML=d}
+function opt(o,i){const fig=o.startsWith('<svg');return `<div class="opt ${fig?'':'t'}" data-i="${i}">${o}<small>${fig?(i+1):'ABCDE'[i]}</small></div>`}
+function exHtml(l,lv){const e=l[lv],name=lv==='B'?'Level B · Year 5 example':'Level E · Year 8 example';
+ const opts=e.opts.map((o,i)=>opt(o,i).replace('class="opt',i===e.ans?'class="opt good':'class="opt')).join('');
+ const letter=e.opts[e.ans].startsWith('<svg')?(e.ans+1):'ABCDE'[e.ans];
+ return `<div class="ex ${lv}${showAns?' revealed':''}"><div class="lv" style="color:${lv==='B'?'#1f6fd1':'#7a3bd1'}">${name}</div><div class="q">${e.q}</div>${e.vis?`<div class="vis">${e.vis}</div>`:''}<div class="opts">${opts}</div>
+ <button class="show" onclick="this.closest('.ex').classList.toggle('revealed')">Show / hide answer</button><div class="why"><b>Answer: ${letter}.</b> ${e.why}</div></div>`}
+function render(){const l=LEAVES.find(x=>x.id===cur),b=BR[l.b];
+ document.querySelectorAll('.lf').forEach(n=>n.classList.toggle('on',n.dataset.id===cur));
+ const lvs=level==='BE'?['B','E']:[level];
+ $('panel').innerHTML=`<span class="tag" style="background:${b.c}">${b.e} ${b.n}</span><h2>${l.ic} ${l.name}</h2><p>${l.what}</p>
+ <div class="two"><div class="box"><h3>How to solve it</h3><ol>${l.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div><div class="box up"><h3>⬆️ From Level B to Level E</h3>${l.up}</div></div>${lvs.map(v=>exHtml(l,v)).join('')}`}
+document.querySelectorAll('#lv button').forEach(b=>b.onclick=()=>{level=b.dataset.v;document.querySelectorAll('#lv button').forEach(x=>x.classList.toggle('on',x===b));render()});
+const hv=location.hash.replace('#','').split('&')[0];if(LEAVES.some(l=>l.id===hv))cur=hv;
+buildMap();render();addEventListener('resize',lines);
+</script></body></html>
