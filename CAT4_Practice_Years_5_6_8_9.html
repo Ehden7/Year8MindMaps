@@ -112,12 +112,12 @@ function matQ(fn,mods,latin,why){const cells=[];for(let r=0;r<3;r++)for(let c=0;
    latin.forEach(a=>{for(let i=0;i<3;i++){const rw=new Set([0,1,2].map(j=>fn(i,j)[a])),cl=new Set([0,1,2].map(j=>fn(j,i)[a]));if(rw.size!==3||cl.size!==3)e.push('not latin '+a)}});return e}}}
 function rotQ(base,nopt,why){const k=1+Math.floor(Math.random()*3),ok=rotN(base,k);
  const ws=shuf([0,1,2,3]).slice(0,nopt-1).map(n=>rotN(mir(base),n));
- return{q:'Which one is the shape on the left, only turned around (not flipped over)?',vis:G(base),opts:[{h:G(ok),k:nk(ok)},...ws.map(w=>({h:G(w),k:nk(w)}))],why:why||'Turn the shape in your head. The other shapes have been flipped over.',
+ return{dbg:{t:'rot',base,ok,ws},q:'Which one is the shape on the left, only turned around (not flipped over)?',vis:G(base),opts:[{h:G(ok),k:nk(ok)},...ws.map(w=>({h:G(w),k:nk(w)}))],why:why||'Turn the shape in your head. The other shapes have been flipped over.',
   chk:()=>{const e=[];if(!chiral(base))e.push('base not chiral');if(!rotKeys(base).includes(nk(ok)))e.push('answer not a rotation');
    ws.forEach(w=>{if(rotKeys(base).includes(nk(w)))e.push('wrong is a rotation')});const ks=[ok,...ws].map(nk);if(new Set(ks).size!==ks.length)e.push('duplicate options');return e}}}
 function mirrorQ(base,nopt,why){const ok=rotN(mir(base),Math.floor(Math.random()*4));
  const ws=shuf([0,1,2,3]).slice(0,nopt-1).map(n=>rotN(base,n));
- return{q:'Which one is the shape on the left flipped over, like its reflection in a mirror?',vis:G(base),opts:[{h:G(ok),k:nk(ok)},...ws.map(w=>({h:G(w),k:nk(w)}))],why:why||'A mirror image is flipped. The other shapes are only turned.',
+ return{dbg:{t:'mirror',base,ok,ws},q:'Which one is the shape on the left flipped over, like its reflection in a mirror?',vis:G(base),opts:[{h:G(ok),k:nk(ok)},...ws.map(w=>({h:G(w),k:nk(w)}))],why:why||'A mirror image is flipped. The other shapes are only turned.',
   chk:()=>{const e=[];if(!chiral(base))e.push('base not chiral');if(rotKeys(base).includes(nk(ok)))e.push('answer is a rotation');
    ws.forEach(w=>{if(!rotKeys(base).includes(nk(w)))e.push('wrong not a rotation')});const ks=[ok,...ws].map(nk);if(new Set(ks).size!==ks.length)e.push('duplicate options');return e}}}
 function foldQ(side,nopt){const ax=(side==='R'||side==='L')?'x':'y';const d=pick1([8,14,28]),a=(side==='R'||side==='B')?10+d:90-d,b=pick1([24,34,66,76]);
@@ -126,12 +126,12 @@ function foldQ(side,nopt){const ax=(side==='R'||side==='L')?'x':'y';const d=pick
  const rect={R:[10,10,40,80],L:[50,10,40,80],B:[10,10,80,40],T:[10,50,80,40]}[side];
  const line=ax==='x'?[[50,10,50,90]]:[[10,50,90,50]];
  const sets=[[h,refl],[h],[h,oth],[h,trn],[h,refl,oth,othR]].slice(0,nopt);
- return{q:'The paper is folded along the red dashed edge. A hole is punched as shown. What does it look like when opened out?',vis:PAPER(rect,[h],line),opts:sets.map(s=>({h:PAPER(FULL,s),k:hk(s)})),why:'Opening the fold copies the hole to the other side, the same distance from the fold, like a mirror.',
+ return{dbg:{t:'fold',side,h,sets},q:'The paper is folded along the red dashed edge. A hole is punched as shown. What does it look like when opened out?',vis:PAPER(rect,[h],line),opts:sets.map(s=>({h:PAPER(FULL,s),k:hk(s)})),why:'Opening the fold copies the hole to the other side, the same distance from the fold, like a mirror.',
   chk:()=>{const e=[];const ks=sets.map(hk);if(new Set(ks).size!==ks.length)e.push('duplicate options');
    if(!(h[0]>=rect[0]&&h[0]<=rect[0]+rect[2]&&h[1]>=rect[1]&&h[1]<=rect[1]+rect[3]))e.push('hole outside packet');return e}}}
 function fold2Q(){const [hx,hy]=pick1([[18,26],[24,38],[36,20],[22,34]]);const h=[hx,hy];
  const sets=[[h,[100-hx,hy],[hx,100-hy],[100-hx,100-hy]],[h,[hx+40,hy],[hx,hy+40],[hx+40,hy+40]],[h,[100-hx,hy]],[h,[hx,100-hy]],[h,[100-hx,hy],[hx,100-hy]]];
- return{q:'The square paper is folded in half, then in half again. The red dashed edges are the folds. One hole is punched. What does it look like when fully opened out?',vis:PAPER([10,10,40,40],[h],[[50,10,50,50],[10,50,50,50]]),opts:sets.map(s=>({h:PAPER(FULL,s),k:hk(s)})),why:'Two folds make 4 layers, so there are 4 holes. Each fold copies the hole across it like a mirror.',
+ return{dbg:{t:'fold2',h,sets},q:'The square paper is folded in half, then in half again. The red dashed edges are the folds. One hole is punched. What does it look like when fully opened out?',vis:PAPER([10,10,40,40],[h],[[50,10,50,50],[10,50,50,50]]),opts:sets.map(s=>({h:PAPER(FULL,s),k:hk(s)})),why:'Two folds make 4 layers, so there are 4 holes. Each fold copies the hole across it like a mirror.',
   chk:()=>{const e=[];const ks=sets.map(hk);if(new Set(ks).size!==ks.length)e.push('duplicate options');return e}}}
 const NETS={cross:[[1,0],[0,1],[1,1],[2,1],[1,2],[1,3]],t141:[[0,0],[0,1],[1,1],[2,1],[3,1],[3,2]],stair:[[0,0],[1,0],[1,1],[2,1],[2,2],[3,2]],n33:[[0,0],[1,0],[2,0],[2,1],[3,1],[4,1]],n231:[[0,0],[1,0],[1,1],[2,1],[3,1],[1,2]],nL:[[0,0],[1,0],[1,1],[1,2],[1,3],[2,3]],
  row5:[[0,0],[1,0],[2,0],[3,0],[4,0],[0,1]],block:[[0,0],[1,0],[0,1],[1,1],[2,0],[3,0]],uu:[[0,0],[0,1],[1,1],[2,1],[3,1],[3,0]],block2:[[0,1],[1,1],[2,1],[3,1],[1,0],[2,0]],bad231:[[0,0],[1,0],[2,0],[2,1],[3,1],[3,2]],w1:[[0,0],[0,1],[0,2],[0,3],[1,0],[1,2]],w2:[[0,0],[0,1],[0,2],[0,3],[1,0],[2,0]],w3:[[0,0],[0,1],[0,2],[1,0],[1,2],[2,0]],w4:[[0,0],[0,1],[0,2],[1,2],[1,3],[2,2]],w5:[[0,0],[0,1],[0,2],[1,1],[2,0],[2,1]]};
@@ -143,7 +143,7 @@ function netQ(good,bads){const tf=c=>rotN(Math.random()<.5?mir(c):c,Math.floor(M
 const SHP=['square','circle','tri'],CL3=['r','b','g'];
 const L4=[[0,0],[0,1],[0,2],[1,2]],P5=[[0,0],[1,0],[0,1],[1,1],[0,2]],F5=[[1,0],[2,0],[0,1],[1,1],[1,2]],N5=[[0,0],[0,1],[1,1],[1,2],[1,3]];
 const H2=[[1,0],[0,1],[1,1],[2,1],[2,2],[3,2]],H4=[[0,0],[0,1],[1,1],[2,1],[2,2],[3,1]],H6=[[0,0],[0,1],[0,2],[1,2],[2,2],[2,3]];
-const BANK={
+const BANK_A={
 5:{ // age 10
  V:[()=>V('Which word does NOT belong with the others?',['carrot','apple','banana','orange','grape'],'A carrot is a vegetable. The others are fruit.'),
     ()=>V('Foot is to shoe as hand is to ...',['glove','finger','arm','wrist','ring'],'A shoe goes on a foot. A glove goes on a hand.'),
@@ -225,26 +225,196 @@ const BANK={
     ()=>seqQ('Which comes next?',i=>({s:'tri',r:(360-(i*90)%360)%360,z:i%2?.55:.9,c:CL3[i%3]}),4,[{r:270},{z:.55},{c:'g'},{c:'r'}],'Three things change: it turns anticlockwise, big and small take turns, and the colours repeat every 3.')],
  S:[()=>rotQ(H4,5),()=>mirrorQ(H6,5),()=>foldQ('L',5),()=>fold2Q(),()=>netQ('stair',['bad231','w4','uu','w1']),()=>netQ('n33',['w3','w5','block2','w2'])]}
 };
+const Yp=[[0,0],[0,1],[0,2],[0,3],[1,1]],H1=[[0,0],[1,0],[2,0],[2,1],[3,1],[3,2]],H3=[[0,0],[1,0],[1,1],[1,2],[2,2],[2,3]],H7=[[0,0],[1,0],[1,1],[2,1],[3,1],[3,2]];
+const BANK_B={
+5:{
+ V:[()=>V('Which word does NOT belong with the others?',['ruler','trumpet','flute','tuba','clarinet'],'The others are musical instruments.'),
+    ()=>V('Puppy is to dog as kitten is to ...',['cat','mouse','lion','cub','fur'],'A puppy is a young dog. A kitten is a young cat.'),
+    ()=>V('Which word means the OPPOSITE of "cheerful"?',['gloomy','happy','loud','kind','quick'],'Cheerful means happy. Gloomy means sad.'),
+    ()=>V('Which word means almost the SAME as "begin"?',['start','finish','stop','wait','end'],'Begin and start mean the same.'),
+    ()=>V('Which word goes with all three: butter___, dragon___, house___?',['fly','bug','wing','cup','net'],'Butterfly, dragonfly, housefly.'),
+    ()=>V('Which word does NOT belong with the others?',['April','Monday','Friday','Sunday','Wednesday'],'April is a month. The others are days.')],
+ Q:[()=>numQ(gen(4,p=>p+4,5),[22,24,18,19],'Add 4 each time.'),
+    ()=>numQ(gen(100,p=>p-10,5),[50,65,40,55],'Take away 10 each time.'),
+    ()=>calcQ('6 boxes hold 8 eggs each. How many eggs are there altogether?',6*8,[14,42,56,54],'6 x 8 = 48.'),
+    ()=>numQ(gen(1,p=>p*3,5),[54,36,30,72],'Multiply by 3 each time.'),
+    ()=>calcQ('Find the missing number: 63 - ? = 28',63-28,[91,45,25,34],'63 - 28 = 35.'),
+    ()=>calcQ('Sam has 3 times as many stickers as Lena. Together they have 32 stickers. How many does Sam have?',32/4*3,[8,16,30,96],'4 equal parts make 32. One part is 8. Sam has 3 parts = 24.')],
+ N:[()=>oddQ({s:'square',c:'r'},{s:'square',c:'g'},4,'Which square is different?'),
+    ()=>seqQ('Which comes next?',i=>({s:'arrow',r:(360-i*90)%360,c:'b'}),3,[{r:0},{r:45},{r:180}],'The arrow turns a quarter turn anticlockwise each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'circle',z:[.9,.75,.6,.45][i],c:'r'}),3,[{z:.6},{z:.75},{z:.3}],'The circle gets a little smaller each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'dots',n:5-i,c:'g'}),3,[{n:1},{n:3},{n:6}],'One less dot each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'circle',c:['r','b','g'][i%3]}),4,[{c:'r'},{c:'g'},{c:'y'}],'Red, blue, green. Then it starts again.'),
+    ()=>oddQ({s:'tri',c:'b',r:0},{s:'tri',c:'b',r:180},4,'Which triangle is the odd one out?')],
+ S:[()=>rotQ(L4,4),()=>rotQ(Yp,4),()=>foldQ('L',4),()=>foldQ('T',4),()=>netQ('t141',['row5','block','w2']),()=>netQ('n33',['row5','block2','uu'])]},
+6:{
+ V:[()=>V('Which word does NOT belong with the others?',['shark','whale','dolphin','porpoise','seal'],'A shark is a fish. The others are mammals.'),
+    ()=>V('Page is to book as brick is to ...',['wall','cement','builder','red','heavy'],'A page is part of a book. A brick is part of a wall.'),
+    ()=>V('Which word means almost the SAME as "fragile"?',['delicate','strong','heavy','old','cheap'],'Fragile means easy to break. So does delicate.'),
+    ()=>V('Which word means the OPPOSITE of "expand"?',['shrink','grow','stretch','spread','explore'],'Expand means get bigger. Shrink means get smaller.'),
+    ()=>V('Which pair of words means the OPPOSITE?',['rapid - slow','huge - enormous','calm - peaceful','begin - start','silent - quiet'],'Only rapid and slow are opposites. The other pairs mean the same.'),
+    ()=>V('The explorers were ___ when they finally reached the summit after three days of climbing.',['triumphant','hesitant','bored','confused','frightened'],'Reaching the top after hard work feels triumphant.')],
+ Q:[()=>numQ(gen(3,p=>p*2+2,5),[76,80,68,116],'Double, then add 2.'),
+    ()=>numQ(gen(100,(p,i)=>p-(10-i),5),[69,71,68,66],'Take away 9, then 8, then 7, then 6.'),
+    ()=>calcQ('What is 2/5 of 35?',35/5*2,[7,15,12,17],'35 / 5 = 7. Then 7 x 2 = 14.'),
+    ()=>calcQ('A rectangle is 9 cm long and 4 cm wide. What is its perimeter?',2*(9+4)+' cm',['36 cm','13 cm','22 cm','32 cm'],'2 x (9 + 4) = 26.'),
+    ()=>{const t=18*60+50+105;return calcQ('A film starts at 6:50 pm and lasts 1 hour 45 minutes. When does it end?',(Math.floor(t/60)-12)+':'+String(t%60).padStart(2,'0')+' pm',['8:25 pm','8:45 pm','7:35 pm','8:15 pm'],'6:50 + 1:45 = 8:35.')},
+    ()=>calcQ('The mean of five numbers is 6. Four of them are 3, 5, 8 and 9. What is the fifth number?',6*5-(3+5+8+9),[6,4,7,8],'Five numbers with mean 6 add up to 30. 30 - 25 = 5.')],
+ N:[()=>oddQ({s:'diamond',c:'p'},{s:'diamond',c:'y'},4,'Which one is different?'),
+    ()=>seqQ('Which comes next?',i=>({s:'arrow',r:(360-(i*45)%360)%360,c:'b'}),4,[{r:135},{r:225},{r:90}],'The arrow turns 45 degrees anticlockwise each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:['circle','square','tri','diamond'][i%4],c:'g'}),5,[{s:'circle'},{s:'tri'},{s:'diamond'}],'Four shapes in a row, then it starts again.'),
+    ()=>seqQ('Which comes next?',i=>({s:'dots',n:[1,3,2,4,3,5][i],c:'p'}),5,[{n:4},{n:6},{n:2}],'Add 2, take away 1, add 2, take away 1.'),
+    ()=>seqQ('Which comes next?',i=>({s:'quad',q:i%2?[1,3]:[0,2],c:'r'}),3,[{q:[0,2]},{q:[0,1]},{q:[2,3]}],'Two pairs of squares take turns.'),
+    ()=>seqQ('Which comes next?',i=>({s:'circle',z:[.4,.55,.7,.85][i],c:['r','b'][i%2]}),3,[{z:.7},{c:'r'},{z:1}],'The circle gets bigger. The colours take turns.')],
+ S:[()=>rotQ(N5,4),()=>mirrorQ(F5,4),()=>foldQ('R',4),()=>foldQ('B',4),()=>netQ('stair',['block','uu','w4']),()=>netQ('n231',['row5','bad231','w3'])]},
+8:{
+ V:[()=>V('Which does NOT belong with the others?',['essay','sonnet','haiku','limerick','ballad'],'The others are kinds of poem. An essay is prose.'),
+    ()=>V('Pilot is to aircraft as captain is to ...',['ship','sea','crew','sailor','port'],'A pilot steers an aircraft. A captain steers a ship.'),
+    ()=>V('Which word means almost the SAME as "meticulous"?',['careful','careless','hasty','generous','modest'],'Meticulous means very careful about details.'),
+    ()=>V('Which word means the OPPOSITE of "scarce"?',['plentiful','rare','valuable','limited','cheap'],'Scarce means hard to find. Plentiful means a lot.'),
+    ()=>V('The scientist remained ___ about the results until other teams had repeated the experiment.',['sceptical','enthusiastic','certain','careless','delighted'],'Sceptical means not yet sure it is true.'),
+    ()=>lettersQ('MOUNTAINS','stamina',['mountain','nations','amount','mantis'])],
+ Q:[()=>numQ([1,3,4,7,11,18],[15,16,22,29],'Add the last two numbers.'),
+    ()=>numQ([1,2,3,4,5].map(n=>n**3),[100,128,216,81],'Cube numbers: 1x1x1, 2x2x2, 3x3x3, 4x4x4, 5x5x5.'),
+    ()=>calcQ('What is (-3) x (-4) + 5?',(-3)*(-4)+5,[7,-7,-17,12],'Minus times minus is plus. 12 + 5 = 17.'),
+    ()=>calcQ('A recipe for 4 people uses 300 g of flour. How much flour is needed for 10 people?',300/4*10+' g',['600 g','1,200 g','450 g','900 g'],'300 / 4 = 75 g each. 75 x 10 = 750.'),
+    ()=>calcQ('The four angles of a quadrilateral add up to 360 degrees. Three angles are 90, 110 and 75. What is the fourth?',(360-90-110-75)+' degrees',['95 degrees','75 degrees','105 degrees','65 degrees'],'90 + 110 + 75 = 275. 360 - 275 = 85.'),
+    ()=>calcQ('What is the value of 3a + 2b when a = 4 and b = 5?',3*4+2*5,[14,20,24,26],'12 + 10 = 22.')],
+ N:[()=>matQ((r,c)=>({s:SHP[(r+c)%3],c:CL3[c]}),[{c:'r'},{c:'b'},{s:'square'},{s:'tri'}],['s'],'Each shape appears once in every row and column. The colour depends on the column.'),
+    ()=>seqQ('Which comes next?',i=>({s:'half',r:i*90,c:['b','r'][i%2]}),4,[{c:'r'},{r:90},{r:270},{r:180}],'The half circle turns a quarter turn each time. The colours take turns.'),
+    ()=>seqQ('Which comes next?',i=>({s:SHP[i%3],z:[.5,.6,.7,.8,.9][i],c:'g'}),4,[{s:'square'},{z:.8},{s:'tri'},{z:.7}],'The shapes repeat every 3. The size grows each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'dots',n:[1,2,4,7,11][i],c:'p'}),4,[{n:10},{n:12},{n:9},{n:13}],'Add 1, then 2, then 3, then 4.'),
+    ()=>oddQ({s:'half',r:0,c:'p'},{s:'half',r:90,c:'p'},5,'Which one is the odd one out?'),
+    ()=>matQ((r,c)=>({s:'arrow',r:c*90,c:CL3[r]}),[{r:90},{r:270},{c:'b'},{c:'r'}],[],'Each row has one colour. The arrow turns a quarter turn more along the row.')],
+ S:[()=>rotQ(H3,5),()=>mirrorQ(N5,5),()=>foldQ('L',5),()=>foldQ('B',5),()=>netQ('cross',['w3','uu','bad231','block2']),()=>netQ('t141',['w4','row5','w5','block'])]},
+9:{
+ V:[()=>V('Which word does NOT belong with the others?',['verbose','concise','succinct','brief','terse'],'The others mean using few words. Verbose means using too many.'),
+    ()=>V('Chef is to recipe as architect is to ...',['blueprint','building','materials','client','tower'],'A chef follows a recipe. An architect works from a blueprint (plan).'),
+    ()=>V('Which word means almost the SAME as "ambiguous"?',['unclear','obvious','certain','hostile','enormous'],'Ambiguous means it can be understood in more than one way.'),
+    ()=>V('Which word means the OPPOSITE of "abundant"?',['scarce','plentiful','ample','rich','common'],'Abundant means a lot. Scarce means very little.'),
+    ()=>lettersQ('MATHEMATICS','mimic',['chemist','attach','steam','thematic']),
+    ()=>V('The new evidence ___ the theory, proving it wrong.',['refuted','confirmed','supported','repeated','introduced'],'To refute means to prove wrong.')],
+ Q:[()=>numQ(gen(1,(p,i)=>p+i*i,6),[54,57,62,48],'Add 1, then 4, then 9, then 16, then 25.'),
+    ()=>numQ([2,3,5,7,11,13],[12,14,15,17],'Prime numbers: numbers with only two factors.'),
+    ()=>calcQ('If 4(x - 3) = 28, what is x?',28/4+3,[7,4,13,6],'28 / 4 = 7. Then x - 3 = 7, so x = 10.'),
+    ()=>calcQ('A bag has 5 red and 3 blue counters. Two are taken out without putting any back. What is the chance both are red?','5/14',['25/64','5/16','1/2','3/8'],'5/8 x 4/7 = 20/56 = 5/14.'),
+    ()=>calcQ('A bike costs £220 after a 10% price rise. What did it cost before the rise?','£'+Math.round(220/1.1),['£198','£242','£210','£180'],'£220 is 110% of the old price. 220 / 1.1 = 200.'),
+    ()=>calcQ('Three consecutive whole numbers add up to 63. What is the largest?',63/3+1,[21,23,20,24],'The middle one is 63 / 3 = 21. The largest is 22.')],
+ N:[()=>matQ((r,c)=>({s:SHP[(r+c)%3],c:CL3[(2*r+c)%3]}),[{c:'b'},{c:'g'},{s:'square'},{s:'tri',c:'b'}],['s','c'],'Each shape appears once in every row and column. Each colour does too.'),
+    ()=>seqQ('Which comes next?',i=>({s:'arrow',r:(i*45)%360,c:CL3[i%3]}),5,[{r:180},{c:'r'},{r:270},{c:'b'}],'The arrow turns 45 degrees each time. The colours repeat every 3.'),
+    ()=>seqQ('Which comes next?',i=>({s:'dots',n:i%2===0?i/2+1:2**((i+1)/2),c:i%2?'r':'b'}),5,[{n:6},{n:5},{n:4},{n:7}],'Two patterns are mixed. Red dots double: 2, 4, 8. Blue dots go up by 1: 1, 2, 3.'),
+    ()=>seqQ('Which comes next?',i=>({s:'quad',q:[0,1,2,3].filter(x=>x!==i%4),c:i%2?'r':'b'}),3,[{q:[1,2,3]},{q:[0,2,3]},{q:[0,1,3]},{q:[0,1]}],'Every part is shaded except one. The empty part moves clockwise.'),
+    ()=>matQ((r,c)=>({s:['half','arrow','tri'][c],r:r*90,c:'b'}),[{r:90},{r:270},{s:'arrow'},{s:'half'}],[],'Each column has one shape. It turns a quarter turn more down the column.'),
+    ()=>seqQ('Which comes next?',i=>({s:i%2?'arrow':'tri',r:(i*90)%360,c:'b'}),5,[{s:'tri'},{r:0},{r:180},{r:270}],'Triangle and arrow take turns. Both turn a quarter turn each time.')],
+ S:[()=>rotQ(H6,5),()=>mirrorQ(H2,5),()=>foldQ('R',5),()=>fold2Q(),()=>netQ('n231',['w3','w1','uu','bad231']),()=>netQ('cross',['w4','w5','block2','w2'])]}
+};
+const BANK_C={
+5:{
+ V:[()=>V('Which word does NOT belong with the others?',['bat','sparrow','eagle','robin','parrot'],'A bat is a mammal. The others are birds.'),
+    ()=>V('Eyes are to see as ears are to ...',['hear','music','head','loud','sound'],'Eyes are for seeing. Ears are for hearing.'),
+    ()=>V('Which word means the OPPOSITE of "empty"?',['full','hollow','clean','light','open'],'Empty and full are opposites.'),
+    ()=>V('Which word means almost the SAME as "tiny"?',['small','huge','thin','wide','heavy'],'Tiny means very small.'),
+    ()=>V('Which word goes with all three: ___coat, ___fall, ___bow?',['rain','snow','sun','wind','sea'],'Raincoat, rainfall, rainbow.'),
+    ()=>V('Which word does NOT belong with the others?',['garden','kitchen','bedroom','bathroom','hallway'],'The garden is outside. The others are rooms inside a house.')],
+ Q:[()=>numQ(gen(7,p=>p+7,5),[32,36,42,30],'Add 7 each time.'),
+    ()=>numQ(gen(64,p=>p/2,5),[2,6,3,12],'Halve each time.'),
+    ()=>calcQ('36 children are put into 4 equal teams. How many children are in each team?',36/4,[8,32,40,6],'36 / 4 = 9.'),
+    ()=>calcQ('Which number is 100 more than 3,450?','3,550',['3,350','4,450','3,460','3,650'],'Add 1 to the hundreds digit: 3,450 + 100 = 3,550.'),
+    ()=>calcQ('A bus leaves at 8:15 and arrives at 9:00. How many minutes does the trip take?',45,[15,35,55,60],'8:15 to 9:00 is 45 minutes.'),
+    ()=>calcQ('I think of a number. I add 9 and then double it. The answer is 30. What was my number?',30/2-9,[3,9,12,21],'Half of 30 is 15. 15 - 9 = 6.')],
+ N:[()=>oddQ({s:'circle',c:'b'},{s:'circle',c:'r'},4,'Which circle is different?'),
+    ()=>seqQ('Which comes next?',i=>({s:'tri',r:i*90,c:'r'}),3,[{r:0},{r:90},{r:180}],'The triangle turns a quarter turn each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'square',z:[.4,.55,.7,.85][i],c:'b'}),3,[{z:.55},{z:.7},{z:1}],'The square gets a little bigger each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'dots',n:1+2*i,c:'p'}),3,[{n:6},{n:8},{n:4}],'Two more dots each time: 1, 3, 5, 7.'),
+    ()=>seqQ('Which comes next?',i=>i%2?{s:'diamond',c:'y'}:{s:'tri',c:'g'},3,[{c:'g'},{s:'tri'},{s:'tri',c:'g'}],'The green triangle and yellow diamond take turns.'),
+    ()=>oddQ({s:'dots',n:5,c:'g'},{s:'dots',n:6,c:'g'},4,'Which one is different?')],
+ S:[()=>rotQ(P5,4),()=>rotQ(N5,4),()=>foldQ('R',4),()=>foldQ('T',4),()=>netQ('cross',['block','uu','w2']),()=>netQ('n231',['row5','block2','w1'])]},
+6:{
+ V:[()=>V('Which word does NOT belong with the others?',['Moon','Mars','Venus','Jupiter','Saturn'],'The Moon is not a planet. The others are planets.'),
+    ()=>V('Fin is to fish as wing is to ...',['bird','air','flight','feather','nest'],'A fin belongs to a fish. A wing belongs to a bird.'),
+    ()=>V('Which word means almost the SAME as "abandon"?',['desert','keep','find','guard','hide'],'To abandon is to leave behind. So is to desert.'),
+    ()=>V('Which word means the OPPOSITE of "victory"?',['defeat','triumph','battle','prize','peace'],'Victory is winning. Defeat is losing.'),
+    ()=>V('The ___ of the river was so strong that it swept the bridge away.',['current','colour','silence','warmth','shadow'],'The current is the strong flow of the water.'),
+    ()=>lettersQ('ADVENTURE','tunnel',['nature','avenue','turned','venture'])],
+ Q:[()=>numQ(gen(2,(p,i)=>i%2?p+3:p*2,6),[52,28,31,32],'Double, then add 3. Repeat.'),
+    ()=>numQ(gen(240,p=>p/2,5),[10,20,12,25],'Halve each time.'),
+    ()=>calcQ('What is 0.6 + 0.75?',(0.6+0.75).toFixed(2),['1.25','1.45','0.81','1.5'],'0.60 + 0.75 = 1.35.'),
+    ()=>calcQ('A pack of 6 pens costs £4.50. How much does one pen cost?',(450/6)+'p',['70p','80p','60p','45p'],'450p / 6 = 75p.'),
+    ()=>calcQ('How many minutes are there in 2.5 hours?',2.5*60,[120,250,125,180],'2.5 x 60 = 150.'),
+    ()=>calcQ('The angles in a triangle add up to 180 degrees. Two angles are 65 and 48. What is the third?',(180-65-48)+' degrees',['57 degrees','77 degrees','113 degrees','72 degrees'],'65 + 48 = 113. 180 - 113 = 67.')],
+ N:[()=>oddQ({s:'arrow',r:90,c:'g'},{s:'arrow',r:270,c:'g'},4,'Which arrow is different?'),
+    ()=>seqQ('Which comes next?',i=>({s:'arrow',r:(i*90)%360,c:i%2?'r':'b'}),4,[{c:'r'},{r:90},{r:180}],'The arrow turns a quarter turn each time. The colours take turns.'),
+    ()=>seqQ('Which comes next?',i=>({s:i%2?'circle':'square',z:[.9,.8,.7,.6,.5][i],c:'p'}),4,[{s:'circle'},{z:.6},{z:.4}],'Square and circle take turns. Each one is a little smaller.'),
+    ()=>seqQ('Which comes next?',i=>({s:'dots',n:8-2*i,c:'g'}),3,[{n:1},{n:3},{n:4}],'Two fewer dots each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'quad',q:[(4-i%4)%4],c:'b'}),3,[{q:[0]},{q:[2]},{q:[3]}],'The blue square moves anticlockwise each time.'),
+    ()=>oddQ({s:'quad',q:[0,1],c:'b'},{s:'quad',q:[0,2],c:'b'},4,'Which one is different?')],
+ S:[()=>rotQ(Yp,4),()=>mirrorQ(P5,4),()=>foldQ('T',4),()=>foldQ('L',4),()=>netQ('cross',['uu','block2','w5']),()=>netQ('t141',['bad231','block','w1'])]},
+8:{
+ V:[()=>V('Which word does NOT belong with the others?',['shout','whisper','murmur','mutter','mumble'],'The others are quiet ways of speaking. To shout is loud.'),
+    ()=>V('Seed is to plant as egg is to ...',['bird','nest','yolk','farm','breakfast'],'A plant grows from a seed. A bird grows from an egg.'),
+    ()=>V('Which word means almost the SAME as "abundant"?',['plentiful','rare','hidden','obvious','ancient'],'Abundant means a lot of something.'),
+    ()=>V('Which word means the OPPOSITE of "optimistic"?',['pessimistic','cheerful','realistic','hopeful','nervous'],'An optimist expects good things. A pessimist expects bad things.'),
+    ()=>V('The match was ___ because the pitch was flooded.',['postponed','celebrated','won','watched','repeated'],'Postponed means moved to a later day.'),
+    ()=>V('Which pair has the same link as "novel : chapter"?',['poem : verse','play : actor','film : cinema','song : singer','painting : gallery'],'A chapter is a part of a novel. A verse is a part of a poem.')],
+ Q:[()=>numQ([1,2,6,24,120],[48,100,96,144],'Multiply by 2, then 3, then 4, then 5.'),
+    ()=>numQ(gen(3,p=>p*2+1,5),[62,64,47,65],'Double, then add 1.'),
+    ()=>calcQ('A phone costs £240 after a 25% discount. What was the price before the discount?','£'+Math.round(240/0.75),['£300','£360','£265','£315'],'£240 is 75% of the old price. 240 / 0.75 = 320.'),
+    ()=>calcQ('Simplify: 5x + 3 - 2x + 7','3x + 10',['7x + 10','3x + 4','3x - 4','7x + 4'],'5x - 2x = 3x. 3 + 7 = 10.'),
+    ()=>calcQ('A car uses 6 litres of fuel to travel 80 km. How many litres does it use to travel 200 km?',6/80*200,[12,16,18,20],'200 km is 2.5 times 80 km. 6 x 2.5 = 15.'),
+    ()=>calcQ('The ratio of red to blue marbles is 3 : 5. There are 40 blue marbles. How many red marbles are there?',40/5*3,[15,40,64,16],'40 / 5 = 8 per part. 3 x 8 = 24.')],
+ N:[()=>matQ((r,c)=>({s:'square',c:CL3[(r+c)%3]}),[{c:'r'},{c:'g'},{c:'y'},{s:'circle'}],['c'],'Each colour appears once in every row and column.'),
+    ()=>seqQ('Which comes next?',i=>({s:'arrow',r:(i*90)%360,z:i%2?.6:1,c:'b'}),5,[{z:1},{r:270},{r:180},{r:0}],'The arrow turns a quarter turn each time. Big and small take turns.'),
+    ()=>seqQ('Which comes next?',i=>({s:'quad',q:[(4-i%4)%4,(5-i%4)%4],c:'b'}),3,[{q:[0,1]},{q:[3,0]},{q:[2,3]},{q:[0,2]}],'The two shaded parts move anticlockwise one step each time.'),
+    ()=>seqQ('Which comes next?',i=>({s:'tri',r:(i*45)%360,z:[.9,.8,.7,.6,.5][i],c:'g'}),4,[{z:.6},{r:135},{r:225},{z:.4}],'The triangle turns 45 degrees and shrinks each time.'),
+    ()=>seqQ('Which comes next?',i=>i%2?{s:'circle',z:[.4,.55,.7][(i-1)/2],c:'r'}:{s:'square',z:[.9,.7,.5][i/2],c:'b'},5,[{z:.55},{z:.4},{s:'square'},{c:'b'}],'Two patterns are mixed. Blue squares get smaller. Red circles get bigger.'),
+    ()=>oddQ({s:'quad',q:[0,2],c:'r'},{s:'quad',q:[0,1],c:'r'},5,'Which one is the odd one out?')],
+ S:[()=>rotQ(H1,5),()=>mirrorQ(P5,5),()=>foldQ('T',5),()=>foldQ('R',5),()=>netQ('n33',['w1','uu','block','w4']),()=>netQ('stair',['w3','w5','bad231','block2'])]},
+9:{
+ V:[()=>V('Which word does NOT belong with the others?',['cacophony','harmony','melody','symphony','chorus'],'Cacophony is harsh, unpleasant noise. The others are pleasant music.'),
+    ()=>V('Prologue is to epilogue as overture is to ...',['finale','intermission','opera','aria','curtain'],'A prologue starts a story. An epilogue ends it. An overture starts a show. A finale ends it.'),
+    ()=>V('Which word means almost the SAME as "candid"?',['frank','secretive','polite','shy','rude'],'Candid means honest and open.'),
+    ()=>V('Which word means the OPPOSITE of "transient"?',['permanent','brief','fleeting','sudden','moving'],'Transient means lasting a short time. Permanent means lasting.'),
+    ()=>V('Although the plan seemed ___ at first, it turned out to be extremely practical.',['unrealistic','sensible','reliable','effective','obvious'],'"Although" shows a surprise. First it seemed unrealistic, then it worked.'),
+    ()=>lettersQ('ADMINISTRATION','minister',['ratio','nation','domain','admin'])],
+ Q:[()=>numQ(gen(5,(p,i)=>p+2*i,6),[33,36,37,32],'Add 2, then 4, then 6, then 8, then 10.'),
+    ()=>numQ(gen(1,(p,i)=>i%2?p*3:p+3,6),[24,60,66,42],'Multiply by 3, then add 3. Repeat.'),
+    ()=>calcQ('Solve: (2x + 1) / 3 = 5',(5*3-1)/2,[8,6,5,14],'2x + 1 = 15. 2x = 14. x = 7.'),
+    ()=>calcQ('A circle has a radius of 5 cm. What is its area? (Use 3.14 for pi.)',(3.14*25)+' cm2',['31.4 cm2','15.7 cm2','157 cm2','25 cm2'],'Area = 3.14 x 5 x 5 = 78.5.'),
+    ()=>calcQ('Two numbers add up to 20 and multiply to give 96. What is the larger number?',12,[10,16,8,14],'12 + 8 = 20 and 12 x 8 = 96.'),
+    ()=>calcQ('A train travels at 90 km/h. How many metres does it travel in 20 seconds?',90*1000/3600*20,[450,1800,250,900],'90 km/h = 25 m per second. 25 x 20 = 500.')],
+ N:[()=>matQ((r,c)=>({s:['tri','arrow','half'][c],r:r*90,c:CL3[(r+c)%3]}),[{c:'r'},{c:'g'},{r:90},{s:'tri'}],['c'],'Each column has one shape. It turns a quarter turn more down the column. Each colour appears once in every row and column.'),
+    ()=>seqQ('Which comes next?',i=>({s:'arrow',r:(360-(i*135)%360)%360,c:i%2?'r':'b'}),5,[{c:'b'},{r:315},{r:135},{r:225}],'The arrow turns 135 degrees anticlockwise each time. The colours take turns.'),
+    ()=>seqQ('Which comes next?',i=>({s:i%2?'circle':'diamond',z:[.5,.6,.7,.8,.9,1][i],c:CL3[i%3]}),5,[{z:.9},{s:'diamond'},{c:'r'},{c:'b'}],'Three things change: diamond and circle take turns, the size grows, and the colours repeat every 3.'),
+    ()=>seqQ('Which comes next?',i=>({s:'dots',n:[2,3,5,7,11][i],c:'p'}),4,[{n:9},{n:10},{n:12},{n:13}],'Prime numbers: 2, 3, 5, 7, 11.'),
+    ()=>matQ((r,c)=>({s:SHP[(r+c)%3],z:[.5,.7,.9][r],c:'g'}),[{z:.7},{z:.5},{s:'square'},{s:'tri'}],['s'],'Each shape appears once in every row and column. The size depends on the row.'),
+    ()=>seqQ('Which comes next?',i=>({s:'quad',q:i%3===0?[i%4]:i%3===1?[i%4,(i+1)%4]:[i%4,(i+1)%4,(i+2)%4],c:'b'}),4,[{q:[0]},{q:[1,2]},{q:[0,1,2]},{q:[3,0]}],'The number of shaded parts goes 1, 2, 3, then starts again. The first shaded part moves clockwise one step each time.')],
+ S:[()=>rotQ(H7,5),()=>mirrorQ(H4,5),()=>foldQ('B',5),()=>fold2Q(),()=>netQ('nL',['w4','w5','bad231','uu']),()=>netQ('stair',['w1','w3','block','w2'])]}
+};
+const BANK={};[5,6,8,9].forEach(y=>{BANK[y]={A:BANK_A[y],B:BANK_B[y],C:BANK_C[y]}});
 const YEARS=[{y:5,age:10},{y:6,age:11},{y:8,age:12},{y:9,age:13}];
 const PARTS=[{k:'V',name:'Verbal',intro:'Words: odd ones out, word pairs and meanings.'},{k:'Q',name:'Quantitative',intro:'Numbers: find the rule and solve the problem.'},{k:'N',name:'Non-verbal',intro:'Shapes: spot the pattern in pictures.'},{k:'S',name:'Spatial',intro:'Turning, flipping and folding shapes.'}];
-const buildYear=y=>PARTS.map(p=>({...p,qs:BANK[y][p.k].map(f=>f())}));
+const TESTS=['A','B','C'];
+const buildYear=(y,t)=>PARTS.map(p=>({...p,qs:BANK[y][t||'A'][p.k].map(f=>f())}));
 // =============== app ===============
 const A=document.getElementById('app');
-let year=null,name='',SECS=[],si=0,qi=0,left=0,tm=null;
+let year=null,test='A',name='',SECS=[],si=0,qi=0,left=0,tm=null;
 const SEC_TIME=300;
 const fmt=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
 function setY(y){year=y;home()}
+function setT(t){test=t;home()}
 function home(){clearInterval(tm);
  A.innerHTML=`<div class="card"><h1>🧠 CAT4-style Practice Test</h1>
  <p>Step 1. Choose the year.</p>
  <div class="years">${YEARS.map(y=>`<div class="yc ${year===y.y?'sel':''}" onclick="setY(${y.y})"><b>Year ${y.y}</b><span>age ${y.age}</span></div>`).join('')}</div>
- <p>Step 2. Type your name, then press Start.</p>
+ <p>Step 2. Choose the test. Each test has different questions.</p>
+ <div class="years">${TESTS.map(t=>`<div class="yc ${test===t?'sel':''}" onclick="setT('${t}')"><b>Test ${t}</b><span>24 questions</span></div>`).join('')}</div>
+ <p>Step 3. Type your name, then press Start.</p>
  <p><input id="nm" placeholder="Your name" value="${name.replace(/"/g,'')}" oninput="name=this.value"> <button ${year?'':'disabled'} onclick="start()">Start</button></p>
  <p><span class="tag V">Verbal</span> <span class="tag Q">Quantitative</span> <span class="tag N">Non-verbal</span> <span class="tag S">Spatial</span></p>
  <p>24 questions · 4 parts · 5 minutes per part. Pick one answer each time. You cannot go back. A wrong answer loses no marks, so always guess.</p>
  <p class="note">Practice questions written to match the style of CAT4. This is not the real GL Assessment test and gives no official score.</p></div>`}
-function start(){SECS=buildYear(year);SECS.forEach(s=>s.qs.forEach(q=>{q.items=shuf(q.opts.map((o,k)=>({...o,ok:k===0})));q.pick=null}));si=0;intro()}
-function intro(){const s=SECS[si];A.innerHTML=`<div class="card"><span class="tag ${s.k}">Year ${year} · Part ${si+1} of 4</span><h1>${s.name}</h1><p>${s.intro}</p><p>6 questions · 5 minutes. The clock starts when you press Go.</p><button onclick="begin()">Go</button></div>`}
+function start(){SECS=buildYear(year,test);SECS.forEach(s=>s.qs.forEach(q=>{q.items=shuf(q.opts.map((o,k)=>({...o,ok:k===0})));q.pick=null}));si=0;intro()}
+function intro(){const s=SECS[si];A.innerHTML=`<div class="card"><span class="tag ${s.k}">Year ${year} · Test ${test} · Part ${si+1} of 4</span><h1>${s.name}</h1><p>${s.intro}</p><p>6 questions · 5 minutes. The clock starts when you press Go.</p><button onclick="begin()">Go</button></div>`}
 function begin(){qi=0;left=SEC_TIME;clearInterval(tm);tm=setInterval(()=>{left--;const t=document.getElementById('tm');if(t){t.textContent=fmt(left);t.className='timer'+(left<30?' low':'')}if(left<=0)endSec()},1000);show()}
 function show(){const s=SECS[si],q=s.qs[qi];
  A.innerHTML=`<div class="card"><div class="top"><span class="tag ${s.k}">${s.name} · ${qi+1}/6</span><span class="timer" id="tm">${fmt(left)}</span></div>
@@ -262,19 +432,20 @@ function results(){let tot=0,h='';
  let rv='';SECS.forEach(s=>s.qs.forEach((q,i)=>{rv+=`<div class="rev"><span class="tag ${s.k}">${s.name} ${i+1}</span><div class="q">${q.q}</div>${q.vis?`<div class="vis">${q.vis}</div>`:''}
  <div class="opts">${q.items.map((o,k)=>`<div class="opt ${o.ok?'good':(q.pick===k?'bad':'')}">${o.h||o.t}${q.pick===k?'<small>your answer</small>':''}${o.ok?'<small>correct</small>':''}</div>`).join('')}</div>
  <p class="note">${q.why||''}</p></div>`}));
- A.innerHTML=`<div class="card"><h1>Well done${name?', '+name.replace(/</g,''):''}! 🎉</h1><p>Year ${year}</p><div class="big">${tot} / 24</div><p>${msg}</p>${h}
+ A.innerHTML=`<div class="card"><h1>Well done${name?', '+name.replace(/</g,''):''}! 🎉</h1><p>Year ${year} · Test ${test}</p><div class="big">${tot} / 24</div><p>${msg}</p>${h}
  <div class="row"><button onclick="start()">Try again</button><button class="alt" onclick="home()">Choose another year</button><button class="alt" onclick="document.getElementById('rv').hidden=!document.getElementById('rv').hidden">Show / hide answers</button></div>
  <p class="note">Practice only. Not an official CAT4 score.</p></div><div class="card" id="rv" hidden><h2>Answers</h2>${rv}</div>`}
 // =============== self test (open the page with ?selftest) ===============
 function selfTest(){const errs=[];let n=0;
- YEARS.forEach(Y=>{for(let it=0;it<80;it++){const secs=buildYear(Y.y);if(secs.length!==4)errs.push('Y'+Y.y+' sections');
-  secs.forEach(s=>{if(s.qs.length!==6)errs.push(`Y${Y.y} ${s.name} has ${s.qs.length} questions`);
-   s.qs.forEach((q,qi)=>{n++;const id=`Y${Y.y} ${s.name} Q${qi+1}`;
+ YEARS.forEach(Y=>TESTS.forEach(TT=>{for(let it=0;it<60;it++){const secs=buildYear(Y.y,TT);if(secs.length!==4)errs.push('Y'+Y.y+TT+' sections');
+  secs.forEach(s=>{if(s.qs.length!==6)errs.push(`Y${Y.y}${TT} ${s.name} has ${s.qs.length} questions`);
+   s.qs.forEach((q,qi)=>{n++;const id=`Y${Y.y}${TT} ${s.name} Q${qi+1}`;
     if(!q||!q.opts||q.opts.length<4)errs.push(id+': fewer than 4 options');
     const ks=q.opts.map(o=>o.k);if(!q.dup&&new Set(ks).size!==ks.length)errs.push(id+': duplicate options');
     if(q.chk)q.chk().forEach(e=>errs.push(id+': '+e));else if(['Q','N','S'].includes(s.k))errs.push(id+': no check');
-    if(!q.why)errs.push(id+': no explanation')})})}});
+    if(!q.why)errs.push(id+': no explanation')})})}}));
  const uniq=[...new Set(errs)];
  document.body.innerHTML='<pre id="out">'+(uniq.length?'FAIL '+uniq.length+'\n'+uniq.slice(0,40).join('\n'):'PASS '+n+' question builds checked')+'</pre>';}
-if(location.search.includes('selftest'))selfTest();else home();
+function dump(){const out=[];YEARS.forEach(Y=>TESTS.forEach(TT=>{for(let it=0;it<25;it++)buildYear(Y.y,TT).forEach(s=>s.qs.forEach(q=>{if(q.dbg)out.push(q.dbg)}))}));document.body.innerHTML='<pre id="dump">'+JSON.stringify(out)+'</pre>'}
+if(location.search.includes('selftest'))selfTest();else if(location.search.includes('dump'))dump();else home();
 </script></body></html>
