@@ -33,7 +33,7 @@ input{font:inherit;padding:10px 14px;border-radius:10px;border:2px solid #cfe0f5
 .opt.good{border-color:#2ec47a;background:#e5f9ee}.opt.bad{border-color:#e63946;background:#ffe9eb}
 .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
 .res{display:flex;align-items:center;gap:10px;margin:10px 0}
-.res b{width:130px}.res .bar{flex:1;margin:0;height:16px}.res span{width:50px;text-align:right}
+.res b{width:200px}.res .bar{flex:1;margin:0;height:16px}.res span{width:50px;text-align:right}
 .big{font-size:44px;font-weight:800;color:#3a86ff}
 .rev{border-top:1px solid #e3ecf7;padding-top:10px;margin-top:10px}
 .note{color:#6b7a8c;font-size:13px}
@@ -57,6 +57,7 @@ function S(o){const c=COL[o.c||'b'],z=o.z||1,s=30*z,r=ROTATABLE.includes(o.s)?((
  if(o.s==='dots'){const n=o.n,cols=n<=4?n:(n<=8?4:5),rows=Math.ceil(n/cols),sp=n>8?15:18,rad=n>8?5:7;
   for(let k=0;k<n;k++){const rw=Math.floor(k/cols),inRow=rw<rows-1?cols:n-cols*(rows-1);
    i+=`<circle cx="${50+((k%cols)-(inRow-1)/2)*sp}" cy="${50+(rw-(rows-1)/2)*sp}" r="${rad}" fill="${c}"/>`}}
+ if(o.s==='poly'){const pts=polyPts(o.n,50,52,34,0),dp=polyPts(o.n,50,52,27,0);i=`<polygon points="${pts.map(q=>q.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`+(o.d||[]).map(d=>`<circle cx="${dp[d%o.n][0].toFixed(1)}" cy="${dp[d%o.n][1].toFixed(1)}" r="6" fill="#111"/>`).join('')}
  if(o.s==='quad'){for(let k=0;k<4;k++){const x=(k===0||k===3)?20:50,y=k<2?20:50;
   i+=`<rect x="${x}" y="${y}" width="30" height="30" fill="${(o.q||[]).includes(k)?c:'#fff'}" stroke="#1d2b3a" stroke-width="2"/>`}}
  return `<svg viewBox="0 0 100 100"><g transform="rotate(${r} 50 50)">${i}</g></svg>`}
@@ -390,62 +391,333 @@ const BANK_C={
     ()=>seqQ('Which comes next?',i=>({s:'quad',q:i%3===0?[i%4]:i%3===1?[i%4,(i+1)%4]:[i%4,(i+1)%4,(i+2)%4],c:'b'}),4,[{q:[0]},{q:[1,2]},{q:[0,1,2]},{q:[3,0]}],'The number of shaded parts goes 1, 2, 3, then starts again. The first shaded part moves clockwise one step each time.')],
  S:[()=>rotQ(H7,5),()=>mirrorQ(H4,5),()=>foldQ('B',5),()=>fold2Q(),()=>netQ('nL',['w4','w5','bad231','uu']),()=>netQ('stair',['w1','w3','block','w2'])]}
 };
+// ===================== CAT4-format tests (Year 5 and Year 8, Tests D to F) =====================
+// 8 batteries per test, 3 questions each, 5 answer choices: Verbal Classification, Verbal Analogies,
+// Number Analogies, Number Series, Figure Classification, Figure Matrices, Figure Analysis, Figure Recognition.
+let UID=0;
+const rnd=(a,b)=>a+Math.random()*(b-a);
+function polyPts(n,cx,cy,r,rotDeg){const a0=((rotDeg||0)-90)*Math.PI/180;return Array.from({length:n},(_,k)=>[cx+r*Math.cos(a0+k*2*Math.PI/n),cy+r*Math.sin(a0+k*2*Math.PI/n)])}
+const SIDES={tri:3,square:4,pent:5,hex:6};
+function fillDef(f,id){
+ if(f==='none')return['','#fff'];
+ if(f==='black')return['','#111'];
+ if(f==='grey')return['','#b9b9b9'];
+ if(f==='dots')return[`<pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#fff"/><circle cx="3.5" cy="3.5" r="1.5" fill="#111"/></pattern>`,`url(#${id})`];
+ const ang={hatchV:0,hatchH:90,hatchD:45}[f];
+ return[`<pattern id="${id}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(${ang})"><rect width="6" height="6" fill="#fff"/><line x1="0" y1="0" x2="0" y2="6" stroke="#111" stroke-width="1.6"/></pattern>`,`url(#${id})`]}
+function figSvg(fg){let defs='',body='';
+ fg.parts.forEach(p=>{const id='p'+(++UID);const[d,fa]=fillDef(p.f,id);defs+=d;
+  if(p.s==='circle')body+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${p.r}" fill="${fa}" stroke="#111" stroke-width="2"/>`;
+  else{const pts=polyPts(SIDES[p.s],p.x,p.y,p.r,p.rot||0);body+=`<polygon points="${pts.map(q=>q.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="${fa}" stroke="#111" stroke-width="2" stroke-linejoin="round"/>`}});
+ return `<svg viewBox="0 0 100 100"><defs>${defs}</defs>${body}</svg>`}
+const figKey=fg=>JSON.stringify(fg.parts.map(p=>[p.s,p.f,p.r]));
+// ---------- Figure Classification ----------
+const FSH=['circle','tri','square','pent','hex'],FFILL=['none','black','hatchV','hatchH','hatchD','dots','grey'];
+function mkFig(n,layout){
+ const sh=()=>pick1(FSH),fl=()=>pick1(FFILL),rt=()=>pick1([0,15,30,45,60,90,120]);const parts=[];
+ if(n===1)parts.push({s:sh(),f:fl(),r:30,x:50,y:50,rot:rt()});
+ else if(n===2&&layout==='inside'){const s0=sh(),br=36,inR=s0==='circle'?br:br*Math.cos(Math.PI/SIDES[s0]);
+  const sr=Math.min(14,inR-6),off=Math.max(0,inR-sr-3),a=Math.random()*6.283,d=Math.random()*off;
+  parts.push({s:s0,f:pick1(FFILL.filter(x=>x!=='black')),r:br,x:50,y:50,rot:rt()});
+  parts.push({s:sh(),f:fl(),r:sr,x:50+d*Math.cos(a),y:50+d*Math.sin(a),rot:rt()})}
+ else if(n===2){parts.push({s:sh(),f:fl(),r:24,x:rnd(26,28),y:50+rnd(-6,6),rot:rt()});parts.push({s:sh(),f:fl(),r:14,x:rnd(74,76),y:50+rnd(-14,14),rot:rt()})}
+ else[18,50,82].forEach(x=>parts.push({s:sh(),f:fl(),r:14,x,y:50+rnd(-10,10),rot:rt()}));
+ return{n,layout:n===1?'single':n===3?'row':layout,parts}}
+const FT={
+ count2:f=>f.n===2,count3:f=>f.n===3,
+ inside:f=>f.layout==='inside',beside:f=>f.layout==='beside'||f.layout==='row',
+ black1:f=>f.parts.filter(p=>p.f==='black').length===1,
+ allSame:f=>f.n>=2&&f.parts.every(p=>p.s===f.parts[0].s),
+ allDiff:f=>f.n>=2&&new Set(f.parts.map(p=>p.s)).size===f.n,
+ allStripe:f=>f.parts.every(p=>p.f.startsWith('hatch')),
+ noCurve:f=>f.parts.every(p=>p.s!=='circle'),
+ hasCircle:f=>f.parts.some(p=>p.s==='circle'),
+ innerBlack:f=>f.layout==='inside'&&f.parts[1].f==='black',
+ allWhite:f=>f.parts.every(p=>p.f==='none')};
+const FTXT={count2:'two shapes',count3:'three shapes',inside:'a small shape inside a big shape',beside:'shapes side by side, not touching',black1:'exactly one black shape',allSame:'shapes that are all the same kind',allDiff:'shapes that are all different kinds',allStripe:'every shape filled with straight lines',noCurve:'only straight sides (no circles)',hasCircle:'at least one circle',innerBlack:'a black shape inside',allWhite:'every shape left empty (white)'};
+function sampleFig(pred){for(let i=0;i<8000;i++){const fg=mkFig(pick1([1,2,2,2,3,3]),pick1(['inside','beside']));if(pred(fg))return fg}throw new Error('no figure for trait')}
+function fcQ(traits){
+ const P=f=>traits.every(t=>FT[t](f)),used=new Set();
+ const fresh=pred=>{for(let t=0;t<40;t++){const g=sampleFig(pred);if(!used.has(figKey(g))){used.add(figKey(g));return g}}return sampleFig(pred)};
+ const given=[fresh(P),fresh(P),fresh(P)],ans=fresh(P),ds=[];
+ if(traits.length===1)for(let i=0;i<4;i++)ds.push(fresh(f=>!P(f)));
+ else[0,1,0,1].forEach(w=>ds.push(fresh(f=>FT[traits[w]](f)&&!FT[traits[1-w]](f))));
+ const all=[ans,...ds];
+ return{dbg:{t:'fc',traits,given,ans,ds},q:'Look at the three figures. Which of the five figures belongs with them?',vis:given.map(figSvg).join(''),
+  opts:all.map(f=>({h:figSvg(f),k:figKey(f)})),
+  why:'What the three figures share: '+traits.map(t=>FTXT[t]).join(' AND ')+'. Only one choice has all of this.',
+  chk:()=>{const e=[];if(!P(ans))e.push('answer breaks rule');ds.forEach(d=>{if(P(d))e.push('wrong option follows rule')});given.forEach(g=>{if(!P(g))e.push('given breaks rule')});
+   if(new Set(all.map(figKey)).size!==5)e.push('duplicate options');
+   if(traits.length===2)ds.forEach(d=>{if(traits.filter(t=>FT[t](d)).length!==1)e.push('wrong option should break exactly one trait')});return e}}}
+// ---------- Figure Matrices ----------
+function matN(N,fn,mods,latin,why,text){
+ const cells=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)cells.push(r===N-1&&c===N-1?'<div class="qm">?</div>':S(fn(r,c)));
+ const ok=fn(N-1,N-1),specs=[ok,...mods.map(m=>({...ok,...m}))];
+ return{q:text||'Which one completes the pattern?',vis:`<div class="mat" style="grid-template-columns:repeat(${N},84px)">${cells.join('')}</div>`,
+  opts:specs.map(o=>({h:S(o),k:S(o)})),why,
+  chk:()=>{const e=[];const ks=specs.map(S);if(new Set(ks).size!==ks.length)e.push('duplicate options');if(specs.length!==5)e.push('need 5 options');
+   (latin||[]).forEach(a=>{for(let i=0;i<N;i++){const rw=new Set(),cl=new Set();for(let j=0;j<N;j++){rw.add(fn(i,j)[a]);cl.add(fn(j,i)[a])}if(rw.size!==N||cl.size!==N)e.push('not latin '+a)}});return e}}}
+
+// ---------- Verbal ----------
+function vcQ(row){const[w,ans,ds,why]=row;
+ return{dbg:{t:'vc'},q:`<b>${w.join(' | ')}</b><br>Which word belongs with the three words above?`,opts:T([ans,...ds]),why,chk:()=>{const e=[];const a=[ans,...ds];if(a.length!==5||new Set(a).size!==5)e.push('need 5 different options');return e}}}
+function vaQ(row){const[w,ans,ds,why]=row;
+ return{dbg:{t:'va'},q:`<b>${w[0]} → ${w[1]} &nbsp;:&nbsp; ${w[2]} → ?</b><br>Which word makes the second pair work the same way as the first pair?`,opts:T([ans,...ds]),why,chk:()=>{const e=[];const a=[ans,...ds];if(a.length!==5||new Set(a).size!==5)e.push('need 5 different options');return e}}}
+// ---------- Numbers ----------
+function uniqNums(ans,cands,k){const out=[];cands.forEach(x=>{if(Number.isFinite(x)&&x>=0&&x!==ans&&!out.includes(x))out.push(x)});
+ for(let d=1;out.length<k;d++)[ans+d,ans-d].forEach(x=>{if(out.length<k&&x>=0&&x!==ans&&!out.includes(x))out.push(x)});return out.slice(0,k)}
+function naQ(id,rule,f,abc,wf){const[a,b,c]=abc,ans=f(c),w=uniqNums(ans,(wf?wf(a,b,c):[]).concat([ans+1,ans-1,ans+2,ans-2,ans+10]),4);
+ return{dbg:{t:'na',id,a,b,c,ans,A:f(a),B:f(b)},q:`Find the rule in the first two pairs. Use it to fill the gap.<br><b>[${a} → ${f(a)}] &nbsp; [${b} → ${f(b)}] &nbsp; [${c} → ?]</b>`,
+  opts:T([ans,...w]),why:`The rule: ${rule}. So ${c} → ${ans}.`,
+  chk:()=>{const e=[];if(new Set([ans,...w]).size!==5)e.push('duplicate numbers');if(f(a)===f(b))e.push('weak pair');return e}}}
+function genSeq(p){const t=[];
+ if(p.type==='cyc'){let v=p.start;for(let i=0;i<=p.n;i++){t.push(v);v+=p.steps[i%p.steps.length]}}
+ if(p.type==='int'){const A=[p.a[0]],B=[p.b[0]];for(let i=1;i<=p.n;i++){A.push(p.a[1]==='add'?A[i-1]+p.a[2]:A[i-1]*p.a[2]);B.push(p.b[1]==='add'?B[i-1]+p.b[2]:B[i-1]*p.b[2])}for(let i=0;i<=p.n;i++)t.push(i%2===0?A[i/2]:B[(i-1)/2])}
+ if(p.type==='rec'){let v=p.start;for(let i=0;i<=p.n;i++){t.push(v);v=v*p.mul+p.add}}
+ if(p.type==='alt'){let v=p.start;for(let i=0;i<=p.n;i++){t.push(v);const o=p.ops[i%p.ops.length];v=o[0]==='mul'?v*o[1]:v+o[1]}}
+ if(p.type==='dif'){let v=p.start,d=p.d0;for(let i=0;i<=p.n;i++){t.push(v);v+=d;d+=p.dd}}
+ return t}
+function nsQ(p,why){const t=genSeq(p),shown=t.slice(0,p.n),ans=t[p.n],last=shown[p.n-1],w=uniqNums(ans,[ans+1,ans-1,ans+2,ans-2,last+1,last-1,ans+3,ans-3].filter(x=>x!==last||true),4);
+ return{dbg:{t:'ns',p,ans},q:`Which number comes next in the series?<br><b>${shown.join(' &nbsp; ')} &nbsp; ?</b>`,opts:T([ans,...w]),why,
+  chk:()=>{const e=[];if(new Set([ans,...w]).size!==5)e.push('duplicate numbers');if(t.some(x=>!Number.isInteger(x)))e.push('non-integer term');return e}}}
+// ---------- Figure Analysis (paper folding) ----------
+const fx=u=>10+80*u,rectPoly=r=>[[r[0],r[1]],[r[2],r[1]],[r[2],r[3]],[r[0],r[3]]];
+function paperSvg(o){let s='<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80" fill="none" stroke="#b9c9e0" stroke-width="1.5" stroke-dasharray="3 3"/>';
+ s+=`<polygon points="${o.poly.map(p=>fx(p[0])+','+fx(p[1])).join(' ')}" fill="#bcd7f7" stroke="#5a86c5" stroke-width="2"/>`;
+ if(o.line)s+=`<line x1="${fx(o.line[0][0])}" y1="${fx(o.line[0][1])}" x2="${fx(o.line[1][0])}" y2="${fx(o.line[1][1])}" stroke="#e63946" stroke-width="2.5" stroke-dasharray="5 3"/>`;
+ (o.holes||[]).forEach(h=>s+=`<circle cx="${fx(h[0])}" cy="${fx(h[1])}" r="4" fill="#fff" stroke="#5a86c5" stroke-width="1.5"/>`);return s+'</svg>'}
+const FULLSQ=[[0,0],[1,0],[1,1],[0,1]];
+const hKey=H=>H.map(h=>h[0].toFixed(2)+','+h[1].toFixed(2)).sort().join(' ');
+const inUnit=h=>h[0]>-1e-9&&h[0]<1+1e-9&&h[1]>-1e-9&&h[1]<1+1e-9;
+const reflAx=(ax,c,h)=>ax==='x'?[2*c-h[0],h[1]]:[h[0],2*c-h[1]];
+function unfoldSet(H,folds,skip,wrongLast){let S0=H.map(h=>h.slice());
+ for(let i=folds.length-1;i>=0;i--){if(skip===i)continue;const f=folds[i];
+  const ax=(wrongLast&&i===folds.length-1)?(f.ax==='x'?'y':'x'):f.ax;S0=S0.concat(S0.map(h=>reflAx(ax,f.c,h)))}return S0}
+function foldQ2(nf,k){
+ let axes;if(nf===1)axes=[pick1(['x','y'])];else if(nf===2){const a=pick1(['x','y']);axes=Math.random()<.75?[a,a==='x'?'y':'x']:[a,a]}else axes=pick1([['x','y','x'],['y','x','y'],['x','x','y'],['y','y','x'],['x','y','y'],['y','x','x']]);
+ const r=[0,0,1,1],folds=[];
+ axes.forEach(ax=>{const lo=ax==='x'?0:1,hi=lo+2,c=(r[lo]+r[hi])/2,keep=pick1(['lo','hi']);folds.push({ax,c,keep,before:r.slice()});if(keep==='lo')r[hi]=c;else r[lo]=c});
+ const pp=k===1?[pick1([[.3,.3],[.7,.3],[.3,.7],[.7,.7]])]:pick1([[[.3,.3],[.7,.7]],[[.3,.7],[.7,.3]],[[.3,.35],[.7,.65]]]);
+ const holes=pp.map(p=>[r[0]+p[0]*(r[2]-r[0]),r[1]+p[1]*(r[3]-r[1])]);
+ const ans=unfoldSet(holes,folds);
+ const cand=[];
+ cand.push(unfoldSet(holes,folds,nf-1));
+ if(nf>1)cand.push(unfoldSet(holes,folds,0));
+ const wl=unfoldSet(holes,folds,undefined,true);if(wl.every(inUnit))cand.push(wl);
+ {const f=folds[nf-1],o=f.ax==='x'?[f.before[1],f.before[3]]:[f.before[0],f.before[2]];let S0=unfoldSet(holes,folds,nf-1);
+  const add=S0.filter((h,i)=>i<holes.length*Math.pow(2,nf-1)).map(h=>f.ax==='x'?[2*f.c-h[0],o[0]+o[1]-h[1]]:[o[0]+o[1]-h[0],2*f.c-h[1]]);cand.push(S0.concat(add))}
+ {const m=ans.map(h=>h.slice()),i=Math.floor(Math.random()*m.length);m[i]=[m[i][0]+(m[i][0]<.5?.14:-.14),m[i][1]];cand.push(m)}
+ cand.push(ans.slice(1));
+ const seen=new Set([hKey(ans)]),ds=[];shuf(cand).forEach(c=>{if(ds.length<4&&c.every(inUnit)&&!seen.has(hKey(c))){seen.add(hKey(c));ds.push(c)}});
+ const panels=folds.map(f=>paperSvg({poly:rectPoly(f.before),line:f.ax==='x'?[[f.c,f.before[1]],[f.c,f.before[3]]]:[[f.before[0],f.c],[f.before[2],f.c]]}));
+ panels.push(paperSvg({poly:rectPoly(r),holes}));
+ const mk=H=>({h:paperSvg({poly:FULLSQ,holes:H}),k:hKey(H)});
+ return{dbg:{t:'fold',folds:folds.map(f=>({ax:f.ax,c:f.c})),holes,ans,ds},q:'The paper is folded along the red dashed lines, step by step. Then holes are punched. Which picture shows the paper when it is opened out flat?',
+  vis:panels.join('<span style="font-size:26px;color:#6b7a8c;margin:0 -4px">→</span>').replace(/<\/svg><span/,'</svg><span'),
+  opts:[ans,...ds].map(mk),why:'Open the folds one at a time, last fold first. Each hole is copied across the fold line, like a mirror. '+k+' hole'+(k>1?'s':'')+' and '+nf+' fold'+(nf>1?'s':'')+' give '+ans.length+' holes.',
+  chk:()=>{const e=[];if(ans.length!==k*Math.pow(2,nf))e.push('wrong hole count');if(!ans.every(inUnit))e.push('hole outside paper');if(new Set(ans.map(h=>h[0].toFixed(2)+','+h[1].toFixed(2))).size!==ans.length)e.push('holes overlap');
+   if(ds.length!==4)e.push('not enough wrong options');const ks=[ans,...ds].map(hKey);if(new Set(ks).size!==5)e.push('duplicate options');
+   if(!holes.every(h=>h[0]>r[0]&&h[0]<r[2]&&h[1]>r[1]&&h[1]<r[3]))e.push('hole outside packet');return e}}}
+function foldDiagQ(k){
+ const anti=Math.random()<.5,keepA=Math.random()<.5;
+ const line=anti?[[1,0],[0,1]]:[[0,0],[1,1]];
+ const tri=anti?(keepA?[[0,0],[1,0],[0,1]]:[[1,1],[1,0],[0,1]]):(keepA?[[0,0],[1,0],[1,1]]:[[0,0],[0,1],[1,1]]);
+ const refl=anti?(h=>[1-h[1],1-h[0]]):(h=>[h[1],h[0]]);
+ const W=[[.5,.3,.2],[.25,.5,.25],[.3,.25,.45],[.2,.4,.4],[.4,.2,.4],[.2,.25,.55]];
+ // tri[0] is the corner opposite the fold for 'main'; use weights where the vertex away from the fold line has weight >= .2
+ const away=anti?(keepA?0:0):0;
+ const pick=()=>{const w=pick1(W);const p=[0,1].map(a=>tri[0][a]*w[0]+tri[1][a]*w[1]+tri[2][a]*w[2]);return p};
+ let holes=[];for(let t=0;t<60&&holes.length<k;t++){const p=pick();if(Math.abs((anti?p[0]+p[1]-1:p[0]-p[1]))>.2&&holes.every(h=>Math.hypot(h[0]-p[0],h[1]-p[1])>.2))holes.push(p)}
+ const ans=holes.concat(holes.map(refl));
+ const alt=[h=>[1-h[1],1-h[0]],h=>[h[1],h[0]],h=>[1-h[0],h[1]],h=>[h[0],1-h[1]],h=>[1-h[0],1-h[1]]];
+ const cand=alt.map(g=>holes.concat(holes.map(g)));cand.push(holes.slice(),ans.slice(1));
+ const seen=new Set([hKey(ans)]),ds=[];shuf(cand).forEach(c=>{if(ds.length<4&&c.every(inUnit)&&!seen.has(hKey(c))){seen.add(hKey(c));ds.push(c)}});
+ const mk=H=>({h:paperSvg({poly:FULLSQ,holes:H}),k:hKey(H)});
+ return{dbg:{t:'diag',anti,holes,ans,ds},q:'The square paper is folded along the red dashed diagonal. Then holes are punched. Which picture shows the paper when it is opened out flat?',
+  vis:paperSvg({poly:FULLSQ,line})+'<span style="font-size:26px;color:#6b7a8c;margin:0 -4px">→</span>'+paperSvg({poly:tri,holes}),opts:[ans,...ds].map(mk),
+  why:'Opening a diagonal fold copies each hole to the other side of the line, like a mirror. '+k+' hole'+(k>1?'s':'')+' become '+ans.length+'.',
+  chk:()=>{const e=[];if(holes.length!==k)e.push('could not place holes');if(ds.length!==4)e.push('not enough wrong options');const ks=[ans,...ds].map(hKey);if(new Set(ks).size!==5)e.push('duplicate options');
+   if(!ans.every(inUnit))e.push('hole outside paper');return e}}}
+// ---------- Figure Recognition ----------
+const FRP={
+ 5:[[[0,0],[12,0],[12,28],[30,28],[30,40],[0,40]],[[0,0],[22,0],[34,12],[34,40],[22,40],[22,18],[0,18]],[[0,30],[14,0],[40,0],[26,30]],[[0,16],[20,0],[40,10],[40,40],[0,40]],[[0,0],[34,0],[34,14],[14,14],[14,38],[0,38]]],
+ 8:[[[0,0],[26,0],[26,10],[14,10],[14,22],[34,22],[34,34],[0,34]],[[0,12],[10,0],[30,0],[40,16],[28,40],[14,30],[14,18]],[[0,0],[18,6],[36,0],[30,20],[40,38],[16,30],[0,40],[8,18]],[[0,10],[16,0],[16,14],[30,6],[40,24],[22,40],[8,30]],[[0,0],[40,6],[30,20],[40,40],[10,34],[14,16]]]};
+const XF={r90:p=>[-p[1],p[0]],r180:p=>[-p[0],-p[1]],r270:p=>[p[1],-p[0]],mir:p=>[-p[0],p[1]],flipv:p=>[p[0],-p[1]],big:p=>[p[0]*1.35,p[1]*1.35],small:p=>[p[0]*.7,p[1]*.7]};
+const polyKey=P=>{const mx=Math.min(...P.map(p=>p[0])),my=Math.min(...P.map(p=>p[1]));return P.map(p=>[Math.round((p[0]-mx)*10)/10,Math.round((p[1]-my)*10)/10].join(',')).sort().join(';')};
+function placePoly(P){const xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),mx=Math.min(...xs),my=Math.min(...ys),w=Math.max(...xs)-mx,h=Math.max(...ys)-my;
+ const ox=rnd(10,90-w)-mx,oy=rnd(10,90-h)-my;return P.map(p=>[+(p[0]+ox).toFixed(1),+(p[1]+oy).toFixed(1)])}
+function clutterSvg(heavy){let s='';const line=()=>{const e=()=>{const t=Math.random()*400;return t<100?[t,0]:t<200?[100,t-100]:t<300?[300-t,100]:[0,400-t]};let a=e(),b=e();for(let g=0;g<30&&Math.hypot(a[0]-b[0],a[1]-b[1])<55;g++){a=e();b=e()}return `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#111" stroke-width="1.5"/>`};
+ for(let i=0;i<(heavy?3:2);i++)s+=line();
+ s+=`<circle cx="${rnd(35,65).toFixed(1)}" cy="${rnd(35,65).toFixed(1)}" r="${rnd(22,32).toFixed(1)}" fill="none" stroke="#111" stroke-width="1.5"/>`;
+ if(heavy){const x=rnd(8,40),y=rnd(8,40),w=rnd(30,55),h=rnd(30,55);s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="none" stroke="#111" stroke-width="1.5"/>`}
+ return s}
+let FRoff=0;
+function frQ(level,idx){
+ let P,valid;const base=FRP[level],pool=base.map((_,i)=>base[(FRoff+(idx||0)+i)%base.length]);
+ const distinctOf=cand=>{const seen=new Set([polyKey(cand)]),out=[];shuf(Object.keys(XF)).forEach(n=>{const k=polyKey(cand.map(XF[n]));if(!seen.has(k)){seen.add(k);out.push(n)}});return out};
+ for(const cand of pool){valid=distinctOf(cand);if(valid.length>=4){P=cand;break}}
+ const ds=valid.slice(0,4).map(n=>({n,Q:placePoly(P.map(XF[n]))}));
+ const ansPts=placePoly(P),heavy=level===8;
+ const draw=pts=>`<svg viewBox="0 0 100 100">${clutterSvg(heavy)}<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/></svg>`;
+ const sh=placePoly(P),tx=Math.min(...sh.map(p=>p[0])),ty=Math.min(...sh.map(p=>p[1])),tw=Math.max(...sh.map(p=>p[0]))-tx,th=Math.max(...sh.map(p=>p[1]))-ty;
+ const tgt=P.map(p=>p).map(p=>[p[0]-Math.min(...P.map(q=>q[0]))+50-tw/2,p[1]-Math.min(...P.map(q=>q[1]))+50-th/2]);
+ const target=`<svg viewBox="0 0 100 100"><polygon points="${tgt.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="#e63946" stroke="#e63946" stroke-width="1" stroke-linejoin="round"/></svg>`;
+ const opts=[{h:draw(ansPts),k:'A'+JSON.stringify(ansPts)},...ds.map(d=>({h:draw(d.Q),k:d.n+JSON.stringify(d.Q)}))];
+ return{dbg:{t:'fr',P,ansPts,ds:ds.map(d=>({n:d.n,Q:d.Q}))},q:'Look at the red target shape. Which figure contains exactly this shape, the same size and facing the same way?',vis:target,opts,
+  why:'Look for the target outline hidden in the lines. The other figures hold the shape turned, flipped over, or a different size.',
+  chk:()=>{const e=[];if(ds.length!==4)e.push('not enough wrong options');if(polyKey(ansPts)!==polyKey(P))e.push('answer does not match target');ds.forEach(d=>{if(polyKey(d.Q)===polyKey(P))e.push('wrong option equals target')});
+   if(new Set(opts.map(o=>o.k)).size!==5)e.push('duplicate options');if(![ansPts,...ds.map(d=>d.Q)].every(Q=>Q.every(p=>p[0]>=5&&p[0]<=95&&p[1]>=5&&p[1]<=95)))e.push('shape outside box');return e}}}
+
+// ---------- word banks (original questions, same battery types as the CAT4 samples) ----------
+const VCD={
+ 5:{D:[[['sock','glove','scarf'],'hat',['wardrobe','wool','button','tailor'],'All are things you wear. A hat is worn too. A wardrobe stores clothes, wool is a material, a button is a part, a tailor is a person.'],
+      [['oak','maple','birch'],'willow',['leaf','forest','acorn','timber'],'All are kinds of tree. A willow is a tree too.'],
+      [['sprint','jog','march'],'stroll',['road','shoe','race','tired'],'All are ways of moving on foot. To stroll is to walk slowly.']],
+    E:[[['triangle','square','hexagon'],'pentagon',['circle','sphere','angle','corner'],'All are flat shapes with straight sides. A pentagon has 5 straight sides. A circle has none.'],
+      [['milk','juice','water'],'tea',['cup','bottle','thirsty','glass'],'All are drinks. The others are things you drink from, or a feeling.'],
+      [['doctor','nurse','dentist'],'pharmacist',['hospital','medicine','patient','ambulance'],'All are people who help keep us healthy. The others are places, things or patients.']],
+    F:[[['drum','flute','guitar'],'trumpet',['song','stage','singer','concert'],'All are musical instruments. A trumpet is one too.'],
+      [['Mars','Venus','Earth'],'Saturn',['Sun','Moon','comet','galaxy'],'All are planets. The Sun is a star. The Moon goes round the Earth.'],
+      [['whisper','murmur','mutter'],'mumble',['shout','sing','laugh','yell'],'All are quiet ways of speaking. To shout or yell is loud.']]},
+ 8:{D:[[['author','poet','playwright'],'novelist',['library','theatre','script','publisher'],'All are people who write for a job. A novelist writes novels.'],
+      [['copper','iron','tin'],'zinc',['glass','rubber','granite','plastic'],'All are metals. Zinc is a metal. The others are not.'],
+      [['gloomy','miserable','dejected'],'despondent',['anxious','furious','ecstatic','puzzled'],'All mean very sad. Despondent means sad and without hope.']],
+    E:[[['ripple','wave','tide'],'current',['ocean','shore','sand','sailor'],'All are movements of water. A current is water on the move. An ocean is a place, not a movement.'],
+      [['frigate','destroyer','submarine'],'cruiser',['harbour','admiral','anchor','voyage'],'All are kinds of warship. A cruiser is a warship too.'],
+      [['sonata','concerto','symphony'],'overture',['orchestra','conductor','instrument','audition'],'All are pieces of classical music. An overture is a piece of music. The others are people, things or events.']],
+    F:[[['dagger','sword','rapier'],'sabre',['shield','helmet','armour','soldier'],'All are blades used as weapons. A shield, helmet and armour protect you.'],
+      [['tributary','stream','brook'],'creek',['lake','waterfall','valley','bridge'],'All are small flowing waters. A creek is a small stream.'],
+      [['sprint','dash','bolt'],'dart',['crawl','linger','stroll','amble'],'All mean to move very fast. To dart is to move suddenly and quickly.']]}};
+const VAD={
+ 5:{D:[[['bird','nest','bee'],'hive',['honey','wing','flower','sting'],'A nest is where a bird lives. A hive is where a bee lives.'],
+      [['hot','cold','tall'],'short',['high','giant','thin','wide'],'Hot and cold are opposites. Tall and short are opposites.'],
+      [['pen','write','knife'],'cut',['sharp','fork','kitchen','blade'],'A pen is used to write. A knife is used to cut.']],
+    E:[[['lamb','sheep','calf'],'cow',['field','milk','horse','grass'],'A lamb is a young sheep. A calf is a young cow.'],
+      [['fish','swim','bird'],'fly',['sing','nest','feather','sky'],'A fish moves by swimming. A bird moves by flying.'],
+      [['finger','hand','toe'],'foot',['shoe','leg','nail','knee'],'A finger is part of a hand. A toe is part of a foot.']],
+    F:[[['summer','hot','winter'],'cold',['snow','season','coat','ice'],'Summer is hot. Winter is cold.'],
+      [['nose','smell','tongue'],'taste',['mouth','eat','sweet','lick'],'You smell with your nose. You taste with your tongue.'],
+      [['page','book','petal'],'flower',['garden','bee','colour','scent'],'A page is part of a book. A petal is part of a flower.']]},
+ 8:{D:[[['author','book','sculptor'],'statue',['clay','museum','artist','chisel'],'An author creates a book. A sculptor creates a statue.'],
+      [['drought','water','famine'],'food',['hunger','harvest','farmer','poverty'],'A drought is a shortage of water. A famine is a shortage of food.'],
+      [['timid','bold','cautious'],'reckless',['careful','nervous','wise','silent'],'Timid and bold are opposites. Cautious and reckless are opposites.']],
+    E:[[['thermometer','temperature','barometer'],'pressure',['weather','wind','rain','height'],'A thermometer measures temperature. A barometer measures air pressure.'],
+      [['novice','expert','amateur'],'professional',['beginner','player','student','learner'],'Novice and expert are opposites in skill. Amateur and professional are opposites too.'],
+      [['whale','mammal','shark'],'fish',['ocean','predator','teeth','reptile'],'A whale is a type of mammal. A shark is a type of fish.']],
+    F:[[['lawyer','court','surgeon'],'hospital',['patient','scalpel','doctor','nurse'],'A lawyer works in a court. A surgeon works in a hospital.'],
+      [['ancient','old','enormous'],'huge',['tiny','heavy','rare','modern'],'Ancient means very old. Enormous means very big, which is huge.'],
+      [['orchestra','conductor','ship'],'captain',['crew','sail','ocean','port'],'A conductor leads an orchestra. A captain leads a ship.']]}};
+// ---------- figure classification traits, matrices ----------
+const FCSETS={5:{D:[['inside'],['allStripe'],['black1']],E:[['count3'],['allSame'],['noCurve']],F:[['beside'],['allWhite'],['hasCircle']]},
+ 8:{D:[['inside','allStripe'],['count3','allDiff'],['beside','black1']],E:[['inside','noCurve'],['count3','allSame'],['count2','allStripe']],F:[['inside','black1'],['count3','hasCircle'],['beside','allDiff']]}};
+const FMSETS={
+ 5:{D:[()=>matN(2,(r,c)=>({s:['square','circle'][r],c:['b','r'][c]}),[{c:'b'},{s:'square'},{s:'tri'},{c:'g'}],[],'The shape changes down the rows. The colour changes along the rows.'),
+       ()=>matN(2,(r,c)=>({s:'arrow',r:c*90,c:['b','r'][r]}),[{r:0},{r:180},{r:270},{c:'b'}],[],'The arrow turns a quarter turn along each row. Each row keeps its colour.'),
+       ()=>matN(3,(r,c)=>({s:'poly',n:[4,5,6][r],d:[(r+c)%[4,5,6][r]]}),[{d:[3]},{d:[5]},{d:[2]},{n:5}],[],'The dot moves one corner clockwise at each step along a row. Each row starts one corner further round.')],
+    E:[()=>matN(2,(r,c)=>({s:['tri','diamond'][r],z:[.55,.9][c],c:'g'}),[{z:.55},{s:'tri'},{s:'square'},{c:'b'}],[],'The shape changes down the rows. The shape gets bigger along each row.'),
+       ()=>matN(2,(r,c)=>({s:'quad',q:[(c+2*r)%4],c:'r'}),[{q:[0]},{q:[1]},{q:[2]},{q:[1,3]}],[],'The red square moves one place clockwise at each step: top left, top right, bottom right, bottom left.'),
+       ()=>matN(3,(r,c)=>({s:SHP[(r+c)%3],c:'b'}),[{s:SHP[0]},{s:SHP[2]},{c:'r'},{s:'diamond'}],['s'],'Each shape appears once in every row and once in every column.')],
+    F:[()=>matN(2,(r,c)=>({s:['tri','half'][r],r:c*180,c:'p'}),[{r:0},{r:90},{r:270},{s:'tri'}],[],'The shape turns half a turn along each row. The shape changes down the rows.'),
+       ()=>matN(2,(r,c)=>({s:'circle',c:['r','b'][(r+c)%2]}),[{c:'b'},{c:'g'},{c:'y'},{s:'square'}],[],'Red and blue take turns in every row and every column.'),
+       ()=>matN(3,(r,c)=>({s:'dots',n:r+c+1,c:'p'}),[{n:4},{n:6},{n:3},{n:7}],[],'Each step along a row, and each step down a column, adds one dot.')]},
+ 8:{D:[()=>matN(3,(r,c)=>({s:SHP[(r+c)%3],c:CL3[r]}),[{s:SHP[0]},{s:SHP[2]},{c:'r'},{c:'b'}],['s'],'Each shape appears once in every row and every column. Each row has its own colour.'),
+       ()=>matN(3,(r,c)=>({s:'poly',n:[5,6,7][r],d:[(r+2*c)%[5,6,7][r]]}),[{d:[5]},{d:[0]},{d:[4]},{n:6}],[],'In each row the dot moves 2 corners clockwise at each step. Each row starts one corner further round.'),
+       ()=>matN(3,(r,c)=>({s:'arrow',r:c*90,z:[.55,.75,1][r],c:'b'}),[{r:90},{r:270},{z:.75},{z:.55}],[],'The arrow turns a quarter turn at each step along a row. Each row has its own size.')],
+    E:[()=>matN(3,(r,c)=>({s:'quad',q:[(c+r)%4,(c+r+1)%4],c:'b'}),[{q:[1,2]},{q:[2,3]},{q:[0,2]},{q:[3,0]}],[],'The two shaded squares move one place clockwise at each step. Each row starts one place further round.'),
+       ()=>matN(3,(r,c)=>({s:SHP[(r+c)%3],c:CL3[(2*r+c)%3]}),[{s:'square'},{s:'tri'},{c:'b'},{c:'g'}],['s','c'],'Each shape appears once in every row and column. Each colour does too.'),
+       ()=>matN(3,(r,c)=>({s:'half',r:((r+c)%4)*90,c:CL3[r]}),[{r:90},{r:180},{r:270},{c:'r'}],[],'The half circle turns a quarter turn more at each step along a row and down a column. Each row has its own colour.')],
+    F:[()=>matN(3,(r,c)=>({s:SHP[(r+c)%3],z:[.5,.7,.9][c],c:'g'}),[{z:.7},{z:.5},{s:'square'},{s:'tri'}],['s'],'Each shape appears once in every row and column. The size grows along each row.'),
+       ()=>matN(3,(r,c)=>({s:'poly',n:[6,7,8][r],d:[(2*r+3*c)%[6,7,8][r]]}),[{d:[1]},{d:[3]},{d:[5]},{n:7}],[],'The dot moves 3 corners clockwise at each step along a row. Each row starts 2 corners further round.'),
+       ()=>matN(3,(r,c)=>({s:'arrow',r:c*90,c:CL3[(r+c)%3]}),[{r:90},{r:270},{c:'r'},{c:'g'}],['c'],'The arrow turns a quarter turn along each row. Each colour appears once in every row and column.')]}};
+// ---------- number banks ----------
+const NASETS={
+ 5:{D:[()=>naQ('x+9','add 9',x=>x+9,[12,30,47]),()=>naQ('x*3','multiply by 3',x=>x*3,[4,7,9],(a,b,c)=>[c+3,c*2]),()=>naQ('x*2+1','double, then add 1',x=>x*2+1,[3,6,10],(a,b,c)=>[c*2,c*3+1])],
+    E:[()=>naQ('x-7','take away 7',x=>x-7,[15,28,40]),()=>naQ('x*4','multiply by 4',x=>x*4,[3,6,9],(a,b,c)=>[c+4,c*3]),()=>naQ('x/2+3','halve, then add 3',x=>x/2+3,[8,20,30],(a,b,c)=>[c/2,c/2-3])],
+    F:[()=>naQ('x+15','add 15',x=>x+15,[7,24,38]),()=>naQ('x*5','multiply by 5',x=>x*5,[2,6,8],(a,b,c)=>[c+5,c*4]),()=>naQ('x*2-1','double, then take away 1',x=>x*2-1,[4,7,12],(a,b,c)=>[c*2,c*2+1])]},
+ 8:{D:[()=>naQ('2*x+7','double, then add 7',x=>2*x+7,[3,6,9],(a,b,c)=>[c*2,c+16]),()=>naQ('x*x+1','multiply the number by itself, then add 1',x=>x*x+1,[2,4,6],(a,b,c)=>[c*c,c*2+1,c*c-1]),()=>naQ('x/3+4','divide by 3, then add 4',x=>x/3+4,[12,21,33],(a,b,c)=>[c/3,c/3-4])],
+    E:[()=>naQ('3*x-4','multiply by 3, then take away 4',x=>3*x-4,[4,7,10],(a,b,c)=>[c*3,c*3+4]),()=>naQ('x*x-3','multiply the number by itself, then take away 3',x=>x*x-3,[3,5,8],(a,b,c)=>[c*c,c*c-5,c*2-3]),()=>naQ('(x+5)*2','add 5, then double',x=>(x+5)*2,[3,6,10],(a,b,c)=>[c*2+5,c+10])],
+    F:[()=>naQ('4*x+1','multiply by 4, then add 1',x=>4*x+1,[2,5,8],(a,b,c)=>[c*4,c*4-1]),()=>naQ('x*x+x','multiply the number by itself, then add the number',x=>x*x+x,[2,4,6],(a,b,c)=>[c*c,c*c+c+1]),()=>naQ('x/2+9','halve, then add 9',x=>x/2+9,[14,30,46],(a,b,c)=>[c/2,c/2-9])]}};
+const NSSETS={
+ 5:{D:[()=>nsQ({type:'cyc',start:10,steps:[3,-1],n:9},'Add 3, then take away 1. Repeat.'),()=>nsQ({type:'int',a:[5,'add',3],b:[40,'add',-5],n:9},'Two series are mixed together. One goes up by 3. The other goes down by 5.'),()=>nsQ({type:'cyc',start:20,steps:[4,4,-5],n:9},'Add 4, add 4, take away 5. Repeat.')],
+    E:[()=>nsQ({type:'cyc',start:7,steps:[5,-2],n:9},'Add 5, then take away 2. Repeat.'),()=>nsQ({type:'int',a:[3,'add',2],b:[1,'mul',2],n:9},'Two series are mixed together. One goes up by 2. The other doubles.'),()=>nsQ({type:'cyc',start:50,steps:[-3,-3,5],n:9},'Take away 3, take away 3, add 5. Repeat.')],
+    F:[()=>nsQ({type:'cyc',start:4,steps:[6,-3],n:9},'Add 6, then take away 3. Repeat.'),()=>nsQ({type:'int',a:[30,'add',-3],b:[3,'add',4],n:9},'Two series are mixed together. One goes down by 3. The other goes up by 4.'),()=>nsQ({type:'cyc',start:10,steps:[7,-2,-2],n:9},'Add 7, take away 2, take away 2. Repeat.')]},
+ 8:{D:[()=>nsQ({type:'rec',start:1,mul:2,add:1,n:6},'Double the number and add 1 each time.'),()=>nsQ({type:'cyc',start:15,steps:[7,-3,-3],n:9},'Add 7, take away 3, take away 3. Repeat.'),()=>nsQ({type:'int',a:[4,'add',3],b:[2,'mul',2],n:9},'Two series are mixed together. One goes up by 3. The other doubles.')],
+    E:[()=>nsQ({type:'cyc',start:12,steps:[9,-4,-4],n:9},'Add 9, take away 4, take away 4. Repeat.'),()=>nsQ({type:'dif',start:2,d0:1,dd:1,n:7},'The gaps grow by 1 each time: +1, +2, +3, +4, +5, +6, then +7.'),()=>nsQ({type:'int',a:[3,'mul',2],b:[50,'add',-5],n:9},'Two series are mixed together. One doubles. The other goes down by 5.')],
+    F:[()=>nsQ({type:'alt',start:3,ops:[['mul',2],['add',-1]],n:8},'Double, then take away 1. Repeat.'),()=>nsQ({type:'cyc',start:6,steps:[5,5,-8],n:9},'Add 5, add 5, take away 8. Repeat.'),()=>nsQ({type:'dif',start:2,d0:3,dd:2,n:6},'The gaps go up by 2 each time: +3, +5, +7, +9, +11, then +13.')]}};
+const FASETS={
+ 5:{D:[()=>foldQ2(1,2),()=>foldQ2(2,1),()=>foldDiagQ(1)],E:[()=>foldQ2(2,1),()=>foldDiagQ(2),()=>foldQ2(2,1)],F:[()=>foldQ2(1,2),()=>foldQ2(2,1),()=>foldQ2(2,2)]},
+ 8:{D:[()=>foldQ2(3,1),()=>foldQ2(2,2),()=>foldQ2(3,1)],E:[()=>foldQ2(2,2),()=>foldQ2(3,1),()=>foldDiagQ(2)],F:[()=>foldQ2(3,1),()=>foldQ2(3,1),()=>foldQ2(2,2)]}};
+const NEWPARTS=[
+ {id:'VC',k:'V',name:'Verbal Classification',intro:'Three words go together. Choose the word that belongs with them.'},
+ {id:'VA',k:'V',name:'Verbal Analogies',intro:'The first two words are linked in a certain way. Make the second pair work the same way.'},
+ {id:'NA',k:'Q',name:'Number Analogies',intro:'Find the rule in the first two number pairs. Use it for the third pair.'},
+ {id:'NS',k:'Q',name:'Number Series',intro:'Find how the numbers change. Work out the next number.'},
+ {id:'FC',k:'N',name:'Figure Classification',intro:'Find what the three figures have in common. Choose the figure that has it too.'},
+ {id:'FM',k:'N',name:'Figure Matrices',intro:'Find the rule along the rows and down the columns. Choose the piece that fits the gap.'},
+ {id:'FA',k:'S',name:'Figure Analysis',intro:'Follow the folds. Picture the holes when the paper is opened out.'},
+ {id:'FR',k:'S',name:'Figure Recognition',intro:'Find the red target shape hidden in one of the five figures. It must be the same size and face the same way.'}];
+function newDef(y,t){return{VC:VCD[y][t].map(r=>()=>vcQ(r)),VA:VAD[y][t].map(r=>()=>vaQ(r)),NA:NASETS[y][t],NS:NSSETS[y][t],FC:FCSETS[y][t].map(tr=>()=>fcQ(tr)),FM:FMSETS[y][t],FA:FASETS[y][t],FR:[0,1,2].map(i=>()=>frQ(y,i))}}
+const buildNew=(y,t)=>{FRoff=Math.floor(Math.random()*5);const d=newDef(y,t);return NEWPARTS.map(p=>({k:p.k,name:p.name,intro:p.intro,time:180,five:true,qs:d[p.id].map(f=>f())}))};
+const testsFor=y=>(y===5||y===8)?['A','B','C','D','E','F']:['A','B','C'];
+
 const BANK={};[5,6,8,9].forEach(y=>{BANK[y]={A:BANK_A[y],B:BANK_B[y],C:BANK_C[y]}});
 const YEARS=[{y:5,age:10},{y:6,age:11},{y:8,age:12},{y:9,age:13}];
 const PARTS=[{k:'V',name:'Verbal',intro:'Words: odd ones out, word pairs and meanings.'},{k:'Q',name:'Quantitative',intro:'Numbers: find the rule and solve the problem.'},{k:'N',name:'Non-verbal',intro:'Shapes: spot the pattern in pictures.'},{k:'S',name:'Spatial',intro:'Turning, flipping and folding shapes.'}];
 const TESTS=['A','B','C'];
-const buildYear=(y,t)=>PARTS.map(p=>({...p,qs:BANK[y][t||'A'][p.k].map(f=>f())}));
+const isNew=t=>'DEF'.includes(t||'A');
+const buildYear=(y,t)=>isNew(t)?buildNew(y,t):PARTS.map(p=>({...p,qs:BANK[y][t||'A'][p.k].map(f=>f())}));
 // =============== app ===============
 const A=document.getElementById('app');
 let year=null,test='A',name='',SECS=[],si=0,qi=0,left=0,tm=null;
 const SEC_TIME=300;
 const fmt=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
-function setY(y){year=y;home()}
+function setY(y){year=y;if(!testsFor(y).includes(test))test='A';home()}
 function setT(t){test=t;home()}
 function home(){clearInterval(tm);
  A.innerHTML=`<div class="card"><h1>🧠 CAT4-style Practice Test</h1>
  <p>Step 1. Choose the year.</p>
  <div class="years">${YEARS.map(y=>`<div class="yc ${year===y.y?'sel':''}" onclick="setY(${y.y})"><b>Year ${y.y}</b><span>age ${y.age}</span></div>`).join('')}</div>
  <p>Step 2. Choose the test. Each test has different questions.</p>
- <div class="years">${TESTS.map(t=>`<div class="yc ${test===t?'sel':''}" onclick="setT('${t}')"><b>Test ${t}</b><span>24 questions</span></div>`).join('')}</div>
+ <div class="years">${testsFor(year||0).map(t=>`<div class="yc ${test===t?'sel':''}" onclick="setT('${t}')"><b>Test ${t}</b><span>${isNew(t)?'CAT4 format · 8 parts':'Mixed · 4 parts'}</span></div>`).join('')}</div>
  <p>Step 3. Type your name, then press Start.</p>
  <p><input id="nm" placeholder="Your name" value="${name.replace(/"/g,'')}" oninput="name=this.value"> <button ${year?'':'disabled'} onclick="start()">Start</button></p>
  <p><span class="tag V">Verbal</span> <span class="tag Q">Quantitative</span> <span class="tag N">Non-verbal</span> <span class="tag S">Spatial</span></p>
- <p>24 questions · 4 parts · 5 minutes per part. Pick one answer each time. You cannot go back. A wrong answer loses no marks, so always guess.</p>
+ <p>${isNew(test)?'24 questions · 8 parts · 3 minutes per part · 5 answer choices. These tests follow the 8 parts of the real CAT4 test.':'24 questions · 4 parts · 5 minutes per part.'} Pick one answer each time. You cannot go back. A wrong answer loses no marks, so always guess.</p>
  <p class="note">Practice questions written to match the style of CAT4. This is not the real GL Assessment test and gives no official score.</p></div>`}
 function start(){SECS=buildYear(year,test);SECS.forEach(s=>s.qs.forEach(q=>{q.items=shuf(q.opts.map((o,k)=>({...o,ok:k===0})));q.pick=null}));si=0;intro()}
-function intro(){const s=SECS[si];A.innerHTML=`<div class="card"><span class="tag ${s.k}">Year ${year} · Test ${test} · Part ${si+1} of 4</span><h1>${s.name}</h1><p>${s.intro}</p><p>6 questions · 5 minutes. The clock starts when you press Go.</p><button onclick="begin()">Go</button></div>`}
-function begin(){qi=0;left=SEC_TIME;clearInterval(tm);tm=setInterval(()=>{left--;const t=document.getElementById('tm');if(t){t.textContent=fmt(left);t.className='timer'+(left<30?' low':'')}if(left<=0)endSec()},1000);show()}
+function intro(){const s=SECS[si];A.innerHTML=`<div class="card"><span class="tag ${s.k}">Year ${year} · Test ${test} · Part ${si+1} of ${SECS.length}</span><h1>${s.name}</h1><p>${s.intro}</p><p>${s.qs.length} questions · ${Math.round((s.time||SEC_TIME)/60)} minutes. The clock starts when you press Go.</p><button onclick="begin()">Go</button></div>`}
+function begin(){qi=0;left=SECS[si].time||SEC_TIME;clearInterval(tm);tm=setInterval(()=>{left--;const t=document.getElementById('tm');if(t){t.textContent=fmt(left);t.className='timer'+(left<30?' low':'')}if(left<=0)endSec()},1000);show()}
 function show(){const s=SECS[si],q=s.qs[qi];
- A.innerHTML=`<div class="card"><div class="top"><span class="tag ${s.k}">${s.name} · ${qi+1}/6</span><span class="timer" id="tm">${fmt(left)}</span></div>
- <div class="bar"><i style="width:${(si*6+qi)/24*100}%"></i></div>
+ A.innerHTML=`<div class="card"><div class="top"><span class="tag ${s.k}">${s.name} · ${qi+1}/${s.qs.length}</span><span class="timer" id="tm">${fmt(left)}</span></div>
+ <div class="bar"><i style="width:${(SECS.slice(0,si).reduce((a,x)=>a+x.qs.length,0)+qi)/SECS.reduce((a,x)=>a+x.qs.length,0)*100}%"></i></div>
  <div class="q">${q.q}</div>${q.vis?`<div class="vis">${q.vis}</div>`:''}
  <div class="opts">${q.items.map((o,i)=>`<div class="opt ${q.pick===i?'sel':''}" onclick="pick(${i})">${o.h||o.t}</div>`).join('')}</div>
- <div class="row"><button onclick="next()">${qi===5?'Finish part':'Next'}</button></div></div>`}
+ <div class="row"><button onclick="next()">${qi===s.qs.length-1?'Finish part':'Next'}</button></div></div>`}
 function pick(i){SECS[si].qs[qi].pick=i;show()}
-function next(){if(qi<5){qi++;show()}else endSec()}
-function endSec(){clearInterval(tm);if(si<3){si++;intro()}else results()}
+function next(){if(qi<SECS[si].qs.length-1){qi++;show()}else endSec()}
+function endSec(){clearInterval(tm);if(si<SECS.length-1){si++;intro()}else results()}
 function results(){let tot=0,h='';
  SECS.forEach(s=>{const n=s.qs.filter(q=>q.pick!==null&&q.items[q.pick].ok).length;tot+=n;
-  h+=`<div class="res"><b>${s.name}</b><div class="bar"><i style="width:${n/6*100}%"></i></div><span>${n}/6</span></div>`});
- const msg=tot>=20?'Excellent work!':tot>=14?'Good work!':tot>=8?'Nice try. Practise more.':'Keep practising. You will improve.';
+  h+=`<div class="res"><b>${s.name}</b><div class="bar"><i style="width:${n/s.qs.length*100}%"></i></div><span>${n}/${s.qs.length}</span></div>`});
+ const TOTQ=SECS.reduce((a,x)=>a+x.qs.length,0);
+ const pc=tot/TOTQ,msg=pc>=.83?'Excellent work!':pc>=.58?'Good work!':pc>=.33?'Nice try. Practise more.':'Keep practising. You will improve.';
  let rv='';SECS.forEach(s=>s.qs.forEach((q,i)=>{rv+=`<div class="rev"><span class="tag ${s.k}">${s.name} ${i+1}</span><div class="q">${q.q}</div>${q.vis?`<div class="vis">${q.vis}</div>`:''}
  <div class="opts">${q.items.map((o,k)=>`<div class="opt ${o.ok?'good':(q.pick===k?'bad':'')}">${o.h||o.t}${q.pick===k?'<small>your answer</small>':''}${o.ok?'<small>correct</small>':''}</div>`).join('')}</div>
  <p class="note">${q.why||''}</p></div>`}));
- A.innerHTML=`<div class="card"><h1>Well done${name?', '+name.replace(/</g,''):''}! 🎉</h1><p>Year ${year} · Test ${test}</p><div class="big">${tot} / 24</div><p>${msg}</p>${h}
+ A.innerHTML=`<div class="card"><h1>Well done${name?', '+name.replace(/</g,''):''}! 🎉</h1><p>Year ${year} · Test ${test}</p><div class="big">${tot} / ${TOTQ}</div><p>${msg}</p>${h}
  <div class="row"><button onclick="start()">Try again</button><button class="alt" onclick="home()">Choose another year</button><button class="alt" onclick="document.getElementById('rv').hidden=!document.getElementById('rv').hidden">Show / hide answers</button></div>
  <p class="note">Practice only. Not an official CAT4 score.</p></div><div class="card" id="rv" hidden><h2>Answers</h2>${rv}</div>`}
 // =============== self test (open the page with ?selftest) ===============
 function selfTest(){const errs=[];let n=0;
- YEARS.forEach(Y=>TESTS.forEach(TT=>{for(let it=0;it<60;it++){const secs=buildYear(Y.y,TT);if(secs.length!==4)errs.push('Y'+Y.y+TT+' sections');
-  secs.forEach(s=>{if(s.qs.length!==6)errs.push(`Y${Y.y}${TT} ${s.name} has ${s.qs.length} questions`);
+ YEARS.forEach(Y=>testsFor(Y.y).forEach(TT=>{for(let it=0;it<(isNew(TT)?40:60);it++){const secs=buildYear(Y.y,TT);if(secs.length!==(isNew(TT)?8:4))errs.push('Y'+Y.y+TT+' sections');
+  secs.forEach(s=>{if(s.qs.length!==(isNew(TT)?3:6))errs.push(`Y${Y.y}${TT} ${s.name} has ${s.qs.length} questions`);
    s.qs.forEach((q,qi)=>{n++;const id=`Y${Y.y}${TT} ${s.name} Q${qi+1}`;
-    if(!q||!q.opts||q.opts.length<4)errs.push(id+': fewer than 4 options');
+    if(!q||!q.opts||q.opts.length<(isNew(TT)?5:4))errs.push(id+': too few options');
     const ks=q.opts.map(o=>o.k);if(!q.dup&&new Set(ks).size!==ks.length)errs.push(id+': duplicate options');
-    if(q.chk)q.chk().forEach(e=>errs.push(id+': '+e));else if(['Q','N','S'].includes(s.k))errs.push(id+': no check');
+    if(q.chk)q.chk().forEach(e=>errs.push(id+': '+e));else if(['Q','N','S'].includes(s.k)&&!isNew(TT))errs.push(id+': no check');
     if(!q.why)errs.push(id+': no explanation')})})}}));
  const uniq=[...new Set(errs)];
  document.body.innerHTML='<pre id="out">'+(uniq.length?'FAIL '+uniq.length+'\n'+uniq.slice(0,40).join('\n'):'PASS '+n+' question builds checked')+'</pre>';}
-function dump(){const out=[];YEARS.forEach(Y=>TESTS.forEach(TT=>{for(let it=0;it<25;it++)buildYear(Y.y,TT).forEach(s=>s.qs.forEach(q=>{if(q.dbg)out.push(q.dbg)}))}));document.body.innerHTML='<pre id="dump">'+JSON.stringify(out)+'</pre>'}
+function dump(){const out=[];YEARS.forEach(Y=>testsFor(Y.y).forEach(TT=>{for(let it=0;it<(isNew(TT)?40:25);it++)buildYear(Y.y,TT).forEach(s=>s.qs.forEach(q=>{if(q.dbg)out.push(q.dbg)}))}));document.body.innerHTML='<pre id="dump">'+JSON.stringify(out)+'</pre>'}
 if(location.search.includes('selftest'))selfTest();else if(location.search.includes('dump'))dump();else home();
 </script></body></html>
