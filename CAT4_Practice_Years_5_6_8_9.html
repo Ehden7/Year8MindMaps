@@ -658,13 +658,94 @@ const NEWPARTS=[
  {id:'FR',k:'S',name:'Figure Recognition',intro:'Find the red target shape hidden in one of the five figures. It must be the same size and face the same way.'}];
 function newDef(y,t){return{VC:VCD[y][t].map(r=>()=>vcQ(r)),VA:VAD[y][t].map(r=>()=>vaQ(r)),NA:NASETS[y][t],NS:NSSETS[y][t],FC:FCSETS[y][t].map(tr=>()=>fcQ(tr)),FM:FMSETS[y][t],FA:FASETS[y][t],FR:[0,1,2].map(i=>()=>frQ(y,i))}}
 const buildNew=(y,t)=>{FRoff=Math.floor(Math.random()*5);const d=newDef(y,t);return NEWPARTS.map(p=>({k:p.k,name:p.name,intro:p.intro,time:180,five:true,qs:d[p.id].map(f=>f())}))};
-const testsFor=y=>(y===5||y===8)?['A','B','C','D','E','F']:['A','B','C'];
+// ===================== Tests G, H and I (Year 5 and Year 8) =====================
+Object.assign(VCD[5],{
+ G:[[['rose','tulip','daisy'],'lily',['petal','garden','stem','vase'],'All are kinds of flower. A lily is a flower too. A petal and a stem are parts of a flower.'],
+    [['cheetah','leopard','lion'],'tiger',['zoo','cage','mane','safari'],'All are big wild cats. A tiger is a big cat too.'],
+    [['Monday','Friday','Sunday'],'Wednesday',['weekend','week','holiday','calendar'],'All are days of the week. Wednesday is a day too.']],
+ H:[[['violin','cello','harp'],'viola',['bow','string','music','tune'],'All are string instruments. A viola is one too.'],
+    [['kitten','puppy','cub'],'foal',['mother','paw','den','pet'],'All are baby animals. A foal is a baby horse.'],
+    [['pencil','crayon','marker'],'pen',['paper','desk','rubber','ruler'],'All are things you draw or write with. A pen is one too.']],
+ I:[[['plate','bowl','saucer'],'platter',['fork','table','meal','kitchen'],'All are dishes that hold food. A platter is a big flat dish.'],
+    [['north','south','east'],'west',['map','compass','road','journey'],'All are compass directions. West is a direction too.'],
+    [['hammer','saw','drill'],'spanner',['nail','wood','builder','shed'],'All are tools. A spanner is a tool too.']]});
+Object.assign(VCD[8],{
+ G:[[['emerald','sapphire','ruby'],'topaz',['mine','jeweller','crystal','necklace'],'All are precious gemstones. Topaz is a gemstone too.'],
+    [['nimble','agile','spry'],'lithe',['clumsy','heavy','sturdy','weary'],'All mean quick and light on your feet. Lithe means supple and agile.'],
+    [['cumulus','stratus','cirrus'],'nimbus',['thunder','drizzle','horizon','breeze'],'All are kinds of cloud. Nimbus is a rain cloud.']],
+ H:[[['venture','gamble','risk'],'hazard',['safety','plan','reward','profit'],'All mean to put something in danger for a chance of gain. Hazard fits with them.'],
+    [['cello','oboe','clarinet'],'bassoon',['rehearsal','melody','maestro','tempo'],'All are orchestral instruments. A bassoon is one too.'],
+    [['peninsula','island','archipelago'],'isthmus',['voyage','harbour','sailor','compass'],'All are land formations linked to water. An isthmus is a narrow strip of land between two seas.']],
+ I:[[['lethargic','sluggish','listless'],'torpid',['frantic','vigorous','alert','eager'],'All mean slow and without energy. Torpid means inactive.'],
+    [['dune','delta','canyon'],'plateau',['climate','geography','pebble','forecast'],'All are natural landforms. A plateau is a high flat area of land.'],
+    [['sculpture','mosaic','fresco'],'tapestry',['gallery','curator','canvas','auction'],'All are works of art. A tapestry is a woven work of art.']]});
+Object.assign(VAD[5],{
+ G:[[['puppy','dog','kitten'],'cat',['mouse','milk','paw','small'],'A puppy is a young dog. A kitten is a young cat.'],
+    [['eye','see','ear'],'hear',['listen','head','sound','loud'],'You see with your eye. You hear with your ear.'],
+    [['farmer','farm','teacher'],'school',['pupil','book','lesson','desk'],'A farmer works on a farm. A teacher works at a school.']],
+ H:[[['day','light','night'],'dark',['sun','lamp','bright','shadow'],'Day is light. Night is dark.'],
+    [['wheel','car','wing'],'plane',['bird','sky','fly','pilot'],'A wheel is part of a car. A wing is part of a plane.'],
+    [['shoe','foot','glove'],'hand',['wool','warm','winter','pair'],'A shoe goes on a foot. A glove goes on a hand.']],
+ I:[[['sad','happy','weak'],'strong',['tired','ill','soft','small'],'Sad and happy are opposites. Weak and strong are opposites.'],
+    [['coat','wear','book'],'read',['page','shelf','write','story'],'You wear a coat. You read a book.'],
+    [['second','minute','centimetre'],'metre',['ruler','kilogram','hour','line'],'A minute is longer than a second. A metre is longer than a centimetre.']]});
+Object.assign(VAD[8],{
+ G:[[['pride','lions','flock'],'birds',['sky','feathers','nest','migrate'],'A group of lions is a pride. A group of birds is a flock.'],
+    [['generous','stingy','honest'],'deceitful',['truthful','kind','loyal','humble'],'Generous and stingy are opposites. Honest and deceitful are opposites.'],
+    [['pilot','aircraft','captain'],'ship',['sea','crew','port','anchor'],'A pilot flies an aircraft. A captain commands a ship.']],
+ H:[[['predator','prey','parasite'],'host',['animal','insect','disease','hunter'],'A predator hunts its prey. A parasite lives on its host.'],
+    [['fragile','robust','scarce'],'plentiful',['rare','tiny','valuable','costly'],'Fragile and robust are opposites. Scarce and plentiful are opposites.'],
+    [['seed','tree','egg'],'bird',['nest','shell','feather','chick'],'A seed grows into a tree. An egg grows into a bird.']],
+ I:[[['ruler','length','scales'],'mass',['balance','weight','heavy','kitchen'],'A ruler measures length. Scales measure mass.'],
+    [['tadpole','frog','caterpillar'],'butterfly',['leaf','cocoon','insect','wing'],'A tadpole grows into a frog. A caterpillar grows into a butterfly.'],
+    [['verdict','jury','sentence'],'judge',['court','prison','trial','crime'],'A jury decides the verdict. A judge decides the sentence.']]});
+Object.assign(FCSETS[5],{G:[['count2'],['allDiff'],['noCurve']],H:[['innerBlack'],['allSame'],['hasCircle']],I:[['allStripe'],['count2'],['inside']]});
+Object.assign(FCSETS[8],{G:[['count2','noCurve'],['inside','allWhite'],['beside','hasCircle']],H:[['count3','black1'],['inside','hasCircle'],['count2','allDiff']],I:[['count3','allStripe'],['beside','noCurve'],['inside','allDiff']]});
+Object.assign(FMSETS[5],{
+ G:[()=>matN(2,(r,c)=>({s:['circle','tri'][c],c:['r','b'][r]}),[{s:'circle'},{c:'r'},{s:'square'},{c:'g'}],[],'The shape changes along each row. The colour changes down each column.'),
+    ()=>matN(2,(r,c)=>({s:'half',r:c*90+r*180,c:'b'}),[{r:0},{r:90},{r:180},{c:'r'}],[],'Along a row the shape turns a quarter turn. Down a column it turns a half turn.'),
+    ()=>matN(3,(r,c)=>({s:'dots',n:2*r+c+1,c:'p'}),[{n:6},{n:8},{n:5},{n:9}],[],'Along a row one dot is added. Down a column two dots are added.')],
+ H:[()=>matN(2,(r,c)=>({s:'circle',z:[.5,.9][r],c:['r','b'][c]}),[{z:.5},{c:'r'},{s:'square'},{c:'g'}],[],'The size changes down the rows. The colour changes along the rows.'),
+    ()=>matN(2,(r,c)=>({s:'arrow',r:(r+c)*90,c:'b'}),[{r:0},{r:90},{r:270},{c:'r'}],[],'The arrow turns a quarter turn at each step along a row and down a column.'),
+    ()=>matN(3,(r,c)=>({s:SHP[(r+c)%3],z:[.5,.7,.9][r],c:'b'}),[{z:.7},{z:.5},{s:SHP[0]},{s:SHP[2]}],['s'],'Each shape appears once in every row and column. The size depends on the row.')],
+ I:[()=>matN(2,(r,c)=>({s:'half',r:[0,180][c],c:['r','b'][r]}),[{r:0},{c:'r'},{s:'tri'},{r:90}],[],'The shape turns a half turn along each row. The colour changes down the columns.'),
+    ()=>matN(2,(r,c)=>({s:'quad',q:[(2*c+r)%4],c:'b'}),[{q:[0]},{q:[1]},{q:[2]},{q:[1,3]}],[],'The shaded square moves 2 places along a row and 1 place down a column.'),
+    ()=>matN(3,(r,c)=>({s:'poly',n:[4,5,6][r],d:[(2*c+r)%[4,5,6][r]]}),[{d:[1]},{d:[2]},{d:[4]},{n:5}],[],'The dot moves 2 corners clockwise at each step along a row. Each row starts one corner further round.')]});
+Object.assign(FMSETS[8],{
+ G:[()=>matN(3,(r,c)=>({s:SHP[(r+2*c)%3],c:CL3[(r+c)%3]}),[{s:SHP[1]},{s:SHP[2]},{c:CL3[0]},{c:CL3[2]}],['s','c'],'Each shape appears once in every row and column. Each colour does too.'),
+    ()=>matN(3,(r,c)=>({s:'arrow',r:((r+c)*90)%360,c:CL3[r]}),[{r:90},{r:180},{r:270},{c:CL3[0]}],[],'The arrow turns a quarter turn at each step along a row and down a column. Each row has its own colour.'),
+    ()=>matN(3,(r,c)=>({s:'quad',q:[(2*c+r)%4,(2*c+r+1)%4],c:'b'}),[{q:[1,2]},{q:[3,0]},{q:[0,1]},{q:[2,0]}],[],'The two shaded squares move 2 places clockwise along a row and 1 place down a column.')],
+ H:[()=>matN(3,(r,c)=>({s:'dots',n:(r+1)*(c+1),c:'p'}),[{n:8},{n:12},{n:7},{n:6}],[],'Multiply the row number by the column number to get the number of dots.'),
+    ()=>matN(3,(r,c)=>({s:'half',r:((2*r+c)%4)*90,c:CL3[c]}),[{r:0},{r:90},{r:270},{c:CL3[0]}],[],'Along a row the shape turns a quarter turn. Down a column it turns a half turn. Each column has its own colour.'),
+    ()=>matN(3,(r,c)=>({s:'poly',n:[4,5,6][r],d:[(3*c+r)%[4,5,6][r]]}),[{d:[0]},{d:[1]},{d:[3]},{n:5}],[],'The dot moves 3 corners clockwise at each step along a row. Each row starts one corner further round.')],
+ I:[()=>matN(3,(r,c)=>({s:SHP[(2*r+c)%3],z:[.5,.7,.9][c],c:CL3[r]}),[{s:SHP[1]},{s:SHP[2]},{z:.7},{c:CL3[0]}],['s'],'Each shape appears once in every row and column. The size grows along each row. Each row has its own colour.'),
+    ()=>matN(3,(r,c)=>({s:'arrow',r:(90*c)%360,z:[.55,.75,1][r],c:CL3[(r+c)%3]}),[{r:90},{r:270},{z:.75},{c:CL3[0]}],['c'],'The arrow turns a quarter turn along each row. Each row has its own size. Each colour appears once in every row and column.'),
+    ()=>matN(3,(r,c)=>({s:'quad',q:[(c+r)%4,(c+r+1)%4,(c+r+2)%4],c:'b'}),[{q:[1,2,3]},{q:[3,0,1]},{q:[0,1]},{q:[0,2,3]}],[],'Three squares are shaded. They move one place clockwise at each step. Each row starts one place further round.')]});
+Object.assign(NASETS[5],{
+ G:[()=>naQ('x+12','add 12',x=>x+12,[8,21,35]),()=>naQ('x*6','multiply by 6',x=>x*6,[3,5,9],(a,b,c)=>[c+6,c*5]),()=>naQ('x*3+2','multiply by 3, then add 2',x=>x*3+2,[2,5,8],(a,b,c)=>[c*3,c*2+2])],
+ H:[()=>naQ('x-9','take away 9',x=>x-9,[20,33,50]),()=>naQ('x*10','multiply by 10',x=>x*10,[3,5,8],(a,b,c)=>[c+10,c*9]),()=>naQ('x*3-2','multiply by 3, then take away 2',x=>x*3-2,[3,6,9],(a,b,c)=>[c*3,c*3+2])],
+ I:[()=>naQ('x+25','add 25',x=>x+25,[14,33,50]),()=>naQ('x*2+5','double, then add 5',x=>x*2+5,[3,7,11],(a,b,c)=>[c*2,c*2-5]),()=>naQ('x*6b','multiply by 6',x=>x*6,[4,7,9],(a,b,c)=>[c+6,c*5])]});
+Object.assign(NASETS[8],{
+ G:[()=>naQ('5*x-3','multiply by 5, then take away 3',x=>5*x-3,[3,6,9],(a,b,c)=>[c*5,c*5+3]),()=>naQ('(x-2)*3','take away 2, then multiply by 3',x=>(x-2)*3,[5,8,12],(a,b,c)=>[c*3-2,c*3-6+1]),()=>naQ('x/4+6','divide by 4, then add 6',x=>x/4+6,[8,20,44],(a,b,c)=>[c/4,c/4-6])],
+ H:[()=>naQ('6*x-5','multiply by 6, then take away 5',x=>6*x-5,[2,5,8],(a,b,c)=>[c*6,c*6+5]),()=>naQ('x*x-x','multiply the number by itself, then take away the number',x=>x*x-x,[3,5,7],(a,b,c)=>[c*c,c*c-c+1]),()=>naQ('(x+4)*3','add 4, then multiply by 3',x=>(x+4)*3,[2,5,9],(a,b,c)=>[c*3+4,c+12])],
+ I:[()=>naQ('7*x+2','multiply by 7, then add 2',x=>7*x+2,[2,4,9],(a,b,c)=>[c*7,c*7-2]),()=>naQ('x*x-2x','multiply the number by itself, then take away double the number',x=>x*x-2*x,[4,6,9],(a,b,c)=>[c*c,c*c-c]),()=>naQ('x/5+8','divide by 5, then add 8',x=>x/5+8,[10,25,60],(a,b,c)=>[c/5,c/5-8])]});
+Object.assign(NSSETS[5],{
+ G:[()=>nsQ({type:'cyc',start:6,steps:[4,-2],n:9},'Add 4, then take away 2. Repeat.'),()=>nsQ({type:'int',a:[2,'add',4],b:[50,'add',-3],n:9},'Two series are mixed together. One goes up by 4. The other goes down by 3.'),()=>nsQ({type:'cyc',start:30,steps:[-4,-4,6],n:9},'Take away 4, take away 4, add 6. Repeat.')],
+ H:[()=>nsQ({type:'cyc',start:9,steps:[5,-3],n:9},'Add 5, then take away 3. Repeat.'),()=>nsQ({type:'int',a:[2,'mul',2],b:[30,'add',-4],n:9},'Two series are mixed together. One doubles. The other goes down by 4.'),()=>nsQ({type:'cyc',start:8,steps:[3,3,-4],n:9},'Add 3, add 3, take away 4. Repeat.')],
+ I:[()=>nsQ({type:'cyc',start:15,steps:[-2,6],n:9},'Take away 2, then add 6. Repeat.'),()=>nsQ({type:'int',a:[40,'add',-6],b:[5,'add',5],n:9},'Two series are mixed together. One goes down by 6. The other goes up by 5.'),()=>nsQ({type:'cyc',start:12,steps:[6,-2,-2],n:9},'Add 6, take away 2, take away 2. Repeat.')]});
+Object.assign(NSSETS[8],{
+ G:[()=>nsQ({type:'rec',start:1,mul:3,add:1,n:6},'Multiply by 3 and add 1 each time.'),()=>nsQ({type:'cyc',start:10,steps:[8,-5,-5],n:9},'Add 8, take away 5, take away 5. Repeat.'),()=>nsQ({type:'int',a:[5,'mul',2],b:[60,'add',-7],n:9},'Two series are mixed together. One doubles. The other goes down by 7.')],
+ H:[()=>nsQ({type:'dif',start:1,d0:2,dd:2,n:7},'The gaps go up by 2 each time: +2, +4, +6, +8, +10, +12, then +14.'),()=>nsQ({type:'alt',start:2,ops:[['mul',3],['add',-2]],n:8},'Multiply by 3, then take away 2. Repeat.'),()=>nsQ({type:'int',a:[7,'add',4],b:[3,'mul',3],n:9},'Two series are mixed together. One goes up by 4. The other multiplies by 3.')],
+ I:[()=>nsQ({type:'rec',start:3,mul:2,add:-1,n:6},'Double the number and take away 1 each time.'),()=>nsQ({type:'dif',start:5,d0:4,dd:3,n:6},'The gaps go up by 3 each time: +4, +7, +10, +13, +16, then +19.'),()=>nsQ({type:'cyc',start:25,steps:[-8,3,3],n:9},'Take away 8, add 3, add 3. Repeat.')]});
+Object.assign(FASETS[5],{G:[()=>foldQ2(1,2),()=>foldQ2(2,1),()=>foldDiagQ(1)],H:[()=>foldQ2(2,1),()=>foldQ2(1,2),()=>foldQ2(2,2)],I:[()=>foldDiagQ(1),()=>foldQ2(2,1),()=>foldQ2(2,2)]});
+Object.assign(FASETS[8],{G:[()=>foldQ2(3,1),()=>foldDiagQ(2),()=>foldQ2(2,2)],H:[()=>foldQ2(2,2),()=>foldQ2(3,1),()=>foldQ2(3,1)],I:[()=>foldQ2(3,1),()=>foldQ2(2,2),()=>foldDiagQ(2)]});
+const testsFor=y=>(y===5||y===8)?['A','B','C','D','E','F','G','H','I']:['A','B','C'];
 
 const BANK={};[5,6,8,9].forEach(y=>{BANK[y]={A:BANK_A[y],B:BANK_B[y],C:BANK_C[y]}});
 const YEARS=[{y:5,age:10},{y:6,age:11},{y:8,age:12},{y:9,age:13}];
 const PARTS=[{k:'V',name:'Verbal',intro:'Words: odd ones out, word pairs and meanings.'},{k:'Q',name:'Quantitative',intro:'Numbers: find the rule and solve the problem.'},{k:'N',name:'Non-verbal',intro:'Shapes: spot the pattern in pictures.'},{k:'S',name:'Spatial',intro:'Turning, flipping and folding shapes.'}];
 const TESTS=['A','B','C'];
-const isNew=t=>'DEF'.includes(t||'A');
+const isNew=t=>'DEFGHI'.includes(t||'A');
 const buildYear=(y,t)=>isNew(t)?buildNew(y,t):PARTS.map(p=>({...p,qs:BANK[y][t||'A'][p.k].map(f=>f())}));
 // =============== app ===============
 const A=document.getElementById('app');
